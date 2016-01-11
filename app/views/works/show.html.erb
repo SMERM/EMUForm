@@ -1,0 +1,29 @@
+<p id="notice"><%= notice %></p>
+
+<p>
+  <strong>Title:</strong>
+  <%= @work.title %>
+</p>
+
+<p>
+  <strong>Year:</strong>
+  <%= @work.year %>
+</p>
+
+<p>
+  <strong>Duration:</strong>
+  <%= @work.duration %>
+</p>
+
+<p>
+  <strong>Instruments:</strong>
+  <%= @work.instruments %>
+</p>
+
+<p>
+  <strong>Program notes en:</strong>
+  <%= @work.program_notes_en %>
+</p>
+
+<%= link_to 'Edit', edit_work_path(@work) %> |
+<%= link_to 'Back', works_path %>

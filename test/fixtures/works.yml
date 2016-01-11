@@ -1,0 +1,15 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  title: 
+  year: 2016-01-11 11:38:42
+  duration: 2016-01-11 11:38:42
+  instruments: MyString
+  program_notes_en: MyText
+
+two:
+  title: 
+  year: 2016-01-11 11:38:42
+  duration: 2016-01-11 11:38:42
+  instruments: MyString
+  program_notes_en: MyText
