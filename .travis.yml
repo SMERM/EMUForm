@@ -1,6 +1,8 @@
 language: ruby
 script: bundle exec rake test
-before_install: gem install bundler
+before_install:
+  - gem install bundler
+  - bundle exec rake db:migrate
 os:
   - linux
   - osx
