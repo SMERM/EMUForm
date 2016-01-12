@@ -2,6 +2,7 @@ language: ruby
 script: bundle exec rake test
 before_install:
   - gem install bundler
+  - bundle install
   - bundle exec rake db:migrate
 os:
   - linux
