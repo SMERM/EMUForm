@@ -37,6 +37,7 @@ group :development, :test do
   gem 'byebug'
   # use 'rspec' instead of 'minitest'
   gem 'rspec-rails', '~> 3.0'
+  gem "codeclimate-test-reporter", require: nil
 end
 
 group :development do
