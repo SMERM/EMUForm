@@ -14,11 +14,11 @@
 ActiveRecord::Schema.define(version: 20160111103842) do
 
   create_table "works", force: :cascade do |t|
-    t.string   "title"
-    t.datetime "year"
-    t.datetime "duration"
-    t.string   "instruments"
-    t.text     "program_notes_en"
+    t.string   "title",            null: false
+    t.datetime "year",             null: false
+    t.datetime "duration",         null: false
+    t.string   "instruments",      null: false
+    t.text     "program_notes_en", null: false
     t.text     "program_notes_it"
     t.datetime "created_at",       null: false
     t.datetime "updated_at",       null: false

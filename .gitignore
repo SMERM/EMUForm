@@ -33,3 +33,7 @@ bower.json
 
 # Ignore pow environment settings
 .powenv
+
+#
+# do not save this file
+.S
