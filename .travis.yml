@@ -25,3 +25,6 @@ matrix:
     - rvm: "1.8.7"
     - rvm: "1.9.3"
     - rvm: "2.3"
+addons:
+  code_climate:
+    repo_token: 7a432be524fe17ff819eba0385b9e6fae891674470c2b9bf540f4a0e748f2b9c
