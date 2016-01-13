@@ -17,7 +17,7 @@
   </div>
   <div class="field">
     <%= f.label :year %><br>
-    <%= f.date_select :year, :discard_day=>true, :discard_month=>true %>
+    <%= f.date_select :year, :start_year=>2016, :end_year=>1900, :discard_day=>true, :discard_month=>true %>
   </div>
   <div class="field">
     <%= f.label :duration %><br>
