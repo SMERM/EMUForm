@@ -37,3 +37,4 @@ bower.json
 #
 # do not save this file
 .S
+.byebug_history
