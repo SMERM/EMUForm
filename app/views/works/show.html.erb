@@ -7,12 +7,12 @@
 
 <p>
   <strong>Year:</strong>
-  <%= @work.year %>
+  <%= @work.display_year %>
 </p>
 
 <p>
   <strong>Duration:</strong>
-  <%= @work.duration %>
+  <%= @work.display_duration %>
 </p>
 
 <p>
@@ -21,8 +21,13 @@
 </p>
 
 <p>
-  <strong>Program notes en:</strong>
+  <strong>Program notes:</strong>
   <%= @work.program_notes_en %>
+</p>
+
+<p>
+  <strong>Note di Programma:</strong>
+  <%= @work.program_notes_it %>
 </p>
 
 <%= link_to 'Edit', edit_work_path(@work) %> |
