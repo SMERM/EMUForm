@@ -28,14 +28,21 @@ RSpec.describe WorksController, type: :controller do
       :title => 'Test', :year => DateTime.civil_from_format(:local, 2012), :duration => Time.zone.parse('00:03:33'), :instruments => 'pno, fl, cl', :program_notes_en => 'Test notes', :program_notes_it => 'Note di Test'
     }
   }
-
+  
   let(:invalid_attributes) {
     #
-    # invalid because :title is empty
+    # invalid because :title is empty and :non_existing_key does not exist
     #
     {
       :title => '', :year => DateTime.civil_from_format(:local, 2012), :duration => Time.zone.parse('00:03:33'), :instruments => 'pno, fl, cl', :program_notes_en => 'Test notes',
-      :program_notes_it => 'Note di Test', :program_notes_fr => 'Notes de test'
+      :program_notes_it => 'Note di Test', :non_existing_key => 'This key does not exist'
+    }
+  }
+
+  let(:attribute_display_keys) {
+    {
+      :title => :title, :year => :display_year, :duration => :display_duration, :instruments => :instruments,
+      :program_notes_en => :program_notes_en, :program_notes_it => :program_notes_it
     }
   }
 
@@ -123,7 +130,7 @@ RSpec.describe WorksController, type: :controller do
         work = Work.create! valid_attributes
         put :update, {:id => work.to_param, :work => new_attributes}, valid_session
         work.reload
-        new_attributes.each { |k, v| expect(work.send(k)).to eq(v) }
+        expect(work.valid?).to be(true)
       end
 
       it "assigns the requested work as @work" do
