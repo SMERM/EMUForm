@@ -18,8 +18,15 @@ class Work < ActiveRecord::Base
   # creates a directory using the +Dir::Tmpname.make_tmpname+ method.
   #
   def initialize(args = {})
-    args['directory'] = Dir::Tmpname.make_tmpname(UPLOAD_PREFIX, UPLOAD_SUFFIX) unless args.has_key?('directory')
-    Dir.mkdir(args['directory']) unless File.exists?(args['directory'])
+    super
+    create_directory(args) if self.valid? # should create the directory only if record is valid
+  end
+
+  #
+  # +destroy+ will remove the record and the file directory
+  #
+  def destroy
+    self.clear_directory
     super
   end
 
@@ -50,7 +57,26 @@ class Work < ActiveRecord::Base
     write_attribute(:year, year_anti_hystheresis(val))
   end
 
+  #
+  # +clear_directory+ will remove the directory referenced by the object,
+  # if present, and clear the field. It returns the removed directory
+  #
+  def clear_directory
+    res = nil
+    unless self.directory.blank?
+      res = self.directory
+      FileUtils.rm_rf(self.directory, :secure => true)
+      self.update_attributes!(:directory => nil)
+    end
+    res
+  end
+
 private
+
+  def create_directory(args)
+    self.directory = Dir::Tmpname.make_tmpname(File.join(UPLOAD_BASE_PATH, UPLOAD_PREFIX), UPLOAD_SUFFIX) unless args.has_key?('directory')
+    FileUtils.mkdir_p(self.directory)
+  end
 
   def year_anti_hystheresis(val)
     res = val.kind_of?(Time) ? val : Time.zone.parse(val.to_s)
