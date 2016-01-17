@@ -1,4 +1,4 @@
-<%= form_for(@work) do |f| %>
+<%= form_for(@work, :enctype => 'multipart/form-data') do |f| %>
   <% if @work.errors.any? %>
     <div id="error_explanation">
       <h2><%= pluralize(@work.errors.count, "error") %> prohibited this work from being saved:</h2>
@@ -27,11 +27,61 @@
     <%= f.label :instruments %><br>
     <%= f.text_field :instruments %>
   </div>
-  <div class="field">
-    <%= f.label :program_notes_en %><br>
+  <div class="field"> <%= f.label 'Program Notes' %><br>
     <%= f.text_area :program_notes_en %>
   </div>
+  <div class="field"> <%= f.label 'Note di Programma' %><br>
+    <%= f.text_area :program_notes_it %>
+  </div>
+  <div class="container">
+
+    <h3>File Upload</h3>
+  
+        <!-- Redirect browsers with JavaScript disabled to the origin page -->
+        <noscript><%= f.hidden_field :redirect, :value => '/work' %></noscript>
+        <!-- The fileupload-buttonbar contains buttons to add/delete files and start/cancel the upload -->
+        <div class="row fileupload-buttonbar">
+            <div class="col-lg-7">
+              <!-- The fileinput-button span is used to style the file input field as button -->
+              <span class="btn btn-success fileinput-button">
+                <i class="glyphicon glyphicon-plus"></i>
+                <span>Add files...</span>
+                <%= f.file_field :files, :multiple => true %>
+              </span>
+              <%= f.button(:reset, :class => 'btn btn-warning cancel') { content_tag('Cancel upload') } %>
+              <%= f.button(:delete, :class => 'btn btn-danger delete') { content_tag('Delete') } %>
+              <%# f.check_box :toggle, :value => 'delete', { :class => 'toggle' } %><%# removed because I can't make it to work :-( %>
+              <!-- The global file processing state -->
+              <span class="fileupload-process"></span>
+            </div>
+            <!-- The global progress state -->
+            <div class="col-lg-5 fileupload-progress fade">
+                <!-- The global progress bar -->
+                <div class="progress progress-striped active" role="progressbar" aria-valuemin="0" aria-valuemax="100">
+                    <div class="progress-bar progress-bar-success" style="width:0%;"></div>
+                </div>
+                <!-- The extended global progress state -->
+                <div class="progress-extended">&nbsp;</div>
+            </div>
+        </div>
+        <!-- The table listing the files available for upload/download -->
+        <table role="presentation" class="table table-striped"><tbody class="files"></tbody></table>
+  </div>
   <div class="actions">
-    <%= f.submit %>
+    <%= f.submit 'Submit work' %>
   </div>
 <% end %>
+<br>
+<div class="panel panel-default">
+  <div class="panel-heading">
+    <h3 class="panel-title">Upload Instructions</h3>
+  </div>
+  <div class="panel-body">
+    <ul>
+      <li>The maximum file size for uploads is <strong>1 GB</strong>.</li>
+      <li>Only <strong>PDF, WAV, AIF</strong> files are allowed.</li>
+      <li>If your browser does not suck you can <strong>drag &amp; drop</strong> files from your desktop on this webpage.
+      If it does, you won't be able to drag &amp; drop (there's a story to be learned here).</li>
+    </ul>
+  </div>
+</div>

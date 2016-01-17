@@ -48,3 +48,7 @@ group :development do
   gem 'spring'
 end
 
+#
+# Added to do the file uploads
+#
+gem 'blueimp-file-upload-rails'
