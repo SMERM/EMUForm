@@ -7,6 +7,22 @@ class Work < ActiveRecord::Base
 
   validates_presence_of :title, :year, :duration, :instruments, :program_notes_en
 
+  UPLOAD_BASE_PATH = File.join(Rails.root, 'public', 'private', 'uploads')
+  UPLOAD_PREFIX = "EF#{Time.zone.now.year}_"
+  UPLOAD_SUFFIX = ''
+
+  #
+  # <tt>new(args = {})
+  #
+  # If +Work+ is created without an <tt>args['directory']</tt> parameter, it
+  # creates a directory using the +Dir::Tmpname.make_tmpname+ method.
+  #
+  def initialize(args = {})
+    args['directory'] = Dir::Tmpname.make_tmpname(UPLOAD_PREFIX, UPLOAD_SUFFIX) unless args.has_key?('directory')
+    Dir.mkdir(args['directory']) unless File.exists?(args['directory'])
+    super
+  end
+
   #
   # displaying these attribute requires some conditioning
   #

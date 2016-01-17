@@ -27,13 +27,13 @@
     <%= f.label :instruments %><br>
     <%= f.text_field :instruments %>
   </div>
-  <div class="field"> <%= f.label 'Program Notes' %><br>
+  <div class="field"> <%= f.label 'Program Notes (in english)' %><br>
     <%= f.text_area :program_notes_en %>
   </div>
-  <div class="field"> <%= f.label 'Note di Programma' %><br>
+  <div class="field"> <%= f.label 'Note di Programma (in italiano - optional)' %><br>
     <%= f.text_area :program_notes_it %>
   </div>
-  <div class="container">
+  <div class="container" id="file upload">
 
     <h3>File Upload</h3>
   
@@ -44,12 +44,11 @@
             <div class="col-lg-7">
               <!-- The fileinput-button span is used to style the file input field as button -->
               <span class="btn btn-success fileinput-button">
-                <i class="glyphicon glyphicon-plus"></i>
-                <span>Add files...</span>
-                <%= f.file_field :files, :multiple => true %>
+                <i class="glyphicon gliphicon-plus">
+                <%= f.file_field 'Add files...', :multiple => true %>
               </span>
-              <%= f.button(:reset, :class => 'btn btn-warning cancel') { content_tag('Cancel upload') } %>
-              <%= f.button(:delete, :class => 'btn btn-danger delete') { content_tag('Delete') } %>
+              <%= f.button('Cancel upload', :type => 'reset', :class => 'btn btn-warning cancel') %>
+              <%# f.button_to('Delete upload', :type => 'reset', :class => 'btn btn-danger delete') %> <%# don't know how to deal with this yet %>
               <%# f.check_box :toggle, :value => 'delete', { :class => 'toggle' } %><%# removed because I can't make it to work :-( %>
               <!-- The global file processing state -->
               <span class="fileupload-process"></span>

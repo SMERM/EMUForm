@@ -2,4 +2,8 @@
 # All this logic will automatically be available in application.js.
 # You can use CoffeeScript in this file: http://coffeescript.org/
 
-//= require jQuery-File-Upload
+###
+Added by nicb
+###
+
+#= require_tree jQuery-File-Upload

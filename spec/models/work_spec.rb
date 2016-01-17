@@ -3,7 +3,7 @@ require 'rails_helper'
 RSpec.describe Work, type: :model do
 
   let(:args) {
-    { :title => 'Test', :year => Time.zone.parse('2016-01-01'), :duration => Time.zone.parse('00:03:03'), :instruments => 'pno', :program_notes_en => 'test notes', :program_notes_it => 'note di test' }
+    HashWithIndifferentAccess.new(:title => 'Test', :year => Time.zone.parse('2016-01-01'), :duration => Time.zone.parse('00:03:03'), :instruments => 'pno', :program_notes_en => 'test notes', :program_notes_it => 'note di test')
   }
 
   it 'does full field validation' do
@@ -48,13 +48,46 @@ RSpec.describe Work, type: :model do
   context 'object update' do
 
     let(:update_args) {
-      { :title => 'Updated Title', :program_notes_it => 'note di test aggiornate' }
+      HashWithIndifferentAccess.new(:title => 'Updated Title', :program_notes_it => 'note di test aggiornate')
     }
 
     it 'updates the object properly when needed' do
       expect((w = Work.create!(args)).class).to be(Work)
       expect(w.update!(update_args)).to eq(true)
       update_args.each { |k, v| expect(w.send(k)).to eq(v) }
+    end
+
+  end
+
+  context 'object creation' do
+
+    it 'creates the directory automatically (if not passed as argument)' do
+      expect((w = Work.create!(args)).valid?).to eq(true)
+      expect(w.directory.blank?).to eq(false)
+      expect(Dir.exists?(w.directory)).to eq(true)
+      Dir.unlink(w.directory)
+    end
+
+    it 'does create the directory with the given name if passed' do
+      dirpath = File.join(Work::UPLOAD_BASE_PATH, 'test_dir')
+      args.update(:directory => dirpath)
+      expect((w = Work.create!(args)).valid?).to eq(true)
+      expect(w.directory).to eq(dirpath)
+      expect(Dir.exists?(w.directory)).to eq(true)
+      expect(Dir.exists?(dirpath)).to eq(true)
+      Dir.unlink(w.directory)
+    end
+
+    it 'does not create the directory if it exists already' do
+      dir = Dir::Tmpname.make_tmpname(Work::UPLOAD_PREFIX, '')
+      Dir.mkdir(dir, 0700)
+      expect(Dir.exists?(dir)).to eq(true)
+      args.update(:directory => dir)
+      expect((w = Work.create!(args)).valid?).to eq(true)
+      expect(w.directory).to eq(dir)
+      expect(Dir.exists?(w.directory)).to eq(true)
+      expect(Dir.exists?(dir)).to eq(true)
+      Dir.unlink(dir)
     end
 
   end

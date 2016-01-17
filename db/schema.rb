@@ -20,6 +20,7 @@ ActiveRecord::Schema.define(version: 20160111103842) do
     t.string   "instruments",      null: false
     t.text     "program_notes_en", null: false
     t.text     "program_notes_it"
+    t.string   "directory"
     t.datetime "created_at",       null: false
     t.datetime "updated_at",       null: false
   end
