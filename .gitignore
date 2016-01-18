@@ -35,5 +35,7 @@ bower.json
 .powenv
 
 #
-# do not save this file
+# do not save these files
 .S
+.byebug_history
+/public/assets/

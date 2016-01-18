@@ -11,7 +11,17 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160111103842) do
+ActiveRecord::Schema.define(version: 20160117195838) do
+
+  create_table "submitted_files", force: :cascade do |t|
+    t.string   "filename",      null: false
+    t.string   "content_type",  null: false
+    t.string   "remote_source", null: false
+    t.integer  "size",          null: false
+    t.integer  "work_id",       null: false
+    t.datetime "created_at",    null: false
+    t.datetime "updated_at",    null: false
+  end
 
   create_table "works", force: :cascade do |t|
     t.string   "title",            null: false
@@ -20,6 +30,7 @@ ActiveRecord::Schema.define(version: 20160111103842) do
     t.string   "instruments",      null: false
     t.text     "program_notes_en", null: false
     t.text     "program_notes_it"
+    t.string   "directory"
     t.datetime "created_at",       null: false
     t.datetime "updated_at",       null: false
   end

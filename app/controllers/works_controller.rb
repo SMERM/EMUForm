@@ -1,4 +1,5 @@
 class WorksController < ApplicationController
+  layout 'works'
   before_action :set_work, only: [:show, :edit, :update, :destroy]
 
   # GET /works
@@ -69,6 +70,6 @@ class WorksController < ApplicationController
 
     # Never trust parameters from the scary internet, only allow the white list through.
     def work_params
-      params.require(:work).permit(:title, :year, :duration, :instruments, :program_notes_en)
+      params.require(:work).permit(:title, :year, :duration, :instruments, :program_notes_en, :program_notes_it)
     end
 end

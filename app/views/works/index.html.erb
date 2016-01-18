@@ -11,8 +11,6 @@
       <th>Year</th>
       <th>Duration</th>
       <th>Instruments</th>
-      <th>Program Notes [ENG]</th>
-      <th>Program notes [IT] (option)</th>
       <th colspan="3"></th>
     </tr>
   </thead>
@@ -21,11 +19,9 @@
     <% @works.each do |work| %>
       <tr>
         <td><%= work.title %></td>
-        <td><%= work.year %></td>
-        <td><%= work.duration %></td>
+        <td><%= work.display_year %></td>
+        <td><%= work.display_duration %></td>
         <td><%= work.instruments %></td>
-        <td><%= work.program_notes_en %></td>
-        <td><%= work.program_notes_it %></td>
         <td><%= link_to 'Show', work %></td>
         <td><%= link_to 'Edit', edit_work_path(work) %></td>
         <td><%= link_to 'Destroy', work, method: :delete, data: { confirm: 'Are you sure?' } %></td>

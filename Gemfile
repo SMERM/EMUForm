@@ -37,6 +37,9 @@ group :development, :test do
   gem 'byebug'
   # use 'rspec' instead of 'minitest'
   gem 'rspec-rails', '~> 3.0'
+  # use FactoryGirl instead of static fixtures
+  gem 'factory_girl_rails', '~> 4.0'
+  gem 'forgery'
   gem "codeclimate-test-reporter", require: nil
 end
 
@@ -48,3 +51,7 @@ group :development do
   gem 'spring'
 end
 
+#
+# Added to do the file uploads
+#
+gem 'blueimp-file-upload-rails'
