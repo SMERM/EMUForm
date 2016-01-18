@@ -1,6 +1,11 @@
 require 'rails_helper'
 
 RSpec.describe "works/edit", type: :view do
+
+  after :example do
+    Work.destroy_all
+  end
+
   before(:each) do
     params = {
       :title => 'Test', :year => DateTime.civil_from_format(:local, 2012), :duration => Time.parse('03:03:03'), :instruments => 'pno, fl, cl', :program_notes_en => 'Test notes',

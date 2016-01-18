@@ -20,6 +20,10 @@ require 'rails_helper'
 
 RSpec.describe WorksController, type: :controller do
 
+  after :example do
+    Work.destroy_all
+  end
+
   # This should return the minimal set of attributes required to create a valid
   # Work. As you add validations to Work, be sure to
   # adjust the attributes here as well.

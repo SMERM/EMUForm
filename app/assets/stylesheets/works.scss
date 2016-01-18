@@ -1,3 +1,76 @@
 // Place all the styles related to the Works controller here.
 // They will automatically be included in application.css.
 // You can use Sass (SCSS) here: http://sass-lang.com/
+
+/*
+ *= require jQuery-File-Upload
+ */
+/* ==========================================================================
+   BODY
+   ========================================================================== */
+
+@import 'reset';
+
+   $base-font: 'Volkhov', serif;
+   $code-font: 'source-code-pro', monospace;
+   $primary-color: #333;
+   $doc-font-size: 16;
+   $doc-line-height: 24;
+
+
+body {
+  margin: 0em 0em 0em 0em;
+  width: 100%;
+  border-top: 5px solid black;
+  background-image: url(http://emufest.github.io//images/bg/snow.png);
+  background-repeat: repeat;
+
+  font-family: 'Volkhov', serif;
+  color: $primary-color;
+}
+
+.table {
+	border-collapse: collapse;
+	margin: ((0px + $doc-line-height) / 2) 0;
+	margin: ((0rem + ($doc-line-height / $doc-font-size)) / 2) 0;
+	width: 100%;
+	tbody,
+	thead,
+	th {
+		padding: (0px + $doc-line-height) / 2;
+		padding: (0rem + ($doc-line-height / $doc-font-size)) / 2;
+		font-family: $code-font;
+		font-weight: bold;
+		text-align: left;
+		border-bottom: 1px solid black;
+	}
+	td {
+		border-bottom: 1px solid black;
+		padding: (0px + $doc-line-height) / 2;
+		padding: (0rem + ($doc-line-height / $doc-font-size)) / 2;
+		}
+	tr, td, th {
+		vertical-align: middle;
+	}
+}
+
+form {
+	margin: 0 0 5px 0;
+	fieldset {
+		margin-bottom: 5px;
+		padding: 0;
+		border-width: 0;
+	}
+
+	p {
+		margin-bottom: 5px / 2;
+	}
+	ul {
+		list-style-type: none;
+		margin: 0 0 5px 0;
+		padding: 0;
+	}
+	br {
+		display: none;
+	}
+}

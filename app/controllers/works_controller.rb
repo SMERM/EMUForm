@@ -1,4 +1,5 @@
 class WorksController < ApplicationController
+  layout 'works'
   before_action :set_work, only: [:show, :edit, :update, :destroy]
 
   # GET /works
