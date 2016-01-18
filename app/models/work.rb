@@ -7,7 +7,9 @@ class Work < ActiveRecord::Base
 
   validates_presence_of :title, :year, :duration, :instruments, :program_notes_en
 
-  UPLOAD_BASE_PATH = File.join(Rails.root, 'public', 'private', 'uploads')
+  has_many :submitted_files
+
+  UPLOAD_BASE_PATH = File.join(Rails.root, 'public', 'private', 'uploads', Rails.env)
   UPLOAD_PREFIX = "EF#{Time.zone.now.year}_"
   UPLOAD_SUFFIX = ''
 
@@ -15,7 +17,8 @@ class Work < ActiveRecord::Base
   # <tt>new(args = {})
   #
   # If +Work+ is created without an <tt>args['directory']</tt> parameter, it
-  # creates a directory using the +Dir::Tmpname.make_tmpname+ method.
+  # creates a directory using the +Dir::Tmpname.make_tmpname+ method and then
+  # uploads all its files
   #
   def initialize(args = {})
     super
