@@ -9,7 +9,8 @@ class Work < ActiveRecord::Base
 
   has_many :submitted_files
 
-  UPLOAD_BASE_PATH = File.join(Rails.root, 'public', 'private', 'uploads', Rails.env)
+  UPLOAD_COND_PATH = Rails.env == 'test' ? 'spec' : 'public'
+  UPLOAD_BASE_PATH = File.join(Rails.root, UPLOAD_COND_PATH, 'private', 'uploads')
   UPLOAD_PREFIX = "EF#{Time.zone.now.year}_"
   UPLOAD_SUFFIX = ''
 
