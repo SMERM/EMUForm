@@ -5,8 +5,8 @@ FactoryGirl.define do
     association         :work
     
     transient do
-      http_channel        { FactoryGirl.build(:uploaded_file) }
-      actual_args         { SubmittedFile.send(:patch_arguments, { :http_channel => http_channel, :work => work }) }
+      http_request        { FactoryGirl.build(:uploaded_file) }
+      actual_args         { SubmittedFile.send(:patch_arguments, { :http_request => http_request, :work => work }) }
     end
 
     filename              { actual_args[:filename] }
@@ -15,7 +15,7 @@ FactoryGirl.define do
 
     after :build do
       |sf, evaluator|
-      sf.http_channel = evaluator.http_channel
+      sf.http_request = evaluator.http_request
     end
 
   end

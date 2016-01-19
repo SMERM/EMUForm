@@ -8,6 +8,7 @@ class Work < ActiveRecord::Base
   validates_presence_of :title, :year, :duration, :instruments, :program_notes_en
 
   has_many :submitted_files
+  accepts_nested_attributes_for :submitted_files, :allow_destroy => true, :reject_if => proc { |attrs| attrs[:http_channel].blank? }
 
   UPLOAD_COND_PATH = Rails.env == 'test' ? 'spec' : 'public'
   UPLOAD_BASE_PATH = File.join(Rails.root, UPLOAD_COND_PATH, 'private', 'uploads')
@@ -15,16 +16,14 @@ class Work < ActiveRecord::Base
   UPLOAD_SUFFIX = ''
 
   #
-  # <tt>new(args = {})
+  # +after_validation+
   #
+  # The +create_directory+ is called after validation is passed to generate
+  # the proper landing directory for all submitted files.
   # If +Work+ is created without an <tt>args['directory']</tt> parameter, it
-  # creates a directory using the +Dir::Tmpname.make_tmpname+ method and then
-  # uploads all its files
+  # creates a directory using the +Dir::Tmpname.make_tmpname+ method
   #
-  def initialize(args = {})
-    super
-    create_directory(args) if self.valid? # should create the directory only if record is valid
-  end
+  after_validation :create_directory
 
   #
   # +destroy+ will remove the record and the file directory
@@ -70,15 +69,15 @@ class Work < ActiveRecord::Base
     unless self.directory.blank?
       res = self.directory
       FileUtils.rm_rf(self.directory, :secure => true)
-      self.update_attributes!(:directory => nil)
+      self.directory = nil
     end
     res
   end
 
 private
 
-  def create_directory(args)
-    self.directory = Dir::Tmpname.make_tmpname(File.join(UPLOAD_BASE_PATH, UPLOAD_PREFIX), UPLOAD_SUFFIX) unless args.has_key?('directory')
+  def create_directory
+    self.directory = Dir::Tmpname.make_tmpname(File.join(UPLOAD_BASE_PATH, UPLOAD_PREFIX), UPLOAD_SUFFIX) unless self.directory
     FileUtils.mkdir_p(self.directory)
   end
 
