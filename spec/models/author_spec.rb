@@ -77,4 +77,21 @@ RSpec.describe Author, type: :model do
 
   end
 
+  context 'object destruction' do
+
+    it 'actually destroys the links with the work when destroyed' do
+      num_works = 3
+      expect((a = FactoryGirl.create(:author)).valid?).to be(true)
+      expect((ws = FactoryGirl.create_list(:work, num_works)).size).to eq(num_works)
+      a.works << ws
+      expect(a.works(true).count).to eq(num_works)
+      #
+      a.destroy
+      expect(a.frozen?).to be(true)
+      ws.each { |w| expect(w.frozen?).to be(false) }
+      ws.each { |w| expect(w.authors(true).count).to eq(0) } # check that intermediate records are destroyed
+    end
+
+  end
+
 end

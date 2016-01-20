@@ -24,11 +24,21 @@ RSpec.describe AuthorsController, type: :controller do
   # Author. As you add validations to Author, be sure to
   # adjust the attributes here as well.
   let(:valid_attributes) {
-    skip("Add a hash of attributes valid for your model")
+    {
+	    :first_name => Forgery(:name).female_first_name, :last_name => Forgery(:name).last_name,
+	    :birth_year => Forgery(:basic).number(:at_least => Time.zone.now.year - 200, :at_most => Time.zone.now.year - 15),
+	    :bio_en => Forgery(:lorem_ipsum).paragraphs(Forgery(:basic).number(:at_least => 1, :at_most => 10)),
+	    :bio_it => Forgery(:lorem_ipsum).paragraphs(Forgery(:basic).number(:at_least => 1, :at_most => 10)),
+    }
   }
 
   let(:invalid_attributes) {
-    skip("Add a hash of attributes invalid for your model")
+    {
+	    :first_name => '', :last_name => '',
+	    :birth_year => Forgery(:basic).number(:at_least => Time.zone.now.year - 200, :at_most => Time.zone.now.year - 15),
+	    :bio_en => Forgery(:lorem_ipsum).paragraphs(Forgery(:basic).number(:at_least => 1, :at_most => 10)),
+	    :bio_it => Forgery(:lorem_ipsum).paragraphs(Forgery(:basic).number(:at_least => 1, :at_most => 10)),
+    }
   }
 
   # This should return the minimal set of values that should be in the session
@@ -103,14 +113,14 @@ RSpec.describe AuthorsController, type: :controller do
   describe "PUT #update" do
     context "with valid params" do
       let(:new_attributes) {
-        skip("Add a hash of attributes valid for your model")
+        valid_attributes
       }
 
       it "updates the requested author" do
         author = Author.create! valid_attributes
         put :update, {:id => author.to_param, :author => new_attributes}, valid_session
         author.reload
-        skip("Add assertions for updated state")
+        new_attributes.keys.each { |na| expect(author.send(na)).to eq(new_attributes[na]) }
       end
 
       it "assigns the requested author as @author" do
