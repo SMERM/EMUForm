@@ -29,7 +29,10 @@ RSpec.describe WorksController, type: :controller do
   # adjust the attributes here as well.
   let(:valid_attributes) {
     {
-      :title => 'Test', :year => DateTime.civil_from_format(:local, 2012), :duration => Time.zone.parse('00:03:33'), :instruments => 'pno, fl, cl', :program_notes_en => 'Test notes', :program_notes_it => 'Note di Test'
+      :title => 'Test', :'year(1i)' => '2016', :'year(2i)' => '1', :'year(3i)' => '1',
+      :'duration(1i)' => '1', :'duration(2i)' => '1', :'duration(3i)' => '1',
+      :'duration(4i)' => '0', :'duration(5i)' => '4', :'duration(6i)' => '33',
+      :instruments => 'pno, fl, cl', :program_notes_en => 'Test notes', :program_notes_it => 'Note di Test'
     }
   }
   
@@ -38,7 +41,10 @@ RSpec.describe WorksController, type: :controller do
     # invalid because :title is empty and :non_existing_key does not exist
     #
     {
-      :title => '', :year => DateTime.civil_from_format(:local, 2012), :duration => Time.zone.parse('00:03:33'), :instruments => 'pno, fl, cl', :program_notes_en => 'Test notes',
+      :title => '', :'year(1i)' => '2016', :'year(2i)' => '1', :'year(3i)' => '1',
+      :'duration(1i)' => '1', :'duration(2i)' => '1', :'duration(3i)' => '1',
+      :'duration(4i)' => '0', :'duration(5i)' => '4', :'duration(6i)' => '33',
+      :instruments => 'pno, fl, cl', :program_notes_en => 'Test notes',
       :program_notes_it => 'Note di Test', :non_existing_key => 'This key does not exist'
     }
   }
@@ -91,9 +97,20 @@ RSpec.describe WorksController, type: :controller do
   describe "POST #create" do
     context "with valid params" do
       it "creates a new Work" do
+        num_attachments = 3
+        attachments = FactoryGirl.create_list(:uploaded_file, num_attachments)
+        args = HashWithIndifferentAccess.new
+        args.update(valid_attributes)
+        args.update(:submitted_files_attributes => attachments.map { |att| {:http_request => att} })
         expect {
-          post :create, {:work => valid_attributes}, valid_session
+          post :create, {:work => args }, valid_session
         }.to change(Work, :count).by(1)
+        expect((w = Work.last).valid?).to be(true)
+        expect(w.submitted_files.count).to eq(num_attachments)
+        expect(w.directory.blank?).to be(false)
+        d = Dir.new(w.directory)
+        n = 0; d.each { n += 1 }
+        expect(n).to eq(num_attachments + 2) # this count includes also '.' and '..'
       end
 
       it "assigns a newly created work as @work" do

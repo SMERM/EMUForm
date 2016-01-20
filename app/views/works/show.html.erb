@@ -30,5 +30,14 @@
   <%= @work.program_notes_it %>
 </p>
 
+<p>
+  <strong>Submitted Files:</strong>
+  <ul>
+  <% @work.submitted_files.each do |sf| %>
+    <li><%= sf.filename %>  <%= sf.size %></li>
+  <% end %>
+  </ul>
+</p> 
+
 <%= link_to 'Edit', edit_work_path(@work) %> |
 <%= link_to 'Back', works_path %>
