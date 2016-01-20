@@ -45,7 +45,7 @@
               <!-- The fileinput-button span is used to style the file input field as button -->
               <span class="btn btn-success fileinput-button">
                 <i class="glyphicon gliphicon-plus">
-                <%= f.file_field 'Add files...', :name => 'work[submitted_files_attributes][][http_request]', :multiple => true %>
+                <%= f.file_field 'Add files...', :multiple => true %>
               </span>
               <%= f.button('Cancel upload', :type => 'reset', :class => 'btn btn-warning cancel') %>
               <%# f.button_to('Delete upload', :type => 'reset', :class => 'btn btn-danger delete') %> <%# don't know how to deal with this yet %>

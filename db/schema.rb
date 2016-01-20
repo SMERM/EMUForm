@@ -14,12 +14,13 @@
 ActiveRecord::Schema.define(version: 20160117195838) do
 
   create_table "submitted_files", force: :cascade do |t|
-    t.string   "filename",     null: false
-    t.string   "content_type", null: false
-    t.integer  "size",         null: false
-    t.integer  "work_id",      null: false
-    t.datetime "created_at",   null: false
-    t.datetime "updated_at",   null: false
+    t.string   "filename",      null: false
+    t.string   "content_type",  null: false
+    t.string   "remote_source", null: false
+    t.integer  "size",          null: false
+    t.integer  "work_id",       null: false
+    t.datetime "created_at",    null: false
+    t.datetime "updated_at",    null: false
   end
 
   create_table "works", force: :cascade do |t|

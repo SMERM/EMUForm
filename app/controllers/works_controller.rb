@@ -24,20 +24,11 @@ class WorksController < ApplicationController
 
   # POST /works
   # POST /works.json
-  #
-  # +create+
-  #
-  # the +Work+ object created may carry along some file attachments that need to be uploaded
-  # along with the +Work+ record. These files get loaded as +SubmittedFile+
-  # object and are uploaded on the fly before the response (FIXME: is this right?)
-  #
   def create
     @work = Work.new(work_params)
 
     respond_to do |format|
       if @work.save
-        create_submitted_files
-        @work.reload # this is to include the submitted files
         format.html { redirect_to @work, notice: 'Work was successfully created.' }
         format.json { render :show, status: :created, location: @work }
       else
@@ -71,28 +62,14 @@ class WorksController < ApplicationController
     end
   end
 
-private
-  # Use callbacks to share common setup or constraints between actions.
-  def set_work
-    @work = Work.find(params[:id])
-  end
-
-  # Never trust parameters from the scary internet, only allow the white list through.
-  def work_params
-    params.require(:work).permit(:id, :title, :year, :duration, :instruments,
-                                 :program_notes_en, :program_notes_it, :submitted_files_attributes => [:id, :http_request, :_destroy])
-  end
-
-  # create submitted file dependent records, if any
-  def create_submitted_files
-    if work_params.has_key?(:submitted_files_attributes)
-      work_params[:submitted_files_attributes].each do
-        |att|
-        att.update(:work => @work)
-        sf = SubmittedFile.create(att)
-        sf.upload
-      end
+  private
+    # Use callbacks to share common setup or constraints between actions.
+    def set_work
+      @work = Work.find(params[:id])
     end
-  end
 
+    # Never trust parameters from the scary internet, only allow the white list through.
+    def work_params
+      params.require(:work).permit(:title, :year, :duration, :instruments, :program_notes_en, :program_notes_it)
+    end
 end

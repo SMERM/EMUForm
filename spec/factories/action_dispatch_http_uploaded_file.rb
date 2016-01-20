@@ -26,8 +26,6 @@ FactoryGirl.define do
     # remember that we can only use the +build+ method here because this is
     # not an ActiveRecord model
     #
-    skip_create
-
     initialize_with { new(:filename => original_filename, :type => content_type, :head => headers, :tempfile => tempfile) }
 
   end
