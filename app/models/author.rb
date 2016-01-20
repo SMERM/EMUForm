@@ -1,8 +1,22 @@
 class Author < ActiveRecord::Base
 
   has_and_belongs_to_many :works
-  before_destroy { works.clear } # we do not destroy the works because they might belong to another author
+  before_destroy :handle_destruction_of_associated_works
 
   validates_presence_of :first_name, :last_name
+
+private
+
+  #
+  # + handle_destruction_of_associated_works+
+  #
+  # clears all HABTM relationships with associated works.
+  # Clears also work records if they do not belong to any other author
+  #
+  def handle_destruction_of_associated_works
+    ws = self.works.map { |w| w }
+    self.works.clear
+    ws.each { |w| w.destroy if w.authors(true).empty? }
+  end
 
 end

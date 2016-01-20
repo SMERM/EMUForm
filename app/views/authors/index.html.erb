@@ -8,8 +8,7 @@
       <th>First name</th>
       <th>Last name</th>
       <th>Birth year</th>
-      <th>Bio en</th>
-      <th>Bio it</th>
+      <th>N. of Submitted Works</th>
       <th colspan="3"></th>
     </tr>
   </thead>
@@ -20,8 +19,7 @@
         <td><%= author.first_name %></td>
         <td><%= author.last_name %></td>
         <td><%= author.birth_year %></td>
-        <td><%= author.bio_en %></td>
-        <td><%= author.bio_it %></td>
+        <td><%= author.works.count %></td>
         <td><%= link_to 'Show', author %></td>
         <td><%= link_to 'Edit', edit_author_path(author) %></td>
         <td><%= link_to 'Destroy', author, method: :delete, data: { confirm: 'Are you sure?' } %></td>

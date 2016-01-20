@@ -79,17 +79,30 @@ RSpec.describe Author, type: :model do
 
   context 'object destruction' do
 
-    it 'actually destroys the links with the work when destroyed' do
+    it 'actually destroys the links with the work *and* the work record itself when destroyed (when single author)' do
       num_works = 3
       expect((a = FactoryGirl.create(:author)).valid?).to be(true)
       expect((ws = FactoryGirl.create_list(:work, num_works)).size).to eq(num_works)
       a.works << ws
       expect(a.works(true).count).to eq(num_works)
+      ws.each { |w| expect(w.authors(true).count).to eq(1) }
       #
       a.destroy
       expect(a.frozen?).to be(true)
+      ws.each { |w| expect{ w.reload }.to raise_error(ActiveRecord::RecordNotFound) }
+    end
+
+    it 'destroys the links with the work *but not* the work record itself when destroyed (when multiple authors)' do
+      num_works = 3
+      num_authors = 2
+      expect((as = FactoryGirl.create_list(:author, num_authors)).size).to be(num_authors)
+      expect((ws = FactoryGirl.create_list(:work, num_works)).size).to eq(num_works)
+      as.each { |a| a.works << ws }
+      as.each { |a| expect(a.works(true).count).to eq(num_works) }
+      #
+      as.first.destroy
+      expect(as.first.frozen?).to be(true)
       ws.each { |w| expect(w.frozen?).to be(false) }
-      ws.each { |w| expect(w.authors(true).count).to eq(0) } # check that intermediate records are destroyed
     end
 
   end
