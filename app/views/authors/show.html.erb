@@ -24,6 +24,11 @@
   <strong>Bio it:</strong>
   <%= @author.bio_it %>
 </p>
+<p>
+  <strong>Works associated to #{@author.full_name}:</strong>
+  <%= render partial: 'works/inner_show', collection: @author.works %>
+  <%= render 'add_new_work' %>
+</p>
 
 <%= link_to 'Edit', edit_author_path(@author) %> |
 <%= link_to 'Back', authors_path %>

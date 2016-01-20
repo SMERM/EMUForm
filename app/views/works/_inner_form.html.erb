@@ -1,0 +1,67 @@
+<% if work.errors.any? %>
+  <div id="error_explanation">
+    <h2><%= pluralize(work.errors.count, "error") %> prohibited this work from being saved:</h2>
+
+    <ul>
+    <% work.errors.full_messages.each do |message| %>
+      <li><%= message %></li>
+    <% end %>
+    </ul>
+  </div>
+<% end %>
+
+<div class="field">
+  <%= form.label :title %><br>
+  <%= form.text_field :title %>
+</div>
+<div class="field">
+  <%= form.label :year %><br>
+  <%= form.date_select :year, :start_year=>Time.zone.now.year, :end_year=>1900, :discard_day=>true, :discard_month=>true %>
+</div>
+<div class="field">
+  <%= form.label :duration %><br>
+  <%= form.time_select :duration, :include_seconds=>true, :prompt => true %>
+</div>
+<div class="field">
+  <%= form.label :instruments %><br>
+  <%= form.text_field :instruments %>
+</div>
+<div class="field"> <%= form.label 'Program Notes (in english)' %><br>
+  <%= form.text_area :program_notes_en %>
+</div>
+<div class="field"> <%= form.label 'Note di Programma (in italiano - optional)' %><br>
+  <%= form.text_area :program_notes_it %>
+</div>
+<div class="container" id="file upload">
+
+  <h3>File Upload</h3>
+
+      <!-- Redirect browsers with JavaScript disabled to the origin page -->
+      <noscript><%= form.hidden_field :redirect, :value => '/work' %></noscript>
+      <!-- The fileupload-buttonbar contains buttons to add/delete files and start/cancel the upload -->
+      <div class="row fileupload-buttonbar">
+          <div class="col-lg-7">
+            <!-- The fileinput-button span is used to style the file input field as button -->
+            <span class="btn btn-success fileinput-button">
+              <i class="glyphicon gliphicon-plus">
+              <%= form.file_field 'Add files...', :name => 'work[submitted_files_attributes][][http_request]', :multiple => true %>
+            </span>
+            <%= form.button('Cancel upload', :type => 'reset', :class => 'btn btn-warning cancel') %>
+            <%# form.button_to('Delete upload', :type => 'reset', :class => 'btn btn-danger delete') %> <%# don't know how to deal with this yet %>
+            <%# form.check_box :toggle, :value => 'delete', { :class => 'toggle' } %><%# removed because I can't make it to work :-( %>
+            <!-- The global file processing state -->
+            <span class="fileupload-process"></span>
+          </div>
+          <!-- The global progress state -->
+          <div class="col-lg-5 fileupload-progress fade">
+              <!-- The global progress bar -->
+              <div class="progress progress-striped active" role="progressbar" aria-valuemin="0" aria-valuemax="100">
+                  <div class="progress-bar progress-bar-success" style="width:0%;"></div>
+              </div>
+              <!-- The extended global progress state -->
+              <div class="progress-extended">&nbsp;</div>
+          </div>
+      </div>
+      <!-- The table listing the files available for upload/download -->
+      <table role="presentation" class="table table-striped"><tbody class="files"></tbody></table>
+</div>
