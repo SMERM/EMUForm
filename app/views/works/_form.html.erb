@@ -11,6 +11,7 @@
     </div>
   <% end %>
 
+  <div class="container">
   <div class="field">
     <%= f.label :title %><br>
     <%= f.text_field :title %>
@@ -33,10 +34,11 @@
   <div class="field"> <%= f.label 'Note di Programma (in italiano - optional)' %><br>
     <%= f.text_area :program_notes_it %>
   </div>
+</div>
   <div class="container" id="file upload">
 
     <h3>File Upload</h3>
-  
+
         <!-- Redirect browsers with JavaScript disabled to the origin page -->
         <noscript><%= f.hidden_field :redirect, :value => '/work' %></noscript>
         <!-- The fileupload-buttonbar contains buttons to add/delete files and start/cancel the upload -->
