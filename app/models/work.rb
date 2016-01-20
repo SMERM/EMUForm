@@ -8,6 +8,8 @@ class Work < ActiveRecord::Base
   validates_presence_of :title, :year, :duration, :instruments, :program_notes_en
 
   has_many :submitted_files
+  has_and_belongs_to_many :authors
+
   accepts_nested_attributes_for :submitted_files, :allow_destroy => true, :reject_if => proc { |attrs| attrs[:http_channel].blank? }
 
   UPLOAD_COND_PATH = Rails.env == 'test' ? 'spec' : 'public'

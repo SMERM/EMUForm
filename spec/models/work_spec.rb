@@ -130,6 +130,28 @@ RSpec.describe Work, type: :model do
 
   end
 
+  context 'associations' do
+
+    it 'can link authors as a single work' do
+      num_authors = 3
+      expect((w = FactoryGirl.create(:work)).valid?).to be(true)
+      expect((as = FactoryGirl.create_list(:author, num_authors)).class).to be(Array)
+      w.authors << as
+      expect(w.authors(true).count).to eq(num_authors)
+    end
+
+    it 'can link authors through multiple works' do
+      num_works = 3
+      num_authors = 5
+      expect((as = FactoryGirl.create_list(:author, num_authors)).class).to be(Array)
+      expect((ws = FactoryGirl.create_list(:work, num_works)).class).to be(Array)
+      ws.each { |w| w.authors << as }
+      ws.each { |w| expect(w.authors(true).count).to eq(num_authors) }
+      as.each { |a| expect(a.works(true).count).to eq(num_works) }
+    end
+
+  end
+
   def zoot_file_directory
     if @w && @w.valid?
       expect((dir = @w.directory).blank?).to eq(false)
