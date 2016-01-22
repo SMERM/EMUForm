@@ -1,29 +1,29 @@
 class WorksController < ApplicationController
   layout 'works'
-  before_action :set_work, only: [:show, :edit, :update, :destroy]
+  before_action :set_author_and_works, except: :index
 
-  # GET /works
-  # GET /works.json
+  # GET authors/1/works
+  # GET authors/1/works.json
   def index
-    @works = Work.all
+    @author = Author.find(params[:author_id])
+    @works = @author.works
   end
 
-  # GET /works/1
-  # GET /works/1.json
+  # GET /authors/1/works/1
+  # GET /authors/1/works/1.json
   def show
   end
 
-  # GET /works/new
+  # GET /authors/1/works/new
   def new
-    @work = Work.new
   end
 
-  # GET /works/1/edit
+  # GET /authors/1/works/1/edit
   def edit
   end
 
-  # POST /works
-  # POST /works.json
+  # POST /authors/1/works
+  # POST /authors/1//works.json
   #
   # +create+
   #
@@ -32,13 +32,13 @@ class WorksController < ApplicationController
   # object and are uploaded on the fly before the response (FIXME: is this right?)
   #
   def create
-    @work = Work.new(work_params)
-
+    @work = @author.works.new(work_params)
+    
     respond_to do |format|
       if @work.save
         create_submitted_files
         @work.reload # this is to include the submitted files
-        format.html { redirect_to @work, notice: 'Work was successfully created.' }
+        format.html { redirect_to author_path(@author), notice: 'Work was successfully created.' }
         format.json { render :show, status: :created, location: @work }
       else
         format.html { render :new }
@@ -52,7 +52,7 @@ class WorksController < ApplicationController
   def update
     respond_to do |format|
       if @work.update(work_params)
-        format.html { redirect_to @work, notice: 'Work was successfully updated.' }
+        format.html { redirect_to author_path(@author), notice: 'Work was successfully updated.' }
         format.json { render :show, status: :ok, location: @work }
       else
         format.html { render :edit }
@@ -61,26 +61,28 @@ class WorksController < ApplicationController
     end
   end
 
-  # DELETE /works/1
-  # DELETE /works/1.json
+  # DELETE authors/1/works/1
+  # DELETE authors/1/works/1.json
   def destroy
     @work.destroy
     respond_to do |format|
-      format.html { redirect_to works_url, notice: 'Work was successfully destroyed.' }
+      format.html { redirect_to author_path(@author), notice: 'Work was successfully destroyed.' }
       format.json { head :no_content }
     end
   end
 
 private
   # Use callbacks to share common setup or constraints between actions.
-  def set_work
-    @work = Work.find(params[:id])
+  def set_author_and_works
+    @author = Author.find(params[:author_id])
+    @work = params[:id] ? @author.works.find_or_initialize_by("id = #{params[:id]}") : @author.works.new
   end
+
 
   # Never trust parameters from the scary internet, only allow the white list through.
   def work_params
-    params.require(:work).permit(:id, :title, :year, :duration, :instruments,
-                                 :program_notes_en, :program_notes_it, :submitted_files_attributes => [:id, :http_request, :_destroy])
+    params.require(:work).permit(:id, :title, :year, :duration, :instruments, :program_notes_en, :program_notes_it,
+                                 :submitted_files_attributes => [:id, :http_request, :_destroy])
   end
 
   # create submitted file dependent records, if any
