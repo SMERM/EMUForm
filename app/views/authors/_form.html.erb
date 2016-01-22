@@ -31,16 +31,15 @@
     <%= f.label :bio_it %><br>
     <%= f.text_area :bio_it %>
   </div>
-  <div class="works">
-     <%= f.label 'Associated works' %><br />
-     <%= render partial: 'works/inner_show', collection: @author.works %>
-  </div>
-  <div class="add_new_work">
-     <% @work = Work.new %>
-     <% f.fields_for @work do |work_form| %>
-       <%= render partial: 'works/inner_form', locals: { form: work_form, work: @work } %>
-     <% end %>
-  </div>
+  <% unless @author.new_record? %>
+    <div class="works">
+       <%= f.label 'Associated works' %><br />
+       <%= render partial: 'works/index_table', collection: @author.works %>
+    </div>
+    <div class="add_new_work">
+      <%= link_to 'Add new work', new_author_work_path(@author) %>
+    </div>
+  <% end %>
   <div class="actions">
     <%= f.submit %>
   </div>

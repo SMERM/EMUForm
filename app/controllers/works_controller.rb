@@ -12,6 +12,7 @@ class WorksController < ApplicationController
   # GET /authors/1/works/1
   # GET /authors/1/works/1.json
   def show
+    @works = @author.works
   end
 
   # GET /authors/1/works/new

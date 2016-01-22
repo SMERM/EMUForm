@@ -1,9 +1,9 @@
 <div id="wrapper">
   <div class="container">
-<h1>New Work</h1>
+  <h1>New Work for <%= @author.full_name %></h1>
 
 <%= render 'form' %>
 
-<%= link_to 'Back', works_path %>
+<%= link_to 'Back', author_works_path(@author) %>
   </div>
 </div>

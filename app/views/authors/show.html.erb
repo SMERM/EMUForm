@@ -25,9 +25,24 @@
   <%= @author.bio_it %>
 </p>
 <p>
-  <strong>Works associated to #{@author.full_name}:</strong>
-  <%= render partial: 'works/inner_show', collection: @author.works %>
-  <%= render 'add_new_work' %>
+  <strong>Works associated to <%= @author.full_name %>:</strong>
+  <table class="table">
+    <thead>
+      <tr>
+        <th>Title</th>
+        <th>Year</th>
+        <th>Duration</th>
+        <th>Instruments</th>
+        <th colspan="3"></th>
+      </tr>
+    </thead>
+  
+    <tbody>
+      <%= render partial: 'works/index_table', collection: @author.works %>
+    </tbody>
+  </table>
+  <br />
+  <%= link_to 'Add new work', new_author_work_path(@author) %>
 </p>
 
 <%= link_to 'Edit', edit_author_path(@author) %> |
