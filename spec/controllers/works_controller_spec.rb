@@ -29,10 +29,13 @@ RSpec.describe WorksController, type: :controller do
   # adjust the attributes here as well.
   let(:valid_attributes) {
     {
-      :title => 'Test', :'year(1i)' => '2016', :'year(2i)' => '1', :'year(3i)' => '1',
+      :title => Forgery(:name).title,
+      :'year(1i)' => Forgery(:basic).number(:at_least => 1850, :at_most => Time.zone.now.year).to_s, :'year(2i)' => '1', :'year(3i)' => '1',
       :'duration(1i)' => '1', :'duration(2i)' => '1', :'duration(3i)' => '1',
       :'duration(4i)' => '0', :'duration(5i)' => '4', :'duration(6i)' => '33',
-      :instruments => 'pno, fl, cl', :program_notes_en => 'Test notes', :program_notes_it => 'Note di Test'
+      :instruments => 'pno, fl, cl',
+      :program_notes_en => Forgery(:lorem_ipsum).paragraphs(Forgery(:basic).number(:at_least => 1, :at_most => 10)),
+      :program_notes_it => Forgery(:lorem_ipsum).paragraphs(Forgery(:basic).number(:at_least => 1, :at_most => 10)),
     }
   }
   
@@ -62,34 +65,35 @@ RSpec.describe WorksController, type: :controller do
   let(:valid_session) { {} }
 
   describe "GET #index" do
-    it "assigns all works as @works" do
-      fixture_works_already_present = Work.all
-      work = Work.create! valid_attributes
-      get :index, {}, valid_session
-      fixture_works_already_present << work
-      expect(assigns(:works)).to eq(fixture_works_already_present)
+    it "assigns all works belonging to a given author as @works" do
+      author = build_enviroment_with_a_single_work
+      get :index, { :author_id => author.to_param }, valid_session
+      expect(assigns(:works)).to eq(author.works)
     end
   end
 
   describe "GET #show" do
     it "assigns the requested work as @work" do
-      work = Work.create! valid_attributes
-      get :show, {:id => work.to_param}, valid_session
+      author = build_enviroment_with_a_single_work
+      work = author.works.create! valid_attributes
+      get :show, {:author_id => author.to_param, :id => work.to_param}, valid_session
       expect(assigns(:work)).to eq(work)
     end
   end
 
   describe "GET #new" do
     it "assigns a new work as @work" do
-      get :new, {}, valid_session
+      author = build_enviroment_with_a_single_work
+      get :new, {:author_id => author.to_param}, valid_session
       expect(assigns(:work)).to be_a_new(Work)
     end
   end
 
   describe "GET #edit" do
     it "assigns the requested work as @work" do
-      work = Work.create! valid_attributes
-      get :edit, {:id => work.to_param}, valid_session
+      author = build_enviroment_with_a_single_work
+      work = author.works.create! valid_attributes
+      get :edit, {:author_id => author.to_param, :id => work.to_param}, valid_session
       expect(assigns(:work)).to eq(work)
     end
   end
@@ -97,13 +101,14 @@ RSpec.describe WorksController, type: :controller do
   describe "POST #create" do
     context "with valid params" do
       it "creates a new Work" do
+        author = build_enviroment_with_a_single_work
         num_attachments = 3
         attachments = FactoryGirl.create_list(:uploaded_file, num_attachments)
         args = HashWithIndifferentAccess.new
         args.update(valid_attributes)
         args.update(:submitted_files_attributes => attachments.map { |att| {:http_request => att} })
         expect {
-          post :create, {:work => args }, valid_session
+          post :create, {:author_id => author.to_param, :work => args }, valid_session
         }.to change(Work, :count).by(1)
         expect((w = Work.last).valid?).to be(true)
         expect(w.submitted_files.count).to eq(num_attachments)
@@ -114,25 +119,29 @@ RSpec.describe WorksController, type: :controller do
       end
 
       it "assigns a newly created work as @work" do
-        post :create, {:work => valid_attributes}, valid_session
+        author = build_enviroment_with_a_single_work
+        post :create, {:author_id => author.to_param, :work => valid_attributes}, valid_session
         expect(assigns(:work)).to be_a(Work)
         expect(assigns(:work)).to be_persisted
       end
 
       it "redirects to the created work" do
-        post :create, {:work => valid_attributes}, valid_session
-        expect(response).to redirect_to(Work.last)
+        author = build_enviroment_with_a_single_work
+        post :create, {:author_id => author.to_param, :work => valid_attributes}, valid_session
+        expect(response).to redirect_to(author_url(author))
       end
     end
 
     context "with invalid params" do
       it "assigns a newly created but unsaved work as @work" do
-        post :create, {:work => invalid_attributes}, valid_session
+        author = build_enviroment_with_a_single_work
+        post :create, {:author_id => author.to_param, :work => invalid_attributes}, valid_session
         expect(assigns(:work)).to be_a_new(Work)
       end
 
       it "re-renders the 'new' template" do
-        post :create, {:work => invalid_attributes}, valid_session
+        author = build_enviroment_with_a_single_work
+        post :create, {:author_id => author.to_param, :work => invalid_attributes}, valid_session
         expect(response).to render_template("new")
       end
     end
@@ -142,41 +151,51 @@ RSpec.describe WorksController, type: :controller do
     context "with valid params" do
       let(:new_attributes) {
         {
-          :title => 'Updated Test', :year => DateTime.civil_from_format(:local, 2015), :duration => Time.zone.parse('00:05:35'), :instruments => 'pno, fl, cl, bc', :program_notes_en => 'Updated Test notes',
-          :program_notes_it => 'Note di Test aggiornate'
+          :title => 'Updated ' + Forgery(:name).title,
+          :'year(1i)' => Forgery(:basic).number(:at_least => 1850, :at_most => Time.zone.now.year).to_s, :'year(2i)' => '1', :'year(3i)' => '1',
+          :'duration(1i)' => '1', :'duration(2i)' => '1', :'duration(3i)' => '1',
+          :'duration(4i)' => '0', :'duration(5i)' => '4', :'duration(6i)' => '33',
+          :instruments => 'pno, fl, cl',
+          :program_notes_en => 'Updated ' + Forgery(:lorem_ipsum).paragraphs(Forgery(:basic).number(:at_least => 1, :at_most => 10)),
+          :program_notes_it => 'Aggiornamento: ' + Forgery(:lorem_ipsum).paragraphs(Forgery(:basic).number(:at_least => 1, :at_most => 10)),
         }
       }
 
       it "updates the requested work" do
-        work = Work.create! valid_attributes
-        put :update, {:id => work.to_param, :work => new_attributes}, valid_session
+        author = build_enviroment_with_a_single_work
+        work = author.works.first
+        put :update, {:author_id => author.to_param, :id => work.to_param, :work => new_attributes}, valid_session
         work.reload
         expect(work.valid?).to be(true)
       end
 
       it "assigns the requested work as @work" do
-        work = Work.create! valid_attributes
-        put :update, {:id => work.to_param, :work => valid_attributes}, valid_session
+        author = build_enviroment_with_a_single_work
+        work = author.works.first
+        put :update, {:author_id => author.to_param, :id => work.to_param, :work => valid_attributes}, valid_session
         expect(assigns(:work)).to eq(work)
       end
 
       it "redirects to the work" do
-        work = Work.create! valid_attributes
-        put :update, {:id => work.to_param, :work => valid_attributes}, valid_session
-        expect(response).to redirect_to(work)
+        author = build_enviroment_with_a_single_work
+        work = author.works.first
+        put :update, {:author_id => author.to_param, :id => work.to_param, :work => valid_attributes}, valid_session
+        expect(response).to redirect_to(author_path(author))
       end
     end
 
     context "with invalid params" do
       it "assigns the work as @work" do
-        work = Work.create! valid_attributes
-        put :update, {:id => work.to_param, :work => invalid_attributes}, valid_session
+        author = build_enviroment_with_a_single_work
+        work = author.works.first
+        put :update, {:author_id => author.to_param, :id => work.to_param, :work => invalid_attributes}, valid_session
         expect(assigns(:work)).to eq(work)
       end
 
       it "re-renders the 'edit' template" do
-        work = Work.create! valid_attributes
-        put :update, {:id => work.to_param, :work => invalid_attributes}, valid_session
+        author = build_enviroment_with_a_single_work
+        work = author.works.first
+        put :update, {:author_id => author.to_param, :id => work.to_param, :work => invalid_attributes}, valid_session
         expect(response).to render_template("edit")
       end
     end
@@ -184,17 +203,31 @@ RSpec.describe WorksController, type: :controller do
 
   describe "DELETE #destroy" do
     it "destroys the requested work" do
-      work = Work.create! valid_attributes
+      author = build_enviroment_with_a_single_work
+      work = author.works.first
       expect {
-        delete :destroy, {:id => work.to_param}, valid_session
+        delete :destroy, {:id => work.to_param, :author_id => author.to_param, :work => work }, valid_session
       }.to change(Work, :count).by(-1)
     end
 
     it "redirects to the works list" do
-      work = Work.create! valid_attributes
-      delete :destroy, {:id => work.to_param}, valid_session
-      expect(response).to redirect_to(works_url)
+      author = build_enviroment_with_a_single_work
+      work = author.works.first
+      delete :destroy, {:id => work.to_param, :author_id => author.to_param, :work => work }, valid_session
+      expect(response).to redirect_to(author_path(author))
     end
+  end
+
+private
+
+  #
+  # +build_enviroment_with_a_single_work+: just build a Factory author along with a few works
+  #
+  def build_enviroment_with_a_single_work
+    author = FactoryGirl.create(:author)
+    work = FactoryGirl.create(:work)
+    author.works << work
+    author
   end
 
 end

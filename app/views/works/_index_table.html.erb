@@ -1,0 +1,11 @@
+<% @works.each do |work| %>
+  <tr>
+    <td><%= work.title %></td>
+    <td><%= work.display_year %></td>
+    <td><%= work.display_duration %></td>
+    <td><%= work.instruments %></td>
+    <td><%= link_to 'Show', author_work_path(@author, work) %></td>
+    <td><%= link_to 'Edit', edit_author_work_path(@author, work) %></td>
+    <td><%= link_to 'Destroy', author_work_path(@author, work), method: :delete, data: { confirm: 'Are you sure?' } %></td>
+  </tr>
+<% end %>

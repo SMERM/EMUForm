@@ -39,5 +39,5 @@
   </ul>
 </p> 
 
-<%= link_to 'Edit', edit_work_path(@work) %> |
-<%= link_to 'Back', works_path %>
+<%= link_to 'Edit', edit_author_work_path(:author_id => @author.to_param, :id => @work.to_param) %> |
+<%= link_to 'Back', author_works_path(:author_id => @author.to_param)  %>

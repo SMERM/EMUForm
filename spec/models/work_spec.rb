@@ -128,6 +128,39 @@ RSpec.describe Work, type: :model do
       @w = nil
     end
 
+    it 'actually destroys the links with the author when destroyed' do
+      num_works = 3
+      expect((a = FactoryGirl.create(:author)).valid?).to be(true)
+      expect((ws = FactoryGirl.create_list(:work, num_works)).size).to eq(num_works)
+      a.works << ws
+      expect(a.works(true).count).to eq(num_works)
+      ws.each { |w| expect(w.authors(true).count).to eq(1) }
+      ws.each { |w| w.destroy }
+      expect(a.works(true).count).to eq(0)
+    end
+
+  end
+
+  context 'associations' do
+
+    it 'can link authors as a single work' do
+      num_authors = 3
+      expect((w = FactoryGirl.create(:work)).valid?).to be(true)
+      expect((as = FactoryGirl.create_list(:author, num_authors)).class).to be(Array)
+      w.authors << as
+      expect(w.authors(true).count).to eq(num_authors)
+    end
+
+    it 'can link authors through multiple works' do
+      num_works = 3
+      num_authors = 5
+      expect((as = FactoryGirl.create_list(:author, num_authors)).class).to be(Array)
+      expect((ws = FactoryGirl.create_list(:work, num_works)).class).to be(Array)
+      ws.each { |w| w.authors << as }
+      ws.each { |w| expect(w.authors(true).count).to eq(num_authors) }
+      as.each { |a| expect(a.works(true).count).to eq(num_works) }
+    end
+
   end
 
   def zoot_file_directory

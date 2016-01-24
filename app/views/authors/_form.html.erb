@@ -1,0 +1,46 @@
+<%= form_for(@author) do |f| %>
+  <% if @author.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(@author.errors.count, "error") %> prohibited this author from being saved:</h2>
+
+      <ul>
+      <% @author.errors.full_messages.each do |message| %>
+        <li><%= message %></li>
+      <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="field">
+    <%= f.label :first_name %><br>
+    <%= f.text_field :first_name %>
+  </div>
+  <div class="field">
+    <%= f.label :last_name %><br>
+    <%= f.text_field :last_name %>
+  </div>
+  <div class="field">
+    <%= f.label :birth_year %><br>
+    <%= f.number_field :birth_year %>
+  </div>
+  <div class="field">
+    <%= f.label :bio_en %><br>
+    <%= f.text_area :bio_en %>
+  </div>
+  <div class="field">
+    <%= f.label :bio_it %><br>
+    <%= f.text_area :bio_it %>
+  </div>
+  <% unless @author.new_record? %>
+    <div class="works">
+       <%= f.label 'Associated works' %><br />
+       <%= render partial: 'works/index_table', collection: @author.works %>
+    </div>
+    <div class="add_new_work">
+      <%= link_to 'Add new work', new_author_work_path(@author) %>
+    </div>
+  <% end %>
+  <div class="actions">
+    <%= f.submit %>
+  </div>
+<% end %>

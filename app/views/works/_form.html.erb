@@ -1,7 +1,6 @@
-<%= form_for(@work, :enctype => 'multipart/form-data') do |f| %>
+<%= form_for([@author, @work], :enctype => 'multipart/form-data') do |f| %>
   <% if @work.errors.any? %>
     <div id="error_explanation">
-      <h2><%= pluralize(@work.errors.count, "error") %> prohibited this work from being saved:</h2>
 
       <ul>
       <% @work.errors.full_messages.each do |message| %>
@@ -40,7 +39,7 @@
   <div class="entry-content">
 
         <!-- Redirect browsers with JavaScript disabled to the origin page -->
-        <noscript><%= f.hidden_field :redirect, :value => '/work' %></noscript>
+        <noscript><%= f.hidden_field :redirect, :value => '/works' %></noscript>
         <!-- The fileupload-buttonbar contains buttons to add/delete files and start/cancel the upload -->
         <div class="row fileupload-buttonbar">
             <div class="col-lg-7">
