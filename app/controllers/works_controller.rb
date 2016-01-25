@@ -1,5 +1,5 @@
 class WorksController < ApplicationController
-  layout 'works'
+  layout 'application'
   before_action :set_author_and_works, except: :index
 
   # GET authors/1/works
@@ -34,7 +34,7 @@ class WorksController < ApplicationController
   #
   def create
     @work = @author.works.new(work_params)
-    
+
     respond_to do |format|
       if @work.save
         create_submitted_files
