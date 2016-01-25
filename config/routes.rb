@@ -1,5 +1,6 @@
 Rails.application.routes.draw do
 
+  resources :roles
   resources :authors do
     resources :works
   end

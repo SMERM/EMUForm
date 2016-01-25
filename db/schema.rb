@@ -11,7 +11,17 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160120084004) do
+ActiveRecord::Schema.define(version: 20160125111646) do
+
+  create_table "author_work_roles", id: false, force: :cascade do |t|
+    t.integer "author_work_id"
+    t.integer "role_id"
+  end
+
+  create_table "author_works", force: :cascade do |t|
+    t.integer "author_id", null: false
+    t.integer "work_id",   null: false
+  end
 
   create_table "authors", force: :cascade do |t|
     t.string   "first_name", null: false
@@ -23,9 +33,10 @@ ActiveRecord::Schema.define(version: 20160120084004) do
     t.datetime "updated_at", null: false
   end
 
-  create_table "authors_works", id: false, force: :cascade do |t|
-    t.integer "author_id", null: false
-    t.integer "work_id",   null: false
+  create_table "roles", force: :cascade do |t|
+    t.string   "description", null: false
+    t.datetime "created_at",  null: false
+    t.datetime "updated_at",  null: false
   end
 
   create_table "submitted_files", force: :cascade do |t|

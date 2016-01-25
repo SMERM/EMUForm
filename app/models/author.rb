@@ -1,6 +1,7 @@
 class Author < ActiveRecord::Base
 
-  has_and_belongs_to_many :works
+  has_many :author_works
+  has_many :works, :through => :author_works, :source => Work
   before_destroy :handle_destruction_of_associated_works
 
   validates_presence_of :first_name, :last_name

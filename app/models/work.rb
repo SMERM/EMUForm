@@ -8,7 +8,8 @@ class Work < ActiveRecord::Base
   validates_presence_of :title, :year, :duration, :instruments, :program_notes_en
 
   has_many :submitted_files
-  has_and_belongs_to_many :authors
+  has_many :author_works
+  has_many :authors, :through => :author_works, :source => Author
 
   accepts_nested_attributes_for :submitted_files, :allow_destroy => true, :reject_if => proc { |attrs| attrs[:http_channel].blank? }
 
