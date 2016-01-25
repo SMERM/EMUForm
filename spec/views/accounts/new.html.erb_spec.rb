@@ -7,7 +7,7 @@ RSpec.describe "accounts/new", type: :view do
   end
 
   it "renders new account form" do
-    skip('this spec is to be (almost completely) refactored! (TODO)')
+    skip('this spec is to be (almost completely) refactored! [TODO]')
     render
 
     assert_select "form[action=?][method=?]", accounts_path, "post" do

@@ -11,7 +11,7 @@ Rails.application.routes.draw do
   get 'pages/landing'
 
   devise_for :accounts, controllers: { omniauth_callbacks: 'omniauth_callbacks' }
-  # resources :accounts
+  resources :accounts, only: [:show]
 
   resources :authors do
     resources :works

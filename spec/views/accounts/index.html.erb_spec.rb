@@ -6,7 +6,7 @@ RSpec.describe "accounts/index", type: :view do
   end
 
   it "renders a list of accounts" do
-    skip('this spec is to be refactored! (TODO)')
+    skip('this spec is to be refactored! [TODO]')
     render
     assert_select "tr>td", :text => "Name".to_s, :count => 2
     assert_select "tr>td", :text => "MyText".to_s, :count => 2
