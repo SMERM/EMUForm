@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>EMUFest Submission Form</title>
+
+  <meta charset="utf-8">
+  <meta name="description" content="International Electroacoustic Music Festival">
+
+  <!-- Twitter Cards -->
+  <meta name="twitter:title" content="EMUFest 2015">
+  <meta name="twitter:description" content="International Electroacoustic Music Festival">
+  <meta name="twitter:site" content="@EMUFest_org">
+  <meta name="twitter:creator" content="@EMUFest_org">
+
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:image" content="http://www.emufest.org/images/E_site-logo.png">
+
+  <!-- Open Graph -->
+  <meta property="og:locale" content="en_US">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="EMUFest 2015">
+  <meta property="og:description" content="International Electroacoustic Music Festival">
+  <meta property="og:url" content="http://www.emufest.org/">
+  <meta property="og:site_name" content="EMUFest">
+
+  <link rel="canonical" href="http://www.emufest.org/">
+  <link href="http://www.emufest.org/feed.xml" type="application/atom+xml" rel="alternate" title="EMUFest Feed">
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- For all browsers -->
+  <!-- Webfonts -->
+  <script src="//use.edgefonts.net/source-sans-pro:n2,i2,n3,i3,n4,i4,n6,i6,n7,i7,n9,i9;source-code-pro:n4,n7;volkhov.js"></script>
+
+  <meta http-equiv="cleartype" content="on">
+
+  <!-- Modernizr -->
+  <script src="http://www.emufest.org/assets/js/vendor/modernizr-2.7.1.custom.min.js"></script>
+
+  <!-- Icons -->
+  <!-- 16x16 -->
+  <link rel="shortcut icon" href="http://www.emufest.org/favicon.ico">
+  <!-- 32x32 -->
+  <link rel="shortcut icon" href="http://www.emufest.org/favicon.png">
+  <!-- 57x57 (precomposed) for iPhone 3GS, pre-2011 iPod Touch and older Android devices -->
+  <link rel="apple-touch-icon-precomposed" href="http://www.emufest.org/images/apple-touch-icon-precomposed.png">
+  <!-- 72x72 (precomposed) for 1st generation iPad, iPad 2 and iPad mini -->
+  <link rel="apple-touch-icon-precomposed" sizes="72x72" href="http://www.emufest.org/images/apple-touch-icon-72x72-precomposed.png">
+  <!-- 114x114 (precomposed) for iPhone 4, 4S, 5 and post-2011 iPod Touch -->
+  <link rel="apple-touch-icon-precomposed" sizes="114x114" href="http://www.emufest.org/images/apple-touch-icon-114x114-precomposed.png">
+  <!-- 144x144 (precomposed) for iPad 3rd and 4th generation -->
+  <link rel="apple-touch-icon-precomposed" sizes="144x144" href="http://www.emufest.org/images/apple-touch-icon-144x144-precomposed.png">
+  </head>
+
+  <!-- emufest style -->
+  <%= stylesheet_link_tag  '//www.emufest.org/assets/css/main.css', media: 'all' %>
+  <%= javascript_include_tag 'application', :media => 'all', 'data-turbolinks-track' => true %>
+  <%= csrf_meta_tags %>
+</head>
+<body id="page">
+
+  <header class="masthead">
+  	<div class="wrap">
+    		<a href="http://www.emufest.org/" class="site-logo" rel="home" title="EMUFest"><img src="http://www.emufest.org/images/E_site-logo.png" width="200" height="200" alt="EMUFest logo" class="animated fadeInDown"></a>
+        <h1 class="site-title animated fadeIn"><a href="http://www.emufest.org/">EMUFest</a></h1>
+  		  <h2 class="site-description animated fadeIn" itemprop="description">International Electroacoustic Music Festival</h2>
+  	</div>
+  </header><!-- /.masthead -->
+
+  <div class="js-menu-screen menu-screen">
+  </div>
+
+  <div id="main" role="main">
+    <article class="entry">
+      <div class="entry-wrapper">
+
+        <%= yield %>
+
+      </div>
+    </article>
+  </div>
+
+<!-- brutal cargo-culting :-( from http://upload.giuseppesilvi.com/jQueryupload/ -->
+<!-- The template to display files available for upload -->
+<script id="template-upload" type="text/x-tmpl">
+{% for (var i=0, file; file=o.files[i]; i++) { %}
+    <tr class="template-upload fade">
+        <td>
+            <span class="preview"></span>
+        </td>
+        <td>
+            <p class="name">{%=file.name%}</p>
+            <strong class="error text-danger"></strong>
+        </td>
+        <td>
+            <p class="size">Processing...</p>
+            <div class="progress progress-striped active" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><div class="progress-bar progress-bar-success" style="width:0%;"></div></div>
+        </td>
+        <td>
+            {% if (!i && !o.options.autoUpload) { %}
+                <button class="btn btn-primary start" disabled>
+                    <i class="glyphicon glyphicon-upload"></i>
+                    <span>Start</span>
+                </button>
+            {% } %}
+            {% if (!i) { %}
+                <button class="btn btn-warning cancel">
+                    <i class="glyphicon glyphicon-ban-circle"></i>
+                    <span>Cancel</span>
+                </button>
+            {% } %}
+        </td>
+    </tr>
+{% } %}
+</script>
+<!-- The template to display files available for download -->
+<script id="template-download" type="text/x-tmpl">
+{% for (var i=0, file; file=o.files[i]; i++) { %}
+    <tr class="template-download fade">
+        <td>
+            <span class="preview">
+                {% if (file.thumbnailUrl) { %}
+                    <a href="{%=file.url%}" title="{%=file.name%}" download="{%=file.name%}" data-gallery><img src="{%=file.thumbnailUrl%}"></a>
+                {% } %}
+            </span>
+        </td>
+        <td>
+            <p class="name">
+                {% if (file.url) { %}
+                    <a href="{%=file.url%}" title="{%=file.name%}" download="{%=file.name%}" {%=file.thumbnailUrl?'data-gallery':''%}>{%=file.name%}</a>
+                {% } else { %}
+                    <span>{%=file.name%}</span>
+                {% } %}
+            </p>
+            {% if (file.error) { %}
+                <div><span class="label label-danger">Error</span> {%=file.error%}</div>
+            {% } %}
+        </td>
+        <td>
+            <span class="size">{%=o.formatFileSize(file.size)%}</span>
+        </td>
+        <td>
+            {% if (file.deleteUrl) { %}
+                <button class="btn btn-danger delete" data-type="{%=file.deleteType%}" data-url="{%=file.deleteUrl%}"{% if (file.deleteWithCredentials) { %} data-xhr-fields='{"withCredentials":true}'{% } %}>
+                    <i class="glyphicon glyphicon-trash"></i>
+                    <span>Delete</span>
+                </button>
+                <input type="checkbox" name="delete" value="1" class="toggle">
+            {% } else { %}
+                <button class="btn btn-warning cancel">
+                    <i class="glyphicon glyphicon-ban-circle"></i>
+                    <span>Cancel</span>
+                </button>
+            {% } %}
+        </td>
+    </tr>
+{% } %}
+</script>
+<%= javascript_include_tag 'http://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js' %>
+<%= javascript_include_tag '//blueimp.github.io/JavaScript-Templates/js/tmpl.min.js' %>
+<%= javascript_include_tag '//netdna.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js' %>
+<%= javascript_include_tag 'js/vendor/jquery.ui.widget.js' %>
+<%= javascript_include_tag 'js/jquery.iframe-transport.js' %>
+<%= javascript_include_tag 'js/jquery.fileupload.js' %>
+<%= javascript_include_tag 'js/jquery.fileupload-process.js' %>
+<%= javascript_include_tag 'js/jquery.fileupload-image.js' %>
+<%# javascript_include_tag 'js/jquery.fileupload-audio.js' %>
+<%# javascript_include_tag 'js/jquery.fileupload-video.js' %>
+<%# javascript_include_tag 'js/jquery.fileupload-validate.js' %>
+<%# javascript_include_tag 'js/main.js' %>
+</body>
+</html>
