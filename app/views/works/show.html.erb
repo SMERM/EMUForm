@@ -1,4 +1,4 @@
-<p id="notice"><%= notice %></p>
+<p class="notice"><%= notice %></p>
 
 <p>
   <strong>Title:</strong>
@@ -37,7 +37,7 @@
     <li><%= sf.filename %>  <%= sf.size %></li>
   <% end %>
   </ul>
-</p> 
+</p>
 
 <%= link_to 'Edit', edit_author_work_path(:author_id => @author.to_param, :id => @work.to_param) %> |
 <%= link_to 'Back', author_works_path(:author_id => @author.to_param)  %>
