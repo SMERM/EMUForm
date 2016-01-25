@@ -55,3 +55,19 @@ end
 # Added to do the file uploads
 #
 gem 'blueimp-file-upload-rails'
+
+#
+# added for user administration
+# (picking them up from [here](https://github.com/mohitjain/social-login-in-rails)
+#
+gem 'devise'
+gem 'omniauth'
+gem 'omniauth-oauth2'
+gem 'omniauth-facebook'
+gem 'omniauth-github'
+gem 'omniauth-google-oauth2'
+gem 'omniauth-linkedin-oauth2'
+gem 'omniauth-twitter'
+gem 'koala'
+gem 'carrierwave'
+gem 'activeadmin', github: 'gregbell/active_admin'

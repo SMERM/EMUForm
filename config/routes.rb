@@ -1,5 +1,18 @@
 Rails.application.routes.draw do
 
+  # added to please devise
+  root to: 'pages#landing'
+  ActiveAdmin.routes(self)
+
+  devise_for :admin_accounts, ActiveAdmin::Devise.config
+
+  get 'pages/terms'
+  get 'pages/welcome'
+  get 'pages/landing'
+
+  devise_for :accounts, controllers: { omniauth_callbacks: 'omniauth_callbacks' }
+  # resources :accounts
+
   resources :authors do
     resources :works
   end
