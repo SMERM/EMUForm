@@ -1,4 +1,3 @@
 class Role < ActiveRecord::Base
-  validates_presence_of :description
-  validates_uniqueness_of :description 
+  validates :description, presence: true, uniqueness: true
 end

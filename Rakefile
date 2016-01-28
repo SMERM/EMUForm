@@ -6,3 +6,8 @@ require File.expand_path('../config/application', __FILE__)
 Rails.application.load_tasks
 
 task :default => :spec
+
+#
+# Load all other rake tasks that reside in lib/tasks
+#
+Dir.glob(File.join(Rails.root, 'lib', 'tasks', '**', '*.rake')).each { |f| load f }
