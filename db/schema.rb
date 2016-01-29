@@ -11,16 +11,14 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160125111646) do
+ActiveRecord::Schema.define(version: 20160128210326) do
 
-  create_table "author_work_roles", id: false, force: :cascade do |t|
-    t.integer "author_work_id"
-    t.integer "role_id"
-  end
-
-  create_table "author_works", force: :cascade do |t|
-    t.integer "author_id", null: false
-    t.integer "work_id",   null: false
+  create_table "author_work_roles", force: :cascade do |t|
+    t.integer  "author_id",  null: false
+    t.integer  "work_id",    null: false
+    t.integer  "role_id",    null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "authors", force: :cascade do |t|
@@ -34,10 +32,13 @@ ActiveRecord::Schema.define(version: 20160125111646) do
   end
 
   create_table "roles", force: :cascade do |t|
-    t.string   "description", null: false
-    t.datetime "created_at",  null: false
-    t.datetime "updated_at",  null: false
+    t.boolean  "static",      default: false, null: false
+    t.string   "description",                 null: false
+    t.datetime "created_at",                  null: false
+    t.datetime "updated_at",                  null: false
   end
+
+  add_index "roles", ["description"], name: "index_roles_on_description"
 
   create_table "submitted_files", force: :cascade do |t|
     t.string   "filename",     null: false

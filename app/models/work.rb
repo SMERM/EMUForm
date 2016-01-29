@@ -8,8 +8,9 @@ class Work < ActiveRecord::Base
   validates_presence_of :title, :year, :duration, :instruments, :program_notes_en
 
   has_many :submitted_files
-  has_many :author_works
-  has_many :authors, :through => :author_works, :source => Author
+  has_many :author_work_roles
+  has_many :authors, -> { includes :roles }, through: :author_work_roles, source: :author
+  has_many :roles, -> { includes :works }, through: :author_work_roles, source: :role
 
   accepts_nested_attributes_for :submitted_files, :allow_destroy => true, :reject_if => proc { |attrs| attrs[:http_channel].blank? }
 
@@ -73,6 +74,28 @@ class Work < ActiveRecord::Base
       res = self.directory
       FileUtils.rm_rf(self.directory, :secure => true)
       self.directory = nil
+    end
+    res
+  end
+
+  #
+  # +authors_with_roles+
+  #
+  # +authors_with_roles+:
+  # * find all the relations between a work and an author (uniqe name)
+  # * returns an array of hashes with the author and a list of roles for it
+  #   like:
+  #
+  #   => [{ :author => <Author:class>, :roles => [ <Role:class>, <Role:class>, ...  ] }, { :author => .... } ]
+  #
+  def authors_with_roles(force = false)
+    res = []
+    as = self.authors(force).uniq
+    as.each do
+      |a|
+      h = { :author => a }
+      h.update(:roles => AuthorWorkRole.where('author_id = ? and work_id = ?', a.id, self.id).map { |awr| awr.role })
+      res << h
     end
     res
   end

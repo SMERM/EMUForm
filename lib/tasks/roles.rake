@@ -16,7 +16,7 @@ namespace :EMUForm do
     # It does *not* duplicate roles if they are already present.
     #
     desc 'setup default static roles'
-    task :setup => :environment do
+    task :setup => [:environment, 'db:migrate'] do
       EMUForm::RoleManager.setup
     end
   

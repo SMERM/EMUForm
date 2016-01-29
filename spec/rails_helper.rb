@@ -66,5 +66,8 @@ RSpec.configure do |config|
   # config.filter_gems_from_backtrace("gem name")
 end
 
+#
+# the next require is included to facilitate the use of the
+# +EMUForm::RoleManager+
+#
 require 'EMUForm/role_manager'
-EMUForm::RoleManager.setup

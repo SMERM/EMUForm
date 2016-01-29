@@ -131,12 +131,13 @@ RSpec.describe Work, type: :model do
     it 'actually destroys the links with the author when destroyed' do
       num_works = 3
       expect((a = FactoryGirl.create(:author)).valid?).to be(true)
+      expect((r = Role.music_composer).valid?).to be(true)
       expect((ws = FactoryGirl.create_list(:work, num_works)).size).to eq(num_works)
-      a.works << ws
-      expect(a.works(true).count).to eq(num_works)
-      ws.each { |w| expect(w.authors(true).count).to eq(1) }
+      ws.each { |w| a.add_work_with_role(w, r) }
+      expect(a.works_with_roles(true).count).to eq(num_works)
+      ws.each { |w| expect(w.authors(true).uniq.count).to eq(1) }
       ws.each { |w| w.destroy }
-      expect(a.works(true).count).to eq(0)
+      expect(a.works_with_roles(true).count).to eq(0)
     end
 
   end
@@ -147,18 +148,20 @@ RSpec.describe Work, type: :model do
       num_authors = 3
       expect((w = FactoryGirl.create(:work)).valid?).to be(true)
       expect((as = FactoryGirl.create_list(:author, num_authors)).class).to be(Array)
-      w.authors << as
-      expect(w.authors(true).count).to eq(num_authors)
+      expect((r = Role.music_composer).valid?).to be(true)
+      as.each { |a| a.add_work_with_role(w, r) }
+      expect(w.authors(true).uniq.count).to eq(num_authors)
     end
 
     it 'can link authors through multiple works' do
       num_works = 3
       num_authors = 5
+      expect((r = Role.music_composer).valid?).to be(true)
       expect((as = FactoryGirl.create_list(:author, num_authors)).class).to be(Array)
       expect((ws = FactoryGirl.create_list(:work, num_works)).class).to be(Array)
-      ws.each { |w| w.authors << as }
-      ws.each { |w| expect(w.authors(true).count).to eq(num_authors) }
-      as.each { |a| expect(a.works(true).count).to eq(num_works) }
+      ws.each { |w| as.each { |a| a.add_work_with_role(w, r) } }
+      ws.each { |w| expect(w.authors(true).uniq.count).to eq(num_authors) }
+      as.each { |a| expect(a.works(true).uniq.count).to eq(num_works) }
     end
 
   end

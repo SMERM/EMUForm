@@ -16,8 +16,8 @@ module EMUForm
       # It does *not* duplicate roles if they are already present.
       #
       def setup
-        srns = load_static_role_names
-        srns.each { |r| Role.create(:description => r) if Role.where('description = ?').empty? }
+        load_static_role_names
+        @static_roles.each { |r| Role.create(:description => r, :static => true) if Role.where('description = ?').empty? }
       end
 
       #
@@ -27,8 +27,26 @@ module EMUForm
       # It does *not* clear roles that have been added subsequently.
       #
       def clear
-        srns = load_static_role_names
-        srns.each { |r| Role.where('description = ?', r).each { |rf| rf.destroy } }
+        static_roles.each { |r| r.destroy }
+        @static_roles = nil
+      end
+
+      #
+      # +static_role_names+
+      #
+      # returns the list of static roles names
+      #
+      def static_role_names
+        load_static_role_names
+      end
+
+      #
+      # +static_roles+
+      #
+      # returns the list of static roles
+      #
+      def static_roles
+        Role.where('static = ?', true)
       end
 
     private
@@ -36,7 +54,7 @@ module EMUForm
       ROLE_CONFIG_PATH = File.join(Rails.root, 'config', 'roles.yml')
 
       def load_static_role_names
-        YAML.load(File.open(ROLE_CONFIG_PATH, 'r')).keys.sort
+        @static_roles ||= YAML.load(File.open(ROLE_CONFIG_PATH, 'r')).keys
       end
 
     end
