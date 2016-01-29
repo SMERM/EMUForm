@@ -2,18 +2,12 @@ require 'rails_helper'
 
 RSpec.describe "roles/index", type: :view do
   before(:each) do
-    assign(:roles, [
-      Role.create!(
-        :description => "Description"
-      ),
-      Role.create!(
-        :description => "Description"
-      )
-    ])
+    @num_roles = 5
+    @roles = assign(:roles, FactoryGirl.create_list(:role, @num_roles))
   end
 
   it "renders a list of roles" do
     render
-    assert_select "tr>td", :text => "Description".to_s, :count => 2
+    @roles.each { |r| assert_select "tr>td", :text => r.description, :count => 1 }
   end
 end
