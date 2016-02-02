@@ -103,6 +103,13 @@ class Author < ActiveRecord::Base
     res
   end
 
+  #
+  # +display_birth_year+
+  #
+  def display_birth_year
+    self.birth_year.year
+  end
+
 private
 
   #

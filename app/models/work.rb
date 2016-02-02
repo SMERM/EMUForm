@@ -58,10 +58,13 @@ class Work < ActiveRecord::Base
   end
 
   #
-  # +display_roles+ should display all the roles as a colon-separated list
+  # <tt>display_roles(author)</tt> 
   #
-  def display_roles
-    self.roles.map { |r| r.description }.join(', ')
+  # display all the roles for a given author as a colon-separated list
+  #
+  def display_roles(author)
+    awrs = AuthorWorkRole.where('author_id = ? and work_id = ?', author.to_param, self.to_param)
+    awrs.map { |awr| awr.role.description }.join(', ')
   end
 
   #
@@ -170,7 +173,7 @@ class Work < ActiveRecord::Base
       |r|
       r.stringify_keys!
       raise ArgumentError, "Elements of the argument to Work#update_roles_for_an_author must be Hashes and contain an ':id' key (#{r.inspect})" unless r.kind_of?(Hash) && r.has_key?('id')
-      roles << Role.find(r['id'])
+      roles << Role.find(r['id']) unless r['id'].blank?
     end
     author.detach_a_work(self.to_param)
     roles.each { |r| author.add_work_with_role(self, r) }

@@ -72,7 +72,7 @@ RSpec.describe Work, type: :model do
       roles = build_roles(@authors)
       work.update_all_roles roles
       expect(work.authors(true).uniq.count).to eq(roles.size)
-      roles.each { |r| expect(work.authors.find(r[:author_id]).roles(true).count).to eq(r[:roles_attributes].size) }
+      roles.each { |r| expect(work.authors.find(r[:author_id]).roles(true).count).to eq(r[:roles_attributes].size-1) } # argument has an extra empty element
     end
 
   end
@@ -236,6 +236,9 @@ private
   #
   # +build_roles(authors)+ builds the proper role argument for each author
   #
+  # we need to simulate the behaviour of the view. For this reason we add an
+  # extra empty 'id' element to the roles (needed by the checkbox collection).
+  #
   def build_roles(authors)
     res = []
     max_num_roles = Role.count-1
@@ -245,6 +248,7 @@ private
       roles = []
       1.upto(num_roles) { roles << Role.all[Forgery(:basic).number(:at_least => 0, :at_most => max_num_roles)] }
       roles = roles.uniq.map { |r| { 'id' => r.id.to_s } }
+      roles << { 'id' => '' } # empty (wrong) element added by the view
       h = HashWithIndifferentAccess.new(author_id: a.id.to_s, roles_attributes: roles)
       res << h
     end

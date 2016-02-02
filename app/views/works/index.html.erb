@@ -19,7 +19,7 @@
   </thead>
 
   <tbody>
-    <%= render partial: 'index_table', collection: @author.works_with_roles, as: :work %>
+    <%= render partial: 'index_table', collection: @author.works.uniq %>
   </tbody>
 </table>
 

@@ -13,5 +13,10 @@ RSpec.describe "works/show", type: :view do
 
   it "renders attributes in <p>" do
     render
+
+    expect(rendered).to match(/#{@work.title}/)
+    expect(rendered).to match(/#{@work.display_year}/)
+    expect(rendered).to match(/#{@work.display_duration}/)
+    expect(rendered).to match(/#{@work.roles(true).uniq.map { |r| r.description }.join(', ')}/)
   end
 end

@@ -118,7 +118,7 @@ RSpec.describe WorksController, type: :controller do
         expect((w = author.works(true).uniq.last).valid?).to be(true)
         expect(w.submitted_files(true).count).to eq(num_attachments)
         expect(w.directory.blank?).to be(false)
-        expect(w.roles(true).count).to eq(args[:roles_attributes].size)
+        expect(w.roles(true).count).to eq(args[:roles_attributes].size-1) # the argument has an extra empty element
         d = Dir.new(w.directory)
         n = 0; d.each { n += 1 }
         expect(n).to eq(num_attachments + 2) # this count includes also '.' and '..'
@@ -246,8 +246,13 @@ private
   #
   # +build_roles(roles)+ builds the proper argument for roles
   #
+  # we need to simulate the behaviour of view which sends an extra empty 'id'
+  # element which needs to be catched by the business logic
+  #
   def build_roles(roles)
-    roles.map { |r| { 'id' => r.id.to_s } }
+    res = roles.map { |r| { 'id' => r.id.to_s } }
+    res << { 'id' => '' } # extra (wrong) 'id' element added by the view
+    res
   end
 
   #

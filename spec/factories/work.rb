@@ -3,7 +3,7 @@ FactoryGirl.define do
   factory :work do
 
     title                do
-      start = Forgery(:basic).number(:at_least => 0, :at_most => 200)
+      start = Forgery(:basic).number(:at_least => 0, :at_most => 10)
       Forgery(:lorem_ipsum).words(start..start+Forgery(:basic).number(:at_least => start + 1, :at_most => start + 3))
     end
     year                 { DateTime.civil_from_format(:local, Forgery(:basic).number(:at_least => 1950, :at_most => Time.zone.now.year)) }

@@ -1,10 +1,9 @@
 <tr>
-  <td><%= work[:work].title %></td>
-  <td><%= work[:work].display_year %></td>
-  <td><%= work[:work].display_duration %></td>
-  <td><%= work[:work].instruments %></td>
-  <td>(<%= work[:work].display_roles %>)</td>
-  <td><%= link_to 'Show', author_work_path(@author, work[:work]) %></td>
-  <td><%= link_to 'Edit', edit_author_work_path(@author, work[:work]) %></td>
-  <td><%= link_to 'Destroy', author_work_path(@author, work[:work]), method: :delete, data: { confirm: 'Are you sure?' } %></td>
+  <td><%= link_to index_table.title, author_work_path(@author, index_table) %></td>
+  <td><%= index_table.display_year %></td>
+  <td><%= index_table.display_duration %></td>
+  <td><%= index_table.instruments %></td>
+  <td>(<%= index_table.display_roles(@author) %>)</td>
+  <td><%= link_to 'Edit', edit_author_work_path(@author, index_table) %></td>
+  <td><%= link_to 'Destroy', author_work_path(@author, index_table), method: :delete, data: { confirm: 'Are you sure?' } %></td>
 </tr>
