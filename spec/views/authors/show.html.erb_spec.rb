@@ -2,6 +2,7 @@ require 'rails_helper'
 
 RSpec.describe "authors/show", type: :view do
   before(:each) do
+    @author = FactoryGirl.create(:author)
     @author = assign(:author, Author.create!(
       :first_name => "First Name",
       :last_name => "Last Name",

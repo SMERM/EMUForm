@@ -24,7 +24,7 @@ RSpec.describe RolesController, type: :controller do
   # Role. As you add validations to Role, be sure to
   # adjust the attributes here as well.
   let(:valid_attributes) {
-    { :description=>"valid description"}
+    { :description => Forgery(:basic).text(:at_least => 5, :at_most => 10) }
   }
 
   let(:invalid_attributes) {
@@ -40,7 +40,7 @@ RSpec.describe RolesController, type: :controller do
     it "assigns all roles as @roles" do
       role = Role.create! valid_attributes
       get :index, {}, valid_session
-      expect(assigns(:roles)).to eq([role])
+      expect(assigns(:roles)).to eq(Role.static_roles.to_a + [role])
     end
   end
 

@@ -75,6 +75,18 @@ RSpec.describe Author, type: :model do
       as.each { |a| expect(a.works_with_roles(true).size).to eq(num_works) }
     end
 
+    it 'can detach a role from a given author successefully (instance method)' do
+      expect((a = FactoryGirl.create(:author)).valid?).to be(true)
+      expect((work = FactoryGirl.create(:work)).valid?).to be(true)
+      load_single_author_complex_environment(a, [ work ])
+      expect((roles = a.works.uniq.first.roles).kind_of?(ActiveRecord::Associations::CollectionProxy)).to be(true)
+      n_roles = roles.size
+      role_to_detach = roles.first
+      expect((detached_awr = a.detach_role_from_a_work(a.works.uniq.first, role_to_detach)).class).to be(AuthorWorkRole)
+      expect(a.works(true).uniq.first.roles.count).to eq(n_roles - 1)
+      expect(a.works.uniq.first.roles.include?(detached_awr.role)).to be(false)
+    end
+
   end
 
   context 'object destruction' do

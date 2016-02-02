@@ -26,4 +26,17 @@ class Role < ActiveRecord::Base
   has_many :works, through: :author_work_roles
 
   include RoleStaticMethods
+
+  class << self
+
+    def static_roles
+      where('static = ?', true).order(:description)
+    end
+
+    def ordered_all
+      all.order('static DESC, description')
+    end
+
+  end
+
 end

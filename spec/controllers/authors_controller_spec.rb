@@ -41,6 +41,11 @@ RSpec.describe AuthorsController, type: :controller do
     }
   }
 
+  before :example do
+    @num_authors = 3
+    Author.destroy_all
+  end
+
   # This should return the minimal set of values that should be in the session
   # in order to pass any filters (e.g. authentication) defined in
   # AuthorsController. Be sure to keep this updated too.
@@ -48,15 +53,15 @@ RSpec.describe AuthorsController, type: :controller do
 
   describe "GET #index" do
     it "assigns all authors as @authors" do
-      author = Author.create! valid_attributes
+      authors = FactoryGirl.create_list(:author_with_works_and_roles, @num_authors).sort { |a, b| a.last_name <=> b.last_name }
       get :index, {}, valid_session
-      expect(assigns(:authors)).to eq([author])
+      expect(assigns(:authors)).to eq(authors)
     end
   end
 
   describe "GET #show" do
     it "assigns the requested author as @author" do
-      author = Author.create! valid_attributes
+      author = FactoryGirl.create(:author_with_works_and_roles)
       get :show, {:id => author.to_param}, valid_session
       expect(assigns(:author)).to eq(author)
     end

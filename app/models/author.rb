@@ -11,13 +11,74 @@ class Author < ActiveRecord::Base
     [self.first_name, self.last_name].join(' ')
   end
 
-  def add_work_with_role(w, r)
-    AuthorWorkRole.create(:author_id => self.to_param, :work_id => w.to_param, :role_id => r.to_param)    
+  class << self
+
+    #
+    # <tt>add_work_with_role(a_id, w_id, r_id)</tt>
+    #
+    # adds a three-way link between an author, a work and a role (class
+    # method)
+    #
+    def add_work_with_role(a_id, w_id, r_id)
+      AuthorWorkRole.create(:author_id => a_id, :work_id => w_id, :role_id => r_id)
+    end
+  
+    #
+    # <tt>detach_role_from_a_work(a_id, w_id, r_id)</tt>
+    #
+    # removes a three-way link between an author, a work and a role (class
+    # method). This does not destroy any of the linked records (author, work,
+    # or role).
+    #
+    def detach_role_from_a_work(a_id, w_id, r_id)
+      awr = AuthorWorkRole.where("author_id = #{a_id} and work_id = #{w_id} and role_id = #{r_id}").first
+      awr.valid? && awr.destroy
+      awr
+    end
+
+    #
+    # <tt>detach_a_work(a_id, w_id)</tt>
+    #
+    # removes all three-way links between an author and a work (class method).
+    # This does not destroy any of the linked records (author, work,
+    # or role), but just any connection between an author and a work.
+    #
+    def detach_a_work(a_id, w_id)
+      AuthorWorkRole.destroy_all("author_id = #{a_id} and work_id = #{w_id}") if a_id && w_id
+    end
+
   end
 
-  def remove_work_with_role(w, r)
-    awr = AuthorWorkRole.where('author_id = ? and work_id = ? and role_id = ?', self.id, w.id, r.id)
-    awr.destroy if awr && awr.valid?
+  #
+  # <tt>add_work_with_role(work, role)</tt>
+  #
+  # adds a three-way link between an author, a work and a role (instance
+  # method)
+  #
+  def add_work_with_role(w, r)
+    self.class.add_work_with_role(self.to_param, w.to_param, r.to_param)
+  end
+
+  #
+  # <tt>detach_role_from_a_work(work, role)</tt>
+  #
+  # removes a three-way link between an author, a work and a role (instance
+  # method). This does not destroy any of the linked records (author, work,
+  # or role).
+  #
+  def detach_role_from_a_work(w, r)
+    self.class.detach_role_from_a_work(self.to_param, w.to_param, r.to_param)
+  end
+
+  #
+  # <tt>detach_a_work(work)</tt>
+  #
+  # removes all three-way links between an author and a work (instance method).
+  # This does not destroy any of the linked records (author, work,
+  # or role), but just any connection between an author and a work.
+  #
+  def detach_a_work(work)
+    self.class.detach_a_work(self.to_param, work.to_param)
   end
 
   #

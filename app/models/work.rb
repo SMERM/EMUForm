@@ -13,6 +13,8 @@ class Work < ActiveRecord::Base
   has_many :roles, -> { includes :works }, through: :author_work_roles, source: :role
 
   accepts_nested_attributes_for :submitted_files, :allow_destroy => true, :reject_if => proc { |attrs| attrs[:http_channel].blank? }
+  accepts_nested_attributes_for :roles
+  accepts_nested_attributes_for :authors
 
   UPLOAD_COND_PATH = Rails.env == 'test' ? 'spec' : 'public'
   UPLOAD_BASE_PATH = File.join(Rails.root, UPLOAD_COND_PATH, 'private', 'uploads')
@@ -56,12 +58,37 @@ class Work < ActiveRecord::Base
   end
 
   #
+  # +display_roles+ should display all the roles as a colon-separated list
+  #
+  def display_roles
+    self.roles.map { |r| r.description }.join(', ')
+  end
+
+  #
   # +year=+ when actually writing a composition year, since inserting a single
   # year has an hysteresis connect to local time zones we should add a couple
   # of days to it to make sure we get the proper year set
   #
   def year=(val)
     write_attribute(:year, year_anti_hystheresis(val))
+  end
+
+  #
+  # +add_submitted_files(sf_attributes)+
+  #
+  # add an array of submitted files which is enclosed in a hash with key
+  # :submitted_file_attributes
+  #
+  def add_submitted_files(sf_attributes)
+    raise ArgumentError, "add_submitted_files(#{File.basename(__FILE__)}:#{__LINE__}) requires a hash argument and got a \"#{sf_attributes.inspect}\" instead" unless sf_attributes.kind_of?(Hash) && sf_attributes.has_key?(:submitted_files_attributes)
+    sfs = sf_attributes[:submitted_files_attributes]
+    raise ArgumentError, "The submitted files attributes should be an array and it is a #{sfs.class.name} instead" unless sfs.kind_of?(Array)
+    sfs.each do
+      |att|
+      att.update(:work => self)
+      sf = SubmittedFile.create(att)
+      sf.upload
+    end
   end
 
   #
@@ -79,25 +106,121 @@ class Work < ActiveRecord::Base
   end
 
   #
-  # +authors_with_roles+
+  # <tt>authors_with_roles(force = false)</tt>
   #
   # +authors_with_roles+:
   # * find all the relations between a work and an author (uniqe name)
-  # * returns an array of hashes with the author and a list of roles for it
+  # * returns an array of hashes with the author id and a list of role ids for it
   #   like:
   #
-  #   => [{ :author => <Author:class>, :roles => [ <Role:class>, <Role:class>, ...  ] }, { :author => .... } ]
+  #   <tt>=> [{ :author_id => author_id, :roles_attributes => [ role_id, role_id, ...  ] }, { :author_id => .... } ]</tt>
   #
   def authors_with_roles(force = false)
     res = []
     as = self.authors(force).uniq
     as.each do
       |a|
-      h = { :author => a }
-      h.update(:roles => AuthorWorkRole.where('author_id = ? and work_id = ?', a.id, self.id).map { |awr| awr.role })
+      h = { :author_id => a.to_param }
+      h.update(:roles_attributes => AuthorWorkRole.where('author_id = ? and work_id = ?', a.to_param, self.to_param).map { |awr| awr.role })
       res << h
     end
     res
+  end
+
+  #
+  # <tt>update_all_roles(role_params_with_authors)</tt>
+  #
+  # updates the roles when editing a work for all authors
+  # +role_params+ is an array of hashes with an +id:+ field, like this:
+  # <tt>=> [ { author_id: '23', roles_attributes: [ { id: '1' }, { id: '2' }, ... ] } ]</tt>
+  #
+  # This method erases all previous roles and sets up new roles for each
+  # author, which are to be saved *after* the work model is saved (that's when
+  # it can be called by the controller).
+  #
+  def update_all_roles(role_params_with_authors)
+    rpwa = role_params_with_authors.deep_dup
+    raise ArgumentError, "the argument to Work#update_roles must be an Array (was a #{rpwa.class} instead)" unless rpwa.kind_of?(Array)
+    rpwa.each do
+      |el|
+      el.stringify_keys!
+      raise ArgumentError, "Elements of the argument to Work#update_all_roles must contain an ':author_id' and a ':roles_attributes' keys (#{el.inspect})" unless el.has_key?('author_id') && el.has_key?('roles_attributes')
+      author = Author.find(el.delete('author_id'))
+      self.update_roles_for_an_author(author, el)
+    end
+  end
+
+  #
+  # <tt>update_roles_for_an_author(author, role_params)</tt>
+  #
+  # updates the roles when editing a work for a given author
+  # +role_params+ is a array of hashes each with an +id:+ field, like this:
+  # <tt>=> [ { id: '1' }, { id: '2' }, ... ]</tt>
+  #
+  # This method erases all previous roles and sets up new roles for each
+  # author, which are to be saved *after* the work model is saved (that's when
+  # it can be called by the controller).
+  #
+  def update_roles_for_an_author(author, role_params)
+    raise ArgumentError, "the second argument to Work#update_roles_for_an_author must be an Hash (was a #{role_params.class} instead)" unless role_params.kind_of?(Hash) && role_params.has_key?(:roles_attributes)
+    rps = role_params[:roles_attributes]
+    raise ArgumentError, "the value of the second argument to Work#update_roles_for_an_author must be an Array (was a #{rps.class} instead)" unless rps.kind_of?(Array)
+    roles = []
+    rps.each do
+      |r|
+      r.stringify_keys!
+      raise ArgumentError, "Elements of the argument to Work#update_roles_for_an_author must be Hashes and contain an ':id' key (#{r.inspect})" unless r.kind_of?(Hash) && r.has_key?('id')
+      roles << Role.find(r['id'])
+    end
+    author.detach_a_work(self.to_param)
+    roles.each { |r| author.add_work_with_role(self, r) }
+  end
+
+  #
+  # <tt>update_extra_features(author, roles, submitted_files = {})</tt>
+  #
+  # +update_extra_features+ performs all extra functionality-related duties
+  # when saving or updating a +Work+ object for a given author.
+  #
+  # After performing all duties this function reloads the model.
+  #
+  def update_extra_features(author, roles, submitted_files)
+    self.add_submitted_files(submitted_files) unless submitted_files[:submitted_files_attributes].blank?
+    self.update_roles_for_an_author(author, roles) unless roles[:roles_attributes].blank?
+    self.reload
+  end
+
+  class << self
+
+    #
+    # <tt>clean_args(args)</tt>
+    #
+    # returns the input arguments without the `authors_attributes`,
+    # `roles_attributes` and `submitted_files_attributes` args in
+    # order to save the object first. The latter can be added with the
+    # `update_roles` method explained above.
+    #
+    # It returns an array with four elements:
+    # * the cleaned up args
+    # * the authors
+    # * the roles
+    # * the submitted files
+    #
+    def clean_args(args)
+      raise ArgumentError, "argument #{args} is not a Hash or doesn't have a 'work' key" unless args.kind_of?(Hash) && args.has_key?('work')
+      cargs = args.dup
+      authors = prepare_for_permission(cargs, :authors_attributes)
+      roles   = prepare_for_permission(cargs, :roles_attributes)
+      submitted_files = prepare_for_permission(cargs, :submitted_files_attributes)
+      [cargs, authors, roles, submitted_files]
+    end
+
+  private
+
+    def prepare_for_permission(args, key)
+      ActionController::Parameters.new(:work => { key => args[:work].delete(key) })
+    end
+
   end
 
 private
