@@ -1,4 +1,4 @@
-r.equire 'EMUForm/role_manager'
+require 'EMUForm/role_manager'
 
 class CreateRoles < ActiveRecord::Migration
   def migrate(direction)
