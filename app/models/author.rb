@@ -107,7 +107,7 @@ class Author < ActiveRecord::Base
   # +display_birth_year+
   #
   def display_birth_year
-    self.birth_year.year
+    self.birth_year
   end
 
 private
