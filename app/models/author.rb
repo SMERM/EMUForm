@@ -1,5 +1,7 @@
 class Author < ActiveRecord::Base
 
+  belongs_to :account, foreign_key: :owner_id
+
   has_and_belongs_to_many :works
   before_destroy :handle_destruction_of_associated_works
 

@@ -10,8 +10,20 @@ Rails.application.routes.draw do
   get 'pages/welcome'
   get 'pages/landing'
 
-  devise_for :accounts, controllers: { omniauth_callbacks: 'omniauth_callbacks' }
-  resources :accounts, only: [:show]
+  devise_for :accounts, controllers: {
+    confirmations: 'accounts/confirmations',
+    passwords: 'accounts/passwords',
+    registrations: 'accounts/registrations',
+    sessions: 'accounts/sessions',
+    unlocks: 'accounts/unlocks',
+    omniauth_callbacks: 'accounts/omniauth_callbacks',
+  }
+# namespace :accounts do
+#   resources :accounts, only: [:show]
+# end
+  devise_scope :accounts do
+    get 'account', to: 'accounts/accounts#show'
+  end
 
   resources :authors do
     resources :works

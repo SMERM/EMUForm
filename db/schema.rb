@@ -108,6 +108,7 @@ ActiveRecord::Schema.define(version: 20160124093407) do
     t.integer  "birth_year"
     t.text     "bio_en"
     t.text     "bio_it"
+    t.integer  "owner_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
