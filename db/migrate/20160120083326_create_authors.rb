@@ -6,6 +6,7 @@ class CreateAuthors < ActiveRecord::Migration
       t.integer :birth_year, :size => 11
       t.text :bio_en
       t.text :bio_it
+      t.integer :owner_id                 # links to the +account+ model
 
       t.timestamps null: false
     end

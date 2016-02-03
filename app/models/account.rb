@@ -1,16 +1,19 @@
 class Account < ActiveRecord::Base
 
+  has_many :authorizations
+  has_many :authors, dependent: :destroy
+
   # Include default devise modules. Others available are:
   # :confirmable, :lockable, :timeoutable and :omniauthable
 
   devise :database_authenticatable, :registerable,
       :recoverable, :rememberable, :trackable, :validatable, :omniauthable
 
+  accepts_nested_attributes_for :authors, allow_destroy: true
+
   validates_presence_of :email
 
 # mount_uploader :image, ImageUploader
-
-  has_many :authorizations
 
   def self.new_with_session(params,session)
     if session["devise.account_attributes"]
