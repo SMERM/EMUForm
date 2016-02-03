@@ -1,0 +1,39 @@
+<p id="notice"><%= notice %></p>
+
+<p>
+  <strong>Login:</strong>
+  <%= @account.login_name %>
+</p>
+
+<p>
+  <strong>First name:</strong>
+  <%= @account.first_name %>
+</p>
+
+<p>
+  <strong>Last name:</strong>
+  <%= @account.last_name %>
+</p>
+
+<p>
+  <strong>E-mail:</strong>
+  <%= @account.email %>
+</p>
+
+<p>
+  <strong>About:</strong>
+  <%= @account.about %>
+</p>
+
+<p>
+  <strong>Location:</strong>
+  <%= @account.location %>
+</p>
+
+<p>
+  <strong>Account created on:</strong>
+  <%= @account.remember_created_at %>
+</p>
+
+<%= link_to 'Edit', edit_account_registration_path(@account) %> |
+<%= link_to 'Back', account_registration_path(@account) %>
