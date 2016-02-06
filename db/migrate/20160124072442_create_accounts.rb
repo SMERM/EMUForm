@@ -9,10 +9,8 @@ class CreateAccounts < ActiveRecord::Migration
   #
   def change_table(table)
     create_table table do |t|
-      t.string :login_name, :unique => true
       t.string :first_name
       t.string :last_name
-      t.text :about
       t.string :image
       t.string :location
 

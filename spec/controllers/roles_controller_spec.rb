@@ -31,130 +31,251 @@ RSpec.describe RolesController, type: :controller do
     { :description=>""}
   }
 
-  # This should return the minimal set of values that should be in the session
-  # in order to pass any filters (e.g. authentication) defined in
-  # RolesController. Be sure to keep this updated too.
-  let(:valid_session) { {} }
+  context 'account not signed in (shouldn\'t go anywhere here)' do
 
-  describe "GET #index" do
-    it "assigns all roles as @roles" do
-      role = Role.create! valid_attributes
-      get :index, {}, valid_session
-      expect(assigns(:roles)).to eq(Role.static_roles.to_a + [role])
-    end
-  end
-
-  describe "GET #show" do
-    it "assigns the requested role as @role" do
-      role = Role.create! valid_attributes
-      get :show, {:id => role.to_param}, valid_session
-      expect(assigns(:role)).to eq(role)
-    end
-  end
-
-  describe "GET #new" do
-    it "assigns a new role as @role" do
-      get :new, {}, valid_session
-      expect(assigns(:role)).to be_a_new(Role)
-    end
-  end
-
-  describe "GET #edit" do
-    it "assigns the requested role as @role" do
-      role = Role.create! valid_attributes
-      get :edit, {:id => role.to_param}, valid_session
-      expect(assigns(:role)).to eq(role)
-    end
-  end
-
-  describe "POST #create" do
-    context "with valid params" do
-      it "creates a new Role" do
-        expect {
-          post :create, {:role => valid_attributes}, valid_session
-        }.to change(Role, :count).by(1)
-      end
-
-      it "assigns a newly created role as @role" do
-        post :create, {:role => valid_attributes}, valid_session
-        expect(assigns(:role)).to be_a(Role)
-        expect(assigns(:role)).to be_persisted
-      end
-
-      it "redirects to the created role" do
-        post :create, {:role => valid_attributes}, valid_session
-        expect(response).to redirect_to(Role.last)
-      end
-    end
-
-    context "with invalid params" do
-      it "assigns a newly created but unsaved role as @role" do
-        post :create, {:role => invalid_attributes}, valid_session
-        expect(assigns(:role)).to be_a_new(Role)
-      end
-
-      it "re-renders the 'new' template" do
-        post :create, {:role => invalid_attributes}, valid_session
-        expect(response).to render_template("new")
-      end
-    end
-  end
-
-  describe "PUT #update" do
-    context "with valid params" do
-      let(:new_attributes) {
-        { :description => "updated valid description" }
-      }
-
-      it "updates the requested role" do
+    describe "GET #index" do
+      it "assigns all roles as @roles" do
         role = Role.create! valid_attributes
-        put :update, {:id => role.to_param, :role => new_attributes}, valid_session
-        role.reload
-        expect(role.description.blank?).to be(false)
-        expect(Role.where("description = ?", role.description).count).to eq(1)
+        get :index, {}
+        expect(response).to redirect_to(new_account_session_path)
       end
-
+    end
+  
+    describe "GET #show" do
       it "assigns the requested role as @role" do
         role = Role.create! valid_attributes
-        put :update, {:id => role.to_param, :role => valid_attributes}, valid_session
-        expect(assigns(:role)).to eq(role)
+        get :show, {:id => role.to_param}
+        expect(response).to redirect_to(new_account_session_path)
       end
-
-      it "redirects to the role" do
+    end
+  
+    describe "GET #new" do
+      it "assigns a new role as @role" do
+        get :new, {}
+        expect(response).to redirect_to(new_account_session_path)
+      end
+    end
+  
+    describe "GET #edit" do
+      it "assigns the requested role as @role" do
         role = Role.create! valid_attributes
-        put :update, {:id => role.to_param, :role => valid_attributes}, valid_session
-        expect(response).to redirect_to(role)
+        get :edit, {:id => role.to_param}
+        expect(response).to redirect_to(new_account_session_path)
+      end
+    end
+  
+    describe "POST #create" do
+      context "with valid params" do
+        it "creates a new Role" do
+          post :create, {:role => valid_attributes}
+          expect(response).to redirect_to(new_account_session_path)
+        end
+  
+        it "assigns a newly created role as @role" do
+          post :create, {:role => valid_attributes}
+          expect(response).to redirect_to(new_account_session_path)
+        end
+  
+        it "redirects to the created role" do
+          post :create, {:role => valid_attributes}
+          expect(response).to redirect_to(new_account_session_path)
+        end
+      end
+  
+      context "with invalid params" do
+        it "assigns a newly created but unsaved role as @role" do
+          post :create, {:role => invalid_attributes}
+          expect(response).to redirect_to(new_account_session_path)
+        end
+  
+        it "re-renders the 'new' template" do
+          post :create, {:role => invalid_attributes}
+          expect(response).to redirect_to(new_account_session_path)
+        end
+      end
+    end
+  
+    describe "PUT #update" do
+      context "with valid params" do
+        let(:new_attributes) {
+          { :description => "updated valid description" }
+        }
+  
+        it "updates the requested role" do
+          role = Role.create! valid_attributes
+          put :update, {:id => role.to_param, :role => new_attributes}
+          expect(response).to redirect_to(new_account_session_path)
+        end
+  
+        it "assigns the requested role as @role" do
+          role = Role.create! valid_attributes
+          put :update, {:id => role.to_param, :role => valid_attributes}
+          expect(response).to redirect_to(new_account_session_path)
+        end
+  
+        it "redirects to the role" do
+          role = Role.create! valid_attributes
+          put :update, {:id => role.to_param, :role => valid_attributes}
+          expect(response).to redirect_to(new_account_session_path)
+        end
+      end
+  
+      context "with invalid params" do
+        it "assigns the role as @role" do
+          role = Role.create! valid_attributes
+          put :update, {:id => role.to_param, :role => invalid_attributes}
+          expect(response).to redirect_to(new_account_session_path)
+        end
+  
+        it "re-renders the 'edit' template" do
+          role = Role.create! valid_attributes
+          put :update, {:id => role.to_param, :role => invalid_attributes}
+          expect(response).to redirect_to(new_account_session_path)
+        end
+      end
+    end
+  
+    describe "DELETE #destroy" do
+      it "destroys the requested role" do
+        role = Role.create! valid_attributes
+        delete :destroy, {:id => role.to_param}
+        expect(response).to redirect_to(new_account_session_path)
+      end
+  
+      it "redirects to the roles list" do
+        role = Role.create! valid_attributes
+        delete :destroy, {:id => role.to_param}
+        expect(response).to redirect_to(new_account_session_path)
       end
     end
 
-    context "with invalid params" do
-      it "assigns the role as @role" do
-        role = Role.create! valid_attributes
-        put :update, {:id => role.to_param, :role => invalid_attributes}, valid_session
-        expect(assigns(:role)).to eq(role)
-      end
-
-      it "re-renders the 'edit' template" do
-        role = Role.create! valid_attributes
-        put :update, {:id => role.to_param, :role => invalid_attributes}, valid_session
-        expect(response).to render_template("edit")
-      end
-    end
   end
 
-  describe "DELETE #destroy" do
-    it "destroys the requested role" do
-      role = Role.create! valid_attributes
-      expect {
-        delete :destroy, {:id => role.to_param}, valid_session
-      }.to change(Role, :count).by(-1)
+  context 'account signed in (should do everything regularly)' do
+
+    login_account
+
+    describe "GET #index" do
+      it "assigns all roles as @roles" do
+        role = Role.create! valid_attributes
+        get :index, {}
+        expect(assigns(:roles)).to eq(Role.static_roles.to_a + [role])
+      end
+    end
+  
+    describe "GET #show" do
+      it "assigns the requested role as @role" do
+        role = Role.create! valid_attributes
+        get :show, {:id => role.to_param}
+        expect(assigns(:role)).to eq(role)
+      end
+    end
+  
+    describe "GET #new" do
+      it "assigns a new role as @role" do
+        get :new, {}
+        expect(assigns(:role)).to be_a_new(Role)
+      end
+    end
+  
+    describe "GET #edit" do
+      it "assigns the requested role as @role" do
+        role = Role.create! valid_attributes
+        get :edit, {:id => role.to_param}
+        expect(assigns(:role)).to eq(role)
+      end
+    end
+  
+    describe "POST #create" do
+      context "with valid params" do
+        it "creates a new Role" do
+          expect {
+            post :create, {:role => valid_attributes}
+          }.to change(Role, :count).by(1)
+        end
+  
+        it "assigns a newly created role as @role" do
+          post :create, {:role => valid_attributes}
+          expect(assigns(:role)).to be_a(Role)
+          expect(assigns(:role)).to be_persisted
+        end
+  
+        it "redirects to the created role" do
+          post :create, {:role => valid_attributes}
+          expect(response).to redirect_to(Role.last)
+        end
+      end
+  
+      context "with invalid params" do
+        it "assigns a newly created but unsaved role as @role" do
+          post :create, {:role => invalid_attributes}
+          expect(assigns(:role)).to be_a_new(Role)
+        end
+  
+        it "re-renders the 'new' template" do
+          post :create, {:role => invalid_attributes}
+          expect(response).to render_template("new")
+        end
+      end
+    end
+  
+    describe "PUT #update" do
+      context "with valid params" do
+        let(:new_attributes) {
+          { :description => "updated valid description" }
+        }
+  
+        it "updates the requested role" do
+          role = Role.create! valid_attributes
+          put :update, {:id => role.to_param, :role => new_attributes}
+          role.reload
+          expect(role.description.blank?).to be(false)
+          expect(Role.where("description = ?", role.description).count).to eq(1)
+        end
+  
+        it "assigns the requested role as @role" do
+          role = Role.create! valid_attributes
+          put :update, {:id => role.to_param, :role => valid_attributes}
+          expect(assigns(:role)).to eq(role)
+        end
+  
+        it "redirects to the role" do
+          role = Role.create! valid_attributes
+          put :update, {:id => role.to_param, :role => valid_attributes}
+          expect(response).to redirect_to(role)
+        end
+      end
+  
+      context "with invalid params" do
+        it "assigns the role as @role" do
+          role = Role.create! valid_attributes
+          put :update, {:id => role.to_param, :role => invalid_attributes}
+          expect(assigns(:role)).to eq(role)
+        end
+  
+        it "re-renders the 'edit' template" do
+          role = Role.create! valid_attributes
+          put :update, {:id => role.to_param, :role => invalid_attributes}
+          expect(response).to render_template("edit")
+        end
+      end
+    end
+  
+    describe "DELETE #destroy" do
+      it "destroys the requested role" do
+        role = Role.create! valid_attributes
+        expect {
+          delete :destroy, {:id => role.to_param}
+        }.to change(Role, :count).by(-1)
+      end
+  
+      it "redirects to the roles list" do
+        role = Role.create! valid_attributes
+        delete :destroy, {:id => role.to_param}
+        expect(response).to redirect_to(roles_url)
+      end
     end
 
-    it "redirects to the roles list" do
-      role = Role.create! valid_attributes
-      delete :destroy, {:id => role.to_param}, valid_session
-      expect(response).to redirect_to(roles_url)
-    end
   end
 
 end

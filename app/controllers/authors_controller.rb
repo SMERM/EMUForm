@@ -25,11 +25,12 @@ class AuthorsController < ApplicationController
   # POST /authors
   # POST /authors.json
   def create
-    @author = Author.new(author_params)
+    parms = params.has_key?(:author) ? author_params : nil
+    @author = current_account.authors.new(parms)
 
     respond_to do |format|
       if @author.save
-        format.html { redirect_to @author, notice: 'Author was successfully created.' }
+        format.html { redirect_to author_path(@author), notice: 'Author was successfully created.' }
         format.json { render :show, status: :created, location: @author }
       else
         format.html { render :new }
@@ -43,7 +44,7 @@ class AuthorsController < ApplicationController
   def update
     respond_to do |format|
       if @author.update(author_params)
-        format.html { redirect_to @author, notice: 'Author was successfully updated.' }
+        format.html { redirect_to author_path(@author), notice: 'Author was successfully updated.' }
         format.json { render :show, status: :ok, location: @author }
       else
         format.html { render :edit }
@@ -55,9 +56,10 @@ class AuthorsController < ApplicationController
   # DELETE /authors/1
   # DELETE /authors/1.json
   def destroy
+    owner = @author.owner
     @author.destroy
     respond_to do |format|
-      format.html { redirect_to authors_url, notice: 'Author was successfully destroyed.' }
+      format.html { redirect_to account_path(owner), notice: 'Author was successfully destroyed.' }
       format.json { head :no_content }
     end
   end
@@ -65,11 +67,11 @@ class AuthorsController < ApplicationController
   private
     # Use callbacks to share common setup or constraints between actions.
     def set_author
-      @author = Author.find(params[:id])
+      @author = current_account.authors.find(params[:id])
     end
 
     # Never trust parameters from the scary internet, only allow the white list through.
     def author_params
-      params.require(:author).permit(:first_name, :last_name, :birth_year, :bio_en, :bio_it)
+      params.require(:author).permit(:first_name, :last_name, :birth_year, :bio_en, :bio_it, :owner_id)
     end
 end

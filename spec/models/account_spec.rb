@@ -12,10 +12,11 @@ RSpec.describe Account, type: :model do
 
     it 'can add author as it pleases to' do
       nw = 2
+      nr = 3
       expect((account = FactoryGirl.create(:account)).valid?).to be(true)
-      expect((author = FactoryGirl.create(:author_with_works, num_works: nw)).valid?).to be(true)
+      expect((author = FactoryGirl.create(:author_with_works_and_roles, num_works: nw, num_roles: 3)).valid?).to be(true)
 
-      account << author
+      account.authors << author
 
       expect(account.authors(true).count).to eq(1)
       expect(account.authors.first.works.uniq.count).to eq(nw)

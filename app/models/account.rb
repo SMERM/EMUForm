@@ -1,7 +1,7 @@
 class Account < ActiveRecord::Base
 
   has_many :authorizations
-  has_many :authors, dependent: :destroy
+  has_many :authors, dependent: :destroy, foreign_key: :owner_id
 
   # Include default devise modules. Others available are:
   # :confirmable, :lockable, :timeoutable and :omniauthable

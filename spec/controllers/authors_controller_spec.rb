@@ -46,129 +46,251 @@ RSpec.describe AuthorsController, type: :controller do
     Author.destroy_all
   end
 
-  # This should return the minimal set of values that should be in the session
-  # in order to pass any filters (e.g. authentication) defined in
-  # AuthorsController. Be sure to keep this updated too.
-  let(:valid_session) { {} }
+  context 'without logging in (there\'s little that we can do)' do
 
-  describe "GET #index" do
-    it "assigns all authors as @authors" do
-      authors = FactoryGirl.create_list(:author_with_works_and_roles, @num_authors).sort { |a, b| a.last_name <=> b.last_name }
-      get :index, {}, valid_session
-      expect(assigns(:authors)).to eq(authors)
-    end
-  end
-
-  describe "GET #show" do
-    it "assigns the requested author as @author" do
-      author = FactoryGirl.create(:author_with_works_and_roles)
-      get :show, {:id => author.to_param}, valid_session
-      expect(assigns(:author)).to eq(author)
-    end
-  end
-
-  describe "GET #new" do
-    it "assigns a new author as @author" do
-      get :new, {}, valid_session
-      expect(assigns(:author)).to be_a_new(Author)
-    end
-  end
-
-  describe "GET #edit" do
-    it "assigns the requested author as @author" do
-      author = Author.create! valid_attributes
-      get :edit, {:id => author.to_param}, valid_session
-      expect(assigns(:author)).to eq(author)
-    end
-  end
-
-  describe "POST #create" do
-    context "with valid params" do
-      it "creates a new Author" do
-        expect {
-          post :create, {:author => valid_attributes}, valid_session
-        }.to change(Author, :count).by(1)
-      end
-
-      it "assigns a newly created author as @author" do
-        post :create, {:author => valid_attributes}, valid_session
-        expect(assigns(:author)).to be_a(Author)
-        expect(assigns(:author)).to be_persisted
-      end
-
-      it "redirects to the created author" do
-        post :create, {:author => valid_attributes}, valid_session
-        expect(response).to redirect_to(Author.last)
+    describe "GET #index" do
+      it "assigns all authors as @authors" do
+        authors = FactoryGirl.create_list(:author_with_works_and_roles, @num_authors).sort { |a, b| a.last_name <=> b.last_name }
+        get :index, {}
+        expect(response).to redirect_to(new_account_session_path)
       end
     end
-
-    context "with invalid params" do
-      it "assigns a newly created but unsaved author as @author" do
-        post :create, {:author => invalid_attributes}, valid_session
-        expect(assigns(:author)).to be_a_new(Author)
-      end
-
-      it "re-renders the 'new' template" do
-        post :create, {:author => invalid_attributes}, valid_session
-        expect(response).to render_template("new")
+  
+    describe "GET #show" do
+      it "assigns the requested author as @author" do
+        author = FactoryGirl.create(:author_with_works_and_roles)
+        get :show, {:id => author.to_param}
+        expect(response).to redirect_to(new_account_session_path)
       end
     end
-  end
-
-  describe "PUT #update" do
-    context "with valid params" do
-      let(:new_attributes) {
-        valid_attributes
-      }
-
-      it "updates the requested author" do
-        author = Author.create! valid_attributes
-        put :update, {:id => author.to_param, :author => new_attributes}, valid_session
-        author.reload
-        new_attributes.keys.each { |na| expect(author.send(na)).to eq(new_attributes[na]) }
+  
+    describe "GET #new" do
+      it "assigns a new author as @author" do
+        get :new, {}
+        expect(response).to redirect_to(new_account_session_path)
       end
-
+    end
+  
+    describe "GET #edit" do
       it "assigns the requested author as @author" do
         author = Author.create! valid_attributes
-        put :update, {:id => author.to_param, :author => valid_attributes}, valid_session
-        expect(assigns(:author)).to eq(author)
-      end
-
-      it "redirects to the author" do
-        author = Author.create! valid_attributes
-        put :update, {:id => author.to_param, :author => valid_attributes}, valid_session
-        expect(response).to redirect_to(author)
+        get :edit, {:id => author.to_param}
+        expect(response).to redirect_to(new_account_session_path)
       end
     end
-
-    context "with invalid params" do
-      it "assigns the author as @author" do
-        author = Author.create! valid_attributes
-        put :update, {:id => author.to_param, :author => invalid_attributes}, valid_session
-        expect(assigns(:author)).to eq(author)
+  
+    describe "POST #create" do
+      context "with valid params" do
+        it "creates a new Author" do
+          post :create, {:author => valid_attributes}
+          expect(response).to redirect_to(new_account_session_path)
+        end
+  
+        it "assigns a newly created author as @author" do
+          post :create, {:author => valid_attributes}
+          expect(response).to redirect_to(new_account_session_path)
+        end
+  
+        it "redirects to the created author" do
+          post :create, {:author => valid_attributes}
+          expect(response).to redirect_to(new_account_session_path)
+        end
       end
-
-      it "re-renders the 'edit' template" do
-        author = Author.create! valid_attributes
-        put :update, {:id => author.to_param, :author => invalid_attributes}, valid_session
-        expect(response).to render_template("edit")
+  
+      context "with invalid params" do
+        it "assigns a newly created but unsaved author as @author" do
+          post :create, {:author => invalid_attributes}
+          expect(response).to redirect_to(new_account_session_path)
+        end
+  
+        it "re-renders the 'new' template" do
+          post :create, {:author => invalid_attributes}
+          expect(response).to redirect_to(new_account_session_path)
+        end
       end
     end
+  
+    describe "PUT #update" do
+      context "with valid params" do
+        let(:new_attributes) {
+          valid_attributes
+        }
+  
+        it "updates the requested author" do
+          author = Author.create! valid_attributes
+          put :update, {:id => author.to_param, :author => new_attributes}
+          expect(response).to redirect_to(new_account_session_path)
+        end
+  
+        it "assigns the requested author as @author" do
+          author = Author.create! valid_attributes
+          put :update, {:id => author.to_param, :author => valid_attributes}
+          expect(response).to redirect_to(new_account_session_path)
+        end
+  
+        it "redirects to the author" do
+          author = Author.create! valid_attributes
+          put :update, {:id => author.to_param, :author => valid_attributes}
+          expect(response).to redirect_to(new_account_session_path)
+        end
+      end
+  
+      context "with invalid params" do
+        it "assigns the author as @author" do
+          author = Author.create! valid_attributes
+          put :update, {:id => author.to_param, :author => invalid_attributes}
+          expect(response).to redirect_to(new_account_session_path)
+        end
+  
+        it "re-renders the 'edit' template" do
+          author = Author.create! valid_attributes
+          put :update, {:id => author.to_param, :author => invalid_attributes}
+          expect(response).to redirect_to(new_account_session_path)
+        end
+      end
+    end
+  
+    describe "DELETE #destroy" do
+      it "destroys the requested author" do
+        author = Author.create! valid_attributes
+        delete :destroy, {:id => author.to_param}
+        expect(response).to redirect_to(new_account_session_path)
+      end
+  
+      it "redirects to the authors list" do
+        author = Author.create! valid_attributes
+        delete :destroy, {:id => author.to_param}
+        expect(response).to redirect_to(new_account_session_path)
+      end
+  
+    end
+
   end
 
-  describe "DELETE #destroy" do
-    it "destroys the requested author" do
-      author = Author.create! valid_attributes
-      expect {
-        delete :destroy, {:id => author.to_param}, valid_session
-      }.to change(Author, :count).by(-1)
+  context 'logging in we can indeed do much more' do
+
+    login_account
+
+    describe "GET #index" do
+      it "assigns all authors as @authors" do
+        authors = FactoryGirl.create_list(:author_with_works_and_roles, @num_authors).sort { |a, b| a.last_name <=> b.last_name }
+        get :index, {}
+        expect(assigns(:authors)).to eq(authors)
+      end
+    end
+  
+    describe "GET #show" do
+      it "assigns the requested author as @author" do
+        author = FactoryGirl.create(:author_with_works_and_roles, owner_id: subject.current_account.to_param)
+        get :show, {:id => author.to_param}
+        expect(assigns(:author)).to eq(author)
+      end
+    end
+  
+    describe "GET #new" do
+      it "assigns a new author as @author" do
+        get :new, {}
+        expect(assigns(:author)).to be_a_new(Author)
+      end
+    end
+  
+    describe "GET #edit" do
+      it "assigns the requested author as @author" do
+        author = FactoryGirl.create(:author, owner_id: subject.current_account.to_param)
+        get :edit, {:id => author.to_param}
+        expect(assigns(:author)).to eq(author)
+      end
+    end
+  
+    describe "POST #create" do
+      context "with valid params" do
+        it "creates a new Author" do
+          expect {
+            post :create, {:author => valid_attributes}
+          }.to change(Author, :count).by(1)
+        end
+  
+        it "assigns a newly created author as @author" do
+          post :create, {:author => valid_attributes}
+          expect(assigns(:author)).to be_a(Author)
+          expect(assigns(:author)).to be_persisted
+        end
+  
+        it "redirects to the created author" do
+          post :create, {:author => valid_attributes}
+          expect(response).to redirect_to(Author.last)
+        end
+      end
+  
+      context "with invalid params" do
+        it "assigns a newly created but unsaved author as @author" do
+          post :create, {:author => invalid_attributes}
+          expect(assigns(:author)).to be_a_new(Author)
+        end
+  
+        it "re-renders the 'new' template" do
+          post :create, {:author => invalid_attributes}
+          expect(response).to render_template("new")
+        end
+      end
+    end
+  
+    describe "PUT #update" do
+      context "with valid params" do
+        let(:new_attributes) {
+          valid_attributes
+        }
+  
+        it "updates the requested author" do
+          author = FactoryGirl.create(:author, owner_id: subject.current_account.to_param)
+          put :update, {:id => author.to_param, :author => new_attributes}
+          author.reload
+          new_attributes.keys.each { |na| expect(author.send(na)).to eq(new_attributes[na]) }
+        end
+  
+        it "assigns the requested author as @author" do
+          author = FactoryGirl.create(:author, owner_id: subject.current_account.to_param)
+          put :update, {:id => author.to_param, :author => valid_attributes}
+          expect(assigns(:author)).to eq(author)
+        end
+  
+        it "redirects to the author" do
+          author = FactoryGirl.create(:author, owner_id: subject.current_account.to_param)
+          put :update, {:id => author.to_param, :author => valid_attributes}
+          expect(response).to redirect_to(author)
+        end
+      end
+  
+      context "with invalid params" do
+        it "assigns the author as @author" do
+          author = FactoryGirl.create(:author, owner_id: subject.current_account.to_param)
+          put :update, {:id => author.to_param, :author => invalid_attributes}
+          expect(assigns(:author)).to eq(author)
+        end
+  
+        it "re-renders the 'edit' template" do
+          author = FactoryGirl.create(:author, owner_id: subject.current_account.to_param)
+          put :update, {:id => author.to_param, :author => invalid_attributes}
+          expect(response).to render_template("edit")
+        end
+      end
+    end
+  
+    describe "DELETE #destroy" do
+      it "destroys the requested author" do
+        author = FactoryGirl.create(:author, owner_id: subject.current_account.to_param)
+        expect {
+          delete :destroy, {:id => author.to_param }
+        }.to change(Author, :count).by(-1)
+      end
+  
+      it "redirects to the account list of authors" do
+        author = FactoryGirl.create(:author, owner_id: subject.current_account.to_param)
+        delete :destroy, {:id => author.to_param }
+        expect(response).to redirect_to(account_path(subject.current_account))
+      end
     end
 
-    it "redirects to the authors list" do
-      author = Author.create! valid_attributes
-      delete :destroy, {:id => author.to_param}, valid_session
-      expect(response).to redirect_to(authors_url)
-    end
   end
 
 end

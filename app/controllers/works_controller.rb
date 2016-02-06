@@ -41,7 +41,7 @@ class WorksController < ApplicationController
     respond_to do |format|
       if @work.save
         @work.update_extra_features(@author, @roles, @submitted_files)
-        format.html { redirect_to author_path(@author), notice: 'Work was successfully created.' }
+        format.html { redirect_to author_work_path(@author, @work), notice: 'Work was successfully created.' }
         format.json { render :show, status: :created, location: @work }
       else
         format.html { render :new }
@@ -59,7 +59,7 @@ class WorksController < ApplicationController
     respond_to do |format|
       if @work.update(@cleaned_params)
         @work.update_extra_features(@author, @roles, @submitted_files)
-        format.html { redirect_to author_path(@author), notice: 'Work was successfully updated.' }
+        format.html { redirect_to author_work_path(@author, @work), notice: 'Work was successfully updated.' }
         format.json { render :show, status: :ok, location: @work }
       else
         format.html { render :edit }

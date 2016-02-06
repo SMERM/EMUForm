@@ -2,10 +2,8 @@ FactoryGirl.define do
 
   factory :account do
 
-    login_name            { Forgery(:internet).user_name }
     first_name            { Forgery(:name).female_first_name }
     last_name             { Forgery(:name).last_name }
-    about                 { Forgery(:lorem_ipsum).sentences(1..5) }
     location              { "%s %s, %s %s %s" % [Forgery(:address).street_address, Forgery(:address).street_suffix, Forgery(:address).city, Forgery(:address).state_abbrev, Forgery(:address).zip] }
     email                 { Forgery(:internet).email_address }
     password              { Forgery(:basic).password(:at_least => 8) }

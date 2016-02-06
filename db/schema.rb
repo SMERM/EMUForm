@@ -14,10 +14,8 @@
 ActiveRecord::Schema.define(version: 20160128210326) do
 
   create_table "accounts", force: :cascade do |t|
-    t.string   "login_name"
     t.string   "first_name"
     t.string   "last_name"
-    t.text     "about"
     t.string   "image"
     t.string   "location"
     t.string   "email",                  default: ""
@@ -61,10 +59,8 @@ ActiveRecord::Schema.define(version: 20160128210326) do
   add_index "active_admin_comments", ["resource_type"], name: "index_active_admin_comments_on_resource_type"
 
   create_table "admin_accounts", force: :cascade do |t|
-    t.string   "login_name"
     t.string   "first_name"
     t.string   "last_name"
-    t.text     "about"
     t.string   "image"
     t.string   "location"
     t.string   "email",                  default: ""

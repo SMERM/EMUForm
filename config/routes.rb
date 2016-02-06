@@ -1,9 +1,5 @@
 Rails.application.routes.draw do
 
-  # added to please devise
-  root to: 'pages#landing'
-  ActiveAdmin.routes(self)
-
   devise_for :admin_accounts, ActiveAdmin::Devise.config
 
   get 'pages/terms'
@@ -26,6 +22,14 @@ Rails.application.routes.draw do
     resources :works
   end
   resources :roles
+
+  authenticated do
+    root to: 'accounts#show', as: :authenticated_root
+  end
+
+  # added to please devise
+  root to: 'pages#landing'
+  ActiveAdmin.routes(self)
 
   # The priority is based upon order of creation: first created -> highest priority.
   # See how all your routes lay out with "rake routes".

@@ -1,4 +1,7 @@
 class PagesController < ApplicationController
+
+  skip_before_action :authenticate_account!
+
   def terms
   end
 
@@ -7,4 +10,5 @@ class PagesController < ApplicationController
 
   def landing
   end
+
 end

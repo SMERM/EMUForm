@@ -4,8 +4,12 @@ class CreateRoles < ActiveRecord::Migration
   def migrate(direction)
     super
     case direction
-    when :up then EMUForm::RoleManager.setup
-    when :down then EMUForm::RoleManager.clear
+    when :up then
+      say('... creating the default static roles...')
+      EMUForm::RoleManager.setup
+    when :down then
+      say('... removing the default static roles...')
+      EMUForm::RoleManager.clear
     end
   end
 

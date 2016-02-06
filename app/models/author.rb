@@ -1,6 +1,6 @@
 class Author < ActiveRecord::Base
 
-  belongs_to :account, foreign_key: :owner_id
+  belongs_to :owner, class_name: 'Account'
 
   has_many :author_work_roles
   has_many :works, -> { includes :roles }, through: :author_work_roles, source: :work
