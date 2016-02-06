@@ -18,6 +18,21 @@ FactoryGirl.define do
       sf.http_request = evaluator.http_request
     end
 
+    #
+    # +:submitted_file_without_association+ expects the work_id to be set on
+    # its argument
+    #
+    factory :submitted_file_without_association do
+
+      work_id              nil
+
+      before :build do
+        |sf, evaluator|
+        sf.work.destroy if sf.work && sf.work.valid?
+      end
+
+    end
+
   end
 
 end

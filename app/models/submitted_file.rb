@@ -50,9 +50,11 @@ class SubmittedFile < ActiveRecord::Base
       raise ArgumentError, "args is not a Hash but rather a #{args.class}" unless args.kind_of?(Hash)
       raise ArgumentError, "args (#{args.inspect}) does not contain an :http_request field" unless args.has_key?(:http_request)
       raise ArgumentError, "The :http_request field is not an ActionDispatch::Http::UploadedFile but rather a #{args.class}" unless args[:http_request].kind_of?(ActionDispatch::Http::UploadedFile)
+      raise ArgumentError, "args (#{args.inspect}) does not have a :work field" unless args.has_key?(:work)
       hr = args[:http_request]
+      work = args.delete(:work)
       res = args.dup
-      res.update(:filename => File.basename(hr.original_filename), :content_type => hr.content_type, :size => hr.size)
+      res.update(:work_id => work.to_param, :filename => File.basename(hr.original_filename), :content_type => hr.content_type, :size => hr.size)
       res
     end
 

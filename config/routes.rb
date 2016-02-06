@@ -18,16 +18,14 @@ Rails.application.routes.draw do
     unlocks: 'accounts/unlocks',
     omniauth_callbacks: 'accounts/omniauth_callbacks',
   }
-# namespace :accounts do
-#   resources :accounts, only: [:show]
-# end
   devise_scope :accounts do
-    get 'account', to: 'accounts/accounts#show'
+    get '/account/:id', to: 'accounts/accounts#show', as: '/account/'
   end
 
   resources :authors do
     resources :works
   end
+  resources :roles
 
   # The priority is based upon order of creation: first created -> highest priority.
   # See how all your routes lay out with "rake routes".

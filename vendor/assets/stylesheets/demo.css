@@ -17,8 +17,8 @@ body {
   font-family: "Lucida Grande", "Lucida Sans Unicode", Arial, sans-serif;
   font-size: 1em;
   line-height: 1.4em;
-  background: #FFFEDB;               /* selected by nicb (color-blind), please replace */
-  color: #032724;                    /* www.emufest.org font color */
+  background: #222;
+  color: #fff;
   -webkit-text-size-adjust: 100%;
       -ms-text-size-adjust: 100%;
 }

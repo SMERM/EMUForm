@@ -10,33 +10,33 @@
     </div>
   <% end %>
 
-  <div class="container">
-  <div class="field">
-    <%= f.label :title %><br>
-    <%= f.text_field :title %>
-  </div>
-  <div class="field">
-    <%= f.label :year %><br>
-    <%= f.date_select :year, :start_year=>Time.zone.now.year, :end_year=>1900, :discard_day=>true, :discard_month=>true %>
-  </div>
-  <div class="field">
-    <%= f.label :duration %><br>
-    <%= f.time_select :duration, :include_seconds=>true, :prompt => true %>
-  </div>
-  <div class="field">
-    <%= f.label :instruments %><br>
-    <%= f.text_field :instruments %>
-  </div>
-  <div class="field"> <%= f.label 'Program Notes (in english)' %><br>
-    <%= f.text_area :program_notes_en %>
-  </div>
-  <div class="field"> <%= f.label 'Note di Programma (in italiano - optional)' %><br>
-    <%= f.text_area :program_notes_it %>
-  </div>
-</div>
-  <div class="container" id="file upload">
+    <%= render partial: 'select_role', locals: { form: f } %>
+    <div class="field">
+      <%= f.label :title %><br>
+      <%= f.text_field :title %>
+    </div>
+    <div class="field">
+      <%= f.label :year %><br>
+      <%= f.date_select :year, :start_year=>Time.zone.now.year, :end_year=>1900, :discard_day=>true, :discard_month=>true %>
+    </div>
+    <div class="field">
+      <%= f.label :duration %><br>
+      <%= f.time_select :duration, :include_seconds=>true, :prompt => true %>
+    </div>
+    <div class="field">
+      <%= f.label :instruments %><br>
+      <%= f.text_field :instruments %>
+    </div>
+    <div class="field"> <%= f.label 'Program Notes (in english)' %><br>
+      <%= f.text_area :program_notes_en %>
+    </div>
+    <div class="field"> <%= f.label 'Note di Programma (in italiano - optional)' %><br>
+      <%= f.text_area :program_notes_it %>
+    </div>
 
-    <h3>File Upload</h3>
+    <h3>Multiple file upload</h3>
+
+  <div class="entry-content">
 
         <!-- Redirect browsers with JavaScript disabled to the origin page -->
         <noscript><%= f.hidden_field :redirect, :value => '/works' %></noscript>
@@ -66,22 +66,17 @@
         </div>
         <!-- The table listing the files available for upload/download -->
         <table role="presentation" class="table table-striped"><tbody class="files"></tbody></table>
-  </div>
+      </div>
   <div class="actions">
     <%= f.submit 'Submit work' %>
   </div>
 <% end %>
 <br>
-<div class="panel panel-default">
-  <div class="panel-heading">
     <h3 class="panel-title">Upload Instructions</h3>
-  </div>
-  <div class="panel-body">
     <ul>
       <li>The maximum file size for uploads is <strong>1 GB</strong>.</li>
       <li>Only <strong>PDF, WAV, AIF</strong> files are allowed.</li>
       <li>If your browser does not suck you can <strong>drag &amp; drop</strong> files from your desktop on this webpage.
       If it does, you won't be able to drag &amp; drop (there's a story to be learned here).</li>
     </ul>
-  </div>
-</div>
+  

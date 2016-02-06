@@ -1,11 +1,9 @@
-<% @works.each do |work| %>
-  <tr>
-    <td><%= work.title %></td>
-    <td><%= work.display_year %></td>
-    <td><%= work.display_duration %></td>
-    <td><%= work.instruments %></td>
-    <td><%= link_to 'Show', author_work_path(@author, work) %></td>
-    <td><%= link_to 'Edit', edit_author_work_path(@author, work) %></td>
-    <td><%= link_to 'Destroy', author_work_path(@author, work), method: :delete, data: { confirm: 'Are you sure?' } %></td>
-  </tr>
-<% end %>
+<tr>
+  <td><%= link_to index_table.title, author_work_path(@author, index_table) %></td>
+  <td><%= index_table.display_year %></td>
+  <td><%= index_table.display_duration %></td>
+  <td><%= index_table.instruments %></td>
+  <td>(<%= index_table.display_roles(@author) %>)</td>
+  <td><%= link_to 'Edit', edit_author_work_path(@author, index_table) %></td>
+  <td><%= link_to 'Destroy', author_work_path(@author, index_table), method: :delete, data: { confirm: 'Are you sure?' } %></td>
+</tr>

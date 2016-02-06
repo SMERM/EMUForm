@@ -19,7 +19,11 @@ RSpec.describe WorksController, type: :routing do
       expect(:get => "/authors/1/works/1/edit").to route_to("works#edit", :id => "1", :author_id => '1')
     end
 
-    it "routes to #create" do
+    it "routes to #create (new)" do
+      expect(:post => "/authors/1/works").to route_to("works#create", :author_id => '1')
+    end
+
+    it "routes to #create (edit)" do
       expect(:post => "/authors/1/works").to route_to("works#create", :author_id => '1')
     end
 

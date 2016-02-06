@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160124093407) do
+ActiveRecord::Schema.define(version: 20160128210326) do
 
   create_table "accounts", force: :cascade do |t|
     t.string   "login_name"
@@ -91,6 +91,14 @@ ActiveRecord::Schema.define(version: 20160124093407) do
   add_index "admin_accounts", ["email"], name: "index_admin_accounts_on_email", unique: true
   add_index "admin_accounts", ["reset_password_token"], name: "index_admin_accounts_on_reset_password_token", unique: true
 
+  create_table "author_work_roles", force: :cascade do |t|
+    t.integer  "author_id",  null: false
+    t.integer  "work_id",    null: false
+    t.integer  "role_id",    null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
   create_table "authorizations", force: :cascade do |t|
     t.string   "account_name"
     t.string   "provider"
@@ -113,10 +121,14 @@ ActiveRecord::Schema.define(version: 20160124093407) do
     t.datetime "updated_at", null: false
   end
 
-  create_table "authors_works", id: false, force: :cascade do |t|
-    t.integer "author_id", null: false
-    t.integer "work_id",   null: false
+  create_table "roles", force: :cascade do |t|
+    t.boolean  "static",      default: false, null: false
+    t.string   "description",                 null: false
+    t.datetime "created_at",                  null: false
+    t.datetime "updated_at",                  null: false
   end
+
+  add_index "roles", ["description"], name: "index_roles_on_description"
 
   create_table "submitted_files", force: :cascade do |t|
     t.string   "filename",     null: false

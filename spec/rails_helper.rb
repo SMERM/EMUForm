@@ -71,3 +71,9 @@ RSpec.configure do |config|
   config.include Devise::TestHelpers, type: :view
 
 end
+
+#
+# the next require is included to facilitate the use of the
+# +EMUForm::RoleManager+
+#
+require 'EMUForm/role_manager'

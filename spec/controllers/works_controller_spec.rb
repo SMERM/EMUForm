@@ -24,6 +24,11 @@ RSpec.describe WorksController, type: :controller do
     Work.destroy_all
   end
 
+  before :example do
+    @role = Role.music_composer
+    @roles = [Role.music_composer, Role.text_author, Role.conductor]
+  end
+
   # This should return the minimal set of attributes required to create a valid
   # Work. As you add validations to Work, be sure to
   # adjust the attributes here as well.
@@ -36,6 +41,7 @@ RSpec.describe WorksController, type: :controller do
       :instruments => 'pno, fl, cl',
       :program_notes_en => Forgery(:lorem_ipsum).paragraphs(Forgery(:basic).number(:at_least => 1, :at_most => 10)),
       :program_notes_it => Forgery(:lorem_ipsum).paragraphs(Forgery(:basic).number(:at_least => 1, :at_most => 10)),
+      :roles_attributes => build_roles(@roles),
     }
   }
   
@@ -48,14 +54,15 @@ RSpec.describe WorksController, type: :controller do
       :'duration(1i)' => '1', :'duration(2i)' => '1', :'duration(3i)' => '1',
       :'duration(4i)' => '0', :'duration(5i)' => '4', :'duration(6i)' => '33',
       :instruments => 'pno, fl, cl', :program_notes_en => 'Test notes',
-      :program_notes_it => 'Note di Test', :non_existing_key => 'This key does not exist'
+      :program_notes_it => 'Note di Test', :non_existing_key => 'This key does not exist',
+      :roles_attributes => build_roles(@roles)
     }
   }
 
   let(:attribute_display_keys) {
     {
       :title => :title, :year => :display_year, :duration => :display_duration, :instruments => :instruments,
-      :program_notes_en => :program_notes_en, :program_notes_it => :program_notes_it
+      :program_notes_en => :program_notes_en, :program_notes_it => :program_notes_it, :roles => :display_roles
     }
   }
 
@@ -66,33 +73,33 @@ RSpec.describe WorksController, type: :controller do
 
   describe "GET #index" do
     it "assigns all works belonging to a given author as @works" do
-      author = build_enviroment_with_a_single_work
+      author = build_environment(4, 5)
       get :index, { :author_id => author.to_param }, valid_session
-      expect(assigns(:works)).to eq(author.works)
+      expect(assigns(:works)).to eq(author.works_with_roles(true))
     end
   end
 
   describe "GET #show" do
     it "assigns the requested work as @work" do
-      author = build_enviroment_with_a_single_work
-      work = author.works.create! valid_attributes
-      get :show, {:author_id => author.to_param, :id => work.to_param}, valid_session
+      author = build_environment(1)
+      work = author.works.uniq.last
+      get :show, { :author_id => author.to_param, :id => work.to_param }, valid_session
       expect(assigns(:work)).to eq(work)
     end
   end
 
   describe "GET #new" do
     it "assigns a new work as @work" do
-      author = build_enviroment_with_a_single_work
-      get :new, {:author_id => author.to_param}, valid_session
+      author = build_environment
+      get :new, {:author_id => author.to_param, :work => {}}, valid_session
       expect(assigns(:work)).to be_a_new(Work)
     end
   end
 
   describe "GET #edit" do
     it "assigns the requested work as @work" do
-      author = build_enviroment_with_a_single_work
-      work = author.works.create! valid_attributes
+      author = build_environment(1, 1)
+      work = author.works.uniq.first
       get :edit, {:author_id => author.to_param, :id => work.to_param}, valid_session
       expect(assigns(:work)).to eq(work)
     end
@@ -101,46 +108,53 @@ RSpec.describe WorksController, type: :controller do
   describe "POST #create" do
     context "with valid params" do
       it "creates a new Work" do
-        author = build_enviroment_with_a_single_work
+        author = build_environment
         num_attachments = 3
-        attachments = FactoryGirl.create_list(:uploaded_file, num_attachments)
-        args = HashWithIndifferentAccess.new
-        args.update(valid_attributes)
-        args.update(:submitted_files_attributes => attachments.map { |att| {:http_request => att} })
+        args = prepare_attributes_for_creation(author, num_attachments)
         expect {
           post :create, {:author_id => author.to_param, :work => args }, valid_session
         }.to change(Work, :count).by(1)
-        expect((w = Work.last).valid?).to be(true)
-        expect(w.submitted_files.count).to eq(num_attachments)
+        expect(author.reload.valid?).to be(true)
+        expect((w = author.works(true).uniq.last).valid?).to be(true)
+        expect(w.submitted_files(true).count).to eq(num_attachments)
         expect(w.directory.blank?).to be(false)
+        expect(w.roles(true).count).to eq(args[:roles_attributes].size-1) # the argument has an extra empty element
         d = Dir.new(w.directory)
         n = 0; d.each { n += 1 }
         expect(n).to eq(num_attachments + 2) # this count includes also '.' and '..'
       end
 
       it "assigns a newly created work as @work" do
-        author = build_enviroment_with_a_single_work
-        post :create, {:author_id => author.to_param, :work => valid_attributes}, valid_session
+        author = build_environment
+        num_attachments = 3
+        args = prepare_attributes_for_creation(author, num_attachments)
+        post :create, {:author_id => author.to_param, :work => args}, valid_session
         expect(assigns(:work)).to be_a(Work)
         expect(assigns(:work)).to be_persisted
       end
 
       it "redirects to the created work" do
-        author = build_enviroment_with_a_single_work
-        post :create, {:author_id => author.to_param, :work => valid_attributes}, valid_session
+        author = build_environment
+        num_attachments = 3
+        args = prepare_attributes_for_creation(author, num_attachments)
+        post :create, {:author_id => author.to_param, :work => args}, valid_session
         expect(response).to redirect_to(author_url(author))
       end
+
+      #
+      # TODO: update a record *removing* a role and check
+      #
     end
 
     context "with invalid params" do
       it "assigns a newly created but unsaved work as @work" do
-        author = build_enviroment_with_a_single_work
+        author = build_environment
         post :create, {:author_id => author.to_param, :work => invalid_attributes}, valid_session
         expect(assigns(:work)).to be_a_new(Work)
       end
 
       it "re-renders the 'new' template" do
-        author = build_enviroment_with_a_single_work
+        author = build_environment
         post :create, {:author_id => author.to_param, :work => invalid_attributes}, valid_session
         expect(response).to render_template("new")
       end
@@ -158,27 +172,29 @@ RSpec.describe WorksController, type: :controller do
           :instruments => 'pno, fl, cl',
           :program_notes_en => 'Updated ' + Forgery(:lorem_ipsum).paragraphs(Forgery(:basic).number(:at_least => 1, :at_most => 10)),
           :program_notes_it => 'Aggiornamento: ' + Forgery(:lorem_ipsum).paragraphs(Forgery(:basic).number(:at_least => 1, :at_most => 10)),
+          :roles_attributes => build_roles(@roles[1..@roles.size-1]), # removing the first role
         }
       }
 
       it "updates the requested work" do
-        author = build_enviroment_with_a_single_work
-        work = author.works.first
+        author = build_environment
+        work = author.works.uniq.last
         put :update, {:author_id => author.to_param, :id => work.to_param, :work => new_attributes}, valid_session
         work.reload
         expect(work.valid?).to be(true)
+        expect(work.roles(true).count).to eq(@roles.size - 1)
       end
 
       it "assigns the requested work as @work" do
-        author = build_enviroment_with_a_single_work
-        work = author.works.first
+        author = build_environment
+        work = author.works.uniq.last
         put :update, {:author_id => author.to_param, :id => work.to_param, :work => valid_attributes}, valid_session
         expect(assigns(:work)).to eq(work)
       end
 
       it "redirects to the work" do
-        author = build_enviroment_with_a_single_work
-        work = author.works.first
+        author = build_environment
+        work = author.works.uniq.last
         put :update, {:author_id => author.to_param, :id => work.to_param, :work => valid_attributes}, valid_session
         expect(response).to redirect_to(author_path(author))
       end
@@ -186,16 +202,16 @@ RSpec.describe WorksController, type: :controller do
 
     context "with invalid params" do
       it "assigns the work as @work" do
-        author = build_enviroment_with_a_single_work
-        work = author.works.first
-        put :update, {:author_id => author.to_param, :id => work.to_param, :work => invalid_attributes}, valid_session
+        author = build_environment
+        work = author.works.uniq.last
+        put :update, {:author_id => author.to_param, :id => work.to_param, :work => invalid_attributes }, valid_session
         expect(assigns(:work)).to eq(work)
       end
 
       it "re-renders the 'edit' template" do
-        author = build_enviroment_with_a_single_work
-        work = author.works.first
-        put :update, {:author_id => author.to_param, :id => work.to_param, :work => invalid_attributes}, valid_session
+        author = build_environment
+        work = author.works.uniq.last
+        put :update, {:author_id => author.to_param, :id => work.to_param, :work => invalid_attributes }, valid_session
         expect(response).to render_template("edit")
       end
     end
@@ -203,17 +219,17 @@ RSpec.describe WorksController, type: :controller do
 
   describe "DELETE #destroy" do
     it "destroys the requested work" do
-      author = build_enviroment_with_a_single_work
-      work = author.works.first
+      author = build_environment
+      work = author.works.uniq.last
       expect {
-        delete :destroy, {:id => work.to_param, :author_id => author.to_param, :work => work }, valid_session
+        delete :destroy, {:author_id => author.to_param, :id => work.to_param }, valid_session
       }.to change(Work, :count).by(-1)
     end
 
     it "redirects to the works list" do
-      author = build_enviroment_with_a_single_work
-      work = author.works.first
-      delete :destroy, {:id => work.to_param, :author_id => author.to_param, :work => work }, valid_session
+      author = build_environment
+      work = author.works.uniq.last
+      delete :destroy, {:author_id => author.to_param, :id => work.to_param }, valid_session
       expect(response).to redirect_to(author_path(author))
     end
   end
@@ -221,13 +237,35 @@ RSpec.describe WorksController, type: :controller do
 private
 
   #
-  # +build_enviroment_with_a_single_work+: just build a Factory author along with a few works
+  # +build_enviroment(n_roles = 3, n_works = 1)+: just build a Factory author along with works and roles as required
   #
-  def build_enviroment_with_a_single_work
-    author = FactoryGirl.create(:author)
-    work = FactoryGirl.create(:work)
-    author.works << work
-    author
+  def build_environment(n_roles = 3, n_works = 1)
+    FactoryGirl.create(:author_with_works_and_roles, num_works: n_works, num_roles: n_roles)
+  end
+
+  #
+  # +build_roles(roles)+ builds the proper argument for roles
+  #
+  # we need to simulate the behaviour of view which sends an extra empty 'id'
+  # element which needs to be catched by the business logic
+  #
+  def build_roles(roles)
+    res = roles.map { |r| { 'id' => r.id.to_s } }
+    res << { 'id' => '' } # extra (wrong) 'id' element added by the view
+    res
+  end
+
+  #
+  # +prepare_attributes_for_creation(author, num_attachments)+
+  #
+  def prepare_attributes_for_creation(author, num_attachments)
+    roles = build_roles(author.works.uniq.last.roles)
+    attachments = FactoryGirl.create_list(:uploaded_file, num_attachments)
+    args = HashWithIndifferentAccess.new
+    args.update(valid_attributes)
+    args.update(:submitted_files_attributes => attachments.map { |att| {:http_request => att} })
+    args.update(:roles_attributes => roles)
+    args
   end
 
 end

@@ -60,19 +60,31 @@ RSpec.describe Author, type: :model do
     it 'can link works as a single author' do
       num_works = 3
       expect((a = FactoryGirl.create(:author)).valid?).to be(true)
-      expect((ws = FactoryGirl.create_list(:work, num_works)).class).to be(Array)
-      a.works << ws
-      expect(a.works(true).count).to eq(num_works)
+      expect((works = FactoryGirl.create_list(:work, num_works)).class).to be(Array)
+      load_single_author_complex_environment(a, works)
+      expect(a.works_with_roles(true).size).to eq(num_works)
     end
 
     it 'can link works through multiple authors' do
       num_works = 3
       num_authors = 5
       expect((as = FactoryGirl.create_list(:author, num_authors)).class).to be(Array)
-      expect((ws = FactoryGirl.create_list(:work, num_works)).class).to be(Array)
-      as.each { |a| a.works << ws }
-      as.each { |a| expect(a.works(true).count).to eq(num_works) }
-      ws.each { |w| expect(w.authors(true).count).to eq(num_authors) }
+      expect((works = FactoryGirl.create_list(:work, num_works)).class).to be(Array)
+      load_multiple_authors_complex_environment(as, works)
+      expect(as.size).to eq(num_authors)
+      as.each { |a| expect(a.works_with_roles(true).size).to eq(num_works) }
+    end
+
+    it 'can detach a role from a given author successefully (instance method)' do
+      expect((a = FactoryGirl.create(:author)).valid?).to be(true)
+      expect((work = FactoryGirl.create(:work)).valid?).to be(true)
+      load_single_author_complex_environment(a, [ work ])
+      expect((roles = a.works.uniq.first.roles).kind_of?(ActiveRecord::Associations::CollectionProxy)).to be(true)
+      n_roles = roles.size
+      role_to_detach = roles.first
+      expect((detached_awr = a.detach_role_from_a_work(a.works.uniq.first, role_to_detach)).class).to be(AuthorWorkRole)
+      expect(a.works(true).uniq.first.roles.count).to eq(n_roles - 1)
+      expect(a.works.uniq.first.roles.include?(detached_awr.role)).to be(false)
     end
 
   end
@@ -83,9 +95,9 @@ RSpec.describe Author, type: :model do
       num_works = 3
       expect((a = FactoryGirl.create(:author)).valid?).to be(true)
       expect((ws = FactoryGirl.create_list(:work, num_works)).size).to eq(num_works)
-      a.works << ws
-      expect(a.works(true).count).to eq(num_works)
-      ws.each { |w| expect(w.authors(true).count).to eq(1) }
+      load_single_author_complex_environment(a, ws)
+      expect(a.works_with_roles(true).size).to eq(num_works)
+      ws.each { |w| expect(w.authors(true).uniq.count).to eq(1) }
       #
       a.destroy
       expect(a.frozen?).to be(true)
@@ -97,14 +109,23 @@ RSpec.describe Author, type: :model do
       num_authors = 2
       expect((as = FactoryGirl.create_list(:author, num_authors)).size).to be(num_authors)
       expect((ws = FactoryGirl.create_list(:work, num_works)).size).to eq(num_works)
-      as.each { |a| a.works << ws }
-      as.each { |a| expect(a.works(true).count).to eq(num_works) }
+      load_multiple_authors_complex_environment(as, ws)
+      as.each { |a| expect(a.works_with_roles(true).size).to eq(num_works) }
       #
       as.first.destroy
       expect(as.first.frozen?).to be(true)
       ws.each { |w| expect(w.frozen?).to be(false) }
     end
 
+  end
+
+  def load_single_author_complex_environment(a, works, num_roles = 5)
+    roles = FactoryGirl.create_list(:role, num_roles)
+    works.each { |w| roles.each { |r| a.add_work_with_role(w, r) } }
+  end
+
+  def load_multiple_authors_complex_environment(as, works, num_roles = 5)
+    as.each { |a| load_single_author_complex_environment(a, works, num_roles) }
   end
 
 end

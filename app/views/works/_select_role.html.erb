@@ -1,0 +1,10 @@
+<div class="role_selector">
+	<p>
+	select at least one role (you may select all that apply)
+	</p>
+  <%= form.collection_check_boxes(:roles, Role.ordered_all, :id, :description, {}, { :name => 'work[roles_attributes][][id]' }) do |b| %>
+	  <%= b.check_box(class: 'role_check_box') %>
+	  <%= b.label(class: 'role_check_box') %>
+	  <br />
+	<% end %>
+</div>
