@@ -25,6 +25,7 @@ RSpec.describe WorksController, type: :controller do
   end
 
   before :example do
+    @author = FactoryGirl.create(:author)
     @role = Role.music_composer
     @roles = [Role.music_composer, Role.text_author, Role.conductor]
   end
@@ -66,172 +67,327 @@ RSpec.describe WorksController, type: :controller do
     }
   }
 
-  # This should return the minimal set of values that should be in the session
-  # in order to pass any filters (e.g. authentication) defined in
-  # WorksController. Be sure to keep this updated too.
-  let(:valid_session) { {} }
+  context 'account not signed in (shouldn\'t go anywhere here)' do
 
-  describe "GET #index" do
-    it "assigns all works belonging to a given author as @works" do
-      author = build_environment(4, 5)
-      get :index, { :author_id => author.to_param }, valid_session
-      expect(assigns(:works)).to eq(author.works_with_roles(true))
-    end
-  end
-
-  describe "GET #show" do
-    it "assigns the requested work as @work" do
-      author = build_environment(1)
-      work = author.works.uniq.last
-      get :show, { :author_id => author.to_param, :id => work.to_param }, valid_session
-      expect(assigns(:work)).to eq(work)
-    end
-  end
-
-  describe "GET #new" do
-    it "assigns a new work as @work" do
-      author = build_environment
-      get :new, {:author_id => author.to_param, :work => {}}, valid_session
-      expect(assigns(:work)).to be_a_new(Work)
-    end
-  end
-
-  describe "GET #edit" do
-    it "assigns the requested work as @work" do
-      author = build_environment(1, 1)
-      work = author.works.uniq.first
-      get :edit, {:author_id => author.to_param, :id => work.to_param}, valid_session
-      expect(assigns(:work)).to eq(work)
-    end
-  end
-
-  describe "POST #create" do
-    context "with valid params" do
-      it "creates a new Work" do
-        author = build_environment
-        num_attachments = 3
-        args = prepare_attributes_for_creation(author, num_attachments)
-        expect {
-          post :create, {:author_id => author.to_param, :work => args }, valid_session
-        }.to change(Work, :count).by(1)
-        expect(author.reload.valid?).to be(true)
-        expect((w = author.works(true).uniq.last).valid?).to be(true)
-        expect(w.submitted_files(true).count).to eq(num_attachments)
-        expect(w.directory.blank?).to be(false)
-        expect(w.roles(true).count).to eq(args[:roles_attributes].size-1) # the argument has an extra empty element
-        d = Dir.new(w.directory)
-        n = 0; d.each { n += 1 }
-        expect(n).to eq(num_attachments + 2) # this count includes also '.' and '..'
-      end
-
-      it "assigns a newly created work as @work" do
-        author = build_environment
-        num_attachments = 3
-        args = prepare_attributes_for_creation(author, num_attachments)
-        post :create, {:author_id => author.to_param, :work => args}, valid_session
-        expect(assigns(:work)).to be_a(Work)
-        expect(assigns(:work)).to be_persisted
-      end
-
-      it "redirects to the created work" do
-        author = build_environment
-        num_attachments = 3
-        args = prepare_attributes_for_creation(author, num_attachments)
-        post :create, {:author_id => author.to_param, :work => args}, valid_session
-        expect(response).to redirect_to(author_url(author))
-      end
-
-      #
-      # TODO: update a record *removing* a role and check
-      #
-    end
-
-    context "with invalid params" do
-      it "assigns a newly created but unsaved work as @work" do
-        author = build_environment
-        post :create, {:author_id => author.to_param, :work => invalid_attributes}, valid_session
-        expect(assigns(:work)).to be_a_new(Work)
-      end
-
-      it "re-renders the 'new' template" do
-        author = build_environment
-        post :create, {:author_id => author.to_param, :work => invalid_attributes}, valid_session
-        expect(response).to render_template("new")
+    describe "GET #index" do
+      it "assigns all works belonging to a given author as @works" do
+        author = build_environment(4, 5)
+        get :index, { :author_id => author.to_param }
+        expect(response).to redirect_to(new_account_session_path)
       end
     end
-  end
-
-  describe "PUT #update" do
-    context "with valid params" do
-      let(:new_attributes) {
-        {
-          :title => 'Updated ' + Forgery(:name).title,
-          :'year(1i)' => Forgery(:basic).number(:at_least => 1850, :at_most => Time.zone.now.year).to_s, :'year(2i)' => '1', :'year(3i)' => '1',
-          :'duration(1i)' => '1', :'duration(2i)' => '1', :'duration(3i)' => '1',
-          :'duration(4i)' => '0', :'duration(5i)' => '4', :'duration(6i)' => '33',
-          :instruments => 'pno, fl, cl',
-          :program_notes_en => 'Updated ' + Forgery(:lorem_ipsum).paragraphs(Forgery(:basic).number(:at_least => 1, :at_most => 10)),
-          :program_notes_it => 'Aggiornamento: ' + Forgery(:lorem_ipsum).paragraphs(Forgery(:basic).number(:at_least => 1, :at_most => 10)),
-          :roles_attributes => build_roles(@roles[1..@roles.size-1]), # removing the first role
-        }
-      }
-
-      it "updates the requested work" do
-        author = build_environment
-        work = author.works.uniq.last
-        put :update, {:author_id => author.to_param, :id => work.to_param, :work => new_attributes}, valid_session
-        work.reload
-        expect(work.valid?).to be(true)
-        expect(work.roles(true).count).to eq(@roles.size - 1)
-      end
-
+  
+    describe "GET #show" do
       it "assigns the requested work as @work" do
+        author = build_environment(1)
+        work = author.works.uniq.last
+        get :show, { :author_id => author.to_param, :id => work.to_param }
+        expect(response).to redirect_to(new_account_session_path)
+      end
+    end
+  
+    describe "GET #new" do
+      it "assigns a new work as @work" do
+        author = build_environment
+        get :new, {:author_id => author.to_param, :work => {}}
+        expect(response).to redirect_to(new_account_session_path)
+      end
+    end
+  
+    describe "GET #edit" do
+      it "assigns the requested work as @work" do
+        author = build_environment(1, 1)
+        work = author.works.uniq.first
+        get :edit, {:author_id => author.to_param, :id => work.to_param}
+        expect(response).to redirect_to(new_account_session_path)
+      end
+    end
+  
+    describe "POST #create" do
+      context "with valid params" do
+        it "creates a new Work" do
+          author = build_environment
+          num_attachments = 3
+          args = prepare_attributes_for_creation(author, num_attachments)
+          post :create, {:author_id => author.to_param, :work => args }
+          expect(response).to redirect_to(new_account_session_path)
+        end
+  
+        it "assigns a newly created work as @work" do
+          author = build_environment
+          num_attachments = 3
+          args = prepare_attributes_for_creation(author, num_attachments)
+          post :create, {:author_id => author.to_param, :work => args}
+          expect(response).to redirect_to(new_account_session_path)
+        end
+  
+        it "redirects to the created work" do
+          author = build_environment
+          num_attachments = 3
+          args = prepare_attributes_for_creation(author, num_attachments)
+          post :create, {:author_id => author.to_param, :work => args}
+          expect(response).to redirect_to(new_account_session_path)
+        end
+  
+        #
+        # TODO: update a record *removing* a role and check
+        #
+      end
+  
+      context "with invalid params" do
+        it "assigns a newly created but unsaved work as @work" do
+          author = build_environment
+          post :create, {:author_id => author.to_param, :work => invalid_attributes}
+          expect(response).to redirect_to(new_account_session_path)
+        end
+  
+        it "re-renders the 'new' template" do
+          author = build_environment
+          post :create, {:author_id => author.to_param, :work => invalid_attributes}
+          expect(response).to redirect_to(new_account_session_path)
+        end
+      end
+    end
+  
+    describe "PUT #update" do
+      context "with valid params" do
+        let(:new_attributes) {
+          {
+            :title => 'Updated ' + Forgery(:name).title,
+            :'year(1i)' => Forgery(:basic).number(:at_least => 1850, :at_most => Time.zone.now.year).to_s, :'year(2i)' => '1', :'year(3i)' => '1',
+            :'duration(1i)' => '1', :'duration(2i)' => '1', :'duration(3i)' => '1',
+            :'duration(4i)' => '0', :'duration(5i)' => '4', :'duration(6i)' => '33',
+            :instruments => 'pno, fl, cl',
+            :program_notes_en => 'Updated ' + Forgery(:lorem_ipsum).paragraphs(Forgery(:basic).number(:at_least => 1, :at_most => 10)),
+            :program_notes_it => 'Aggiornamento: ' + Forgery(:lorem_ipsum).paragraphs(Forgery(:basic).number(:at_least => 1, :at_most => 10)),
+            :roles_attributes => build_roles(@roles[1..@roles.size-1]), # removing the first role
+          }
+        }
+  
+        it "updates the requested work" do
+          author = build_environment
+          work = author.works.uniq.last
+          put :update, {:author_id => author.to_param, :id => work.to_param, :work => new_attributes}
+          expect(response).to redirect_to(new_account_session_path)
+        end
+  
+        it "assigns the requested work as @work" do
+          author = build_environment
+          work = author.works.uniq.last
+          put :update, {:author_id => author.to_param, :id => work.to_param, :work => valid_attributes}
+          expect(response).to redirect_to(new_account_session_path)
+        end
+  
+        it "redirects to the work" do
+          author = build_environment
+          work = author.works.uniq.last
+          put :update, {:author_id => author.to_param, :id => work.to_param, :work => valid_attributes}
+          expect(response).to redirect_to(new_account_session_path)
+        end
+      end
+  
+      context "with invalid params" do
+        it "assigns the work as @work" do
+          author = build_environment
+          work = author.works.uniq.last
+          put :update, {:author_id => author.to_param, :id => work.to_param, :work => invalid_attributes }
+          expect(response).to redirect_to(new_account_session_path)
+        end
+  
+        it "re-renders the 'edit' template" do
+          author = build_environment
+          work = author.works.uniq.last
+          put :update, {:author_id => author.to_param, :id => work.to_param, :work => invalid_attributes }
+          expect(response).to redirect_to(new_account_session_path)
+        end
+      end
+    end
+  
+    describe "DELETE #destroy" do
+      it "destroys the requested work" do
         author = build_environment
         work = author.works.uniq.last
-        put :update, {:author_id => author.to_param, :id => work.to_param, :work => valid_attributes}, valid_session
+        delete :destroy, {:author_id => author.to_param, :id => work.to_param }
+        expect(response).to redirect_to(new_account_session_path)
+      end
+    end
+
+  end
+
+  context 'account signed in (should be able to do most things)' do
+
+    login_account
+
+    describe 'it should have a current valid account' do
+      it 'does, indeed' do
+        expect(subject.current_account).to_not eq(nil)
+      end
+    end
+
+    describe "GET #index" do
+      it "assigns all works belonging to a given author as @works" do
+        author = build_environment(4, 5, subject.current_account.to_param)
+        get :index, { :author_id => author.to_param }
+        expect(assigns(:works)).to eq(author.works_with_roles(true))
+      end
+    end
+  
+    describe "GET #show" do
+      it "assigns the requested work as @work" do
+        author = build_environment(1, 2, subject.current_account.to_param)
+        work = author.works.uniq.last
+        get :show, { :author_id => author.to_param, :id => work.to_param }
         expect(assigns(:work)).to eq(work)
       end
-
-      it "redirects to the work" do
-        author = build_environment
+    end
+  
+    describe "GET #new" do
+      it "assigns a new work as @work" do
+        author = build_environment(3, 2, subject.current_account.to_param)
+        get :new, {:author_id => author.to_param, :work => {}}
+        expect(assigns(:work)).to be_a_new(Work)
+      end
+    end
+  
+    describe "GET #edit" do
+      it "assigns the requested work as @work" do
+        author = build_environment(1, 1, subject.current_account.to_param)
+        work = author.works.uniq.first
+        get :edit, {:author_id => author.to_param, :id => work.to_param}
+        expect(assigns(:work)).to eq(work)
+      end
+    end
+  
+    describe "POST #create" do
+      context "with valid params" do
+        it "creates a new Work" do
+          author = build_environment(3, 2, subject.current_account.to_param)
+          num_attachments = 3
+          args = prepare_attributes_for_creation(author, num_attachments)
+          expect {
+            post :create, {:author_id => author.to_param, :work => args }
+          }.to change(Work, :count).by(1)
+          expect(author.reload.valid?).to be(true)
+          expect((w = author.works(true).uniq.last).valid?).to be(true)
+          expect(w.submitted_files(true).count).to eq(num_attachments)
+          expect(w.directory.blank?).to be(false)
+          expect(w.roles(true).count).to eq(args[:roles_attributes].size-1) # the argument has an extra empty element
+          d = Dir.new(w.directory)
+          n = 0; d.each { n += 1 }
+          expect(n).to eq(num_attachments + 2) # this count includes also '.' and '..'
+        end
+  
+        it "assigns a newly created work as @work" do
+          author = build_environment(3, 2, subject.current_account.to_param)
+          num_attachments = 3
+          args = prepare_attributes_for_creation(author, num_attachments)
+          post :create, {:author_id => author.to_param, :work => args}
+          expect(assigns(:work)).to be_a(Work)
+          expect(assigns(:work)).to be_persisted
+        end
+  
+        it "redirects to the created work" do
+          author = build_environment(3, 2, subject.current_account.to_param)
+          num_attachments = 3
+          args = prepare_attributes_for_creation(author, num_attachments)
+          post :create, {:author_id => author.to_param, :work => args}
+          work = author.works.where('title = ?', args[:title]).uniq.first
+          expect(response).to redirect_to(author_work_path(author, work))
+        end
+  
+        #
+        # TODO: update a record *removing* a role and check
+        #
+      end
+  
+      context "with invalid params" do
+        it "assigns a newly created but unsaved work as @work" do
+          author = build_environment(3, 2, subject.current_account.to_param)
+          post :create, {:author_id => author.to_param, :work => invalid_attributes}
+          expect(assigns(:work)).to be_a_new(Work)
+        end
+  
+        it "re-renders the 'new' template" do
+          author = build_environment(3, 2, subject.current_account.to_param)
+          post :create, {:author_id => author.to_param, :work => invalid_attributes}
+          expect(response).to render_template("new")
+        end
+      end
+    end
+  
+    describe "PUT #update" do
+      context "with valid params" do
+        let(:new_attributes) {
+          {
+            :title => 'Updated ' + Forgery(:name).title,
+            :'year(1i)' => Forgery(:basic).number(:at_least => 1850, :at_most => Time.zone.now.year).to_s, :'year(2i)' => '1', :'year(3i)' => '1',
+            :'duration(1i)' => '1', :'duration(2i)' => '1', :'duration(3i)' => '1',
+            :'duration(4i)' => '0', :'duration(5i)' => '4', :'duration(6i)' => '33',
+            :instruments => 'pno, fl, cl',
+            :program_notes_en => 'Updated ' + Forgery(:lorem_ipsum).paragraphs(Forgery(:basic).number(:at_least => 1, :at_most => 10)),
+            :program_notes_it => 'Aggiornamento: ' + Forgery(:lorem_ipsum).paragraphs(Forgery(:basic).number(:at_least => 1, :at_most => 10)),
+            :roles_attributes => build_roles(@roles[1..@roles.size-1]), # removing the first role
+          }
+        }
+  
+        it "updates the requested work" do
+          author = build_environment(3, 2, subject.current_account.to_param)
+          work = author.works.uniq.last
+          put :update, {:author_id => author.to_param, :id => work.to_param, :work => new_attributes}
+          work.reload
+          expect(work.valid?).to be(true)
+          expect(work.roles(true).count).to eq(@roles.size - 1)
+        end
+  
+        it "assigns the requested work as @work" do
+          author = build_environment(3, 2, subject.current_account.to_param)
+          work = author.works.uniq.last
+          put :update, {:author_id => author.to_param, :id => work.to_param, :work => valid_attributes}
+          expect(assigns(:work)).to eq(work)
+        end
+  
+        it "redirects to the work" do
+          author = build_environment(3, 2, subject.current_account.to_param)
+          work = author.works.uniq.last
+          put :update, {:author_id => author.to_param, :id => work.to_param, :work => valid_attributes}
+          expect(response).to redirect_to(author_work_path(author, work))
+        end
+      end
+  
+      context "with invalid params" do
+        it "assigns the work as @work" do
+          author = build_environment(3, 2, subject.current_account.to_param)
+          work = author.works.uniq.last
+          put :update, {:author_id => author.to_param, :id => work.to_param, :work => invalid_attributes }
+          expect(assigns(:work)).to eq(work)
+        end
+  
+        it "re-renders the 'edit' template" do
+          author = build_environment(3, 2, subject.current_account.to_param)
+          work = author.works.uniq.last
+          put :update, {:author_id => author.to_param, :id => work.to_param, :work => invalid_attributes }
+          expect(response).to render_template("edit")
+        end
+      end
+    end
+  
+    describe "DELETE #destroy" do
+      it "destroys the requested work" do
+        author = build_environment(3, 2, subject.current_account.to_param)
         work = author.works.uniq.last
-        put :update, {:author_id => author.to_param, :id => work.to_param, :work => valid_attributes}, valid_session
+        expect {
+          delete :destroy, {:author_id => author.to_param, :id => work.to_param }
+        }.to change(Work, :count).by(-1)
+      end
+  
+      it "redirects to the author works list" do
+        author = build_environment(3, 2, subject.current_account.to_param)
+        work = author.works.uniq.last
+        delete :destroy, {:author_id => author.to_param, :id => work.to_param }
         expect(response).to redirect_to(author_path(author))
       end
     end
 
-    context "with invalid params" do
-      it "assigns the work as @work" do
-        author = build_environment
-        work = author.works.uniq.last
-        put :update, {:author_id => author.to_param, :id => work.to_param, :work => invalid_attributes }, valid_session
-        expect(assigns(:work)).to eq(work)
-      end
-
-      it "re-renders the 'edit' template" do
-        author = build_environment
-        work = author.works.uniq.last
-        put :update, {:author_id => author.to_param, :id => work.to_param, :work => invalid_attributes }, valid_session
-        expect(response).to render_template("edit")
-      end
-    end
-  end
-
-  describe "DELETE #destroy" do
-    it "destroys the requested work" do
-      author = build_environment
-      work = author.works.uniq.last
-      expect {
-        delete :destroy, {:author_id => author.to_param, :id => work.to_param }, valid_session
-      }.to change(Work, :count).by(-1)
-    end
-
-    it "redirects to the works list" do
-      author = build_environment
-      work = author.works.uniq.last
-      delete :destroy, {:author_id => author.to_param, :id => work.to_param }, valid_session
-      expect(response).to redirect_to(author_path(author))
-    end
   end
 
 private
@@ -239,8 +395,8 @@ private
   #
   # +build_enviroment(n_roles = 3, n_works = 1)+: just build a Factory author along with works and roles as required
   #
-  def build_environment(n_roles = 3, n_works = 1)
-    FactoryGirl.create(:author_with_works_and_roles, num_works: n_works, num_roles: n_roles)
+  def build_environment(n_roles = 3, n_works = 1, a_id = nil)
+    FactoryGirl.create(:author_with_works_and_roles, num_works: n_works, num_roles: n_roles, owner_id: a_id)
   end
 
   #
