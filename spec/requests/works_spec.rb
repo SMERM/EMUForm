@@ -104,7 +104,6 @@ RSpec.describe "Works", type: :request do
     describe "POST /authors/:id/works" do
       it "works! " do
         new_work = FactoryGirl.build(:work)
-        awr = AuthorWorkRole.new(:author_id => @author.to_param, :role_id => Role.music_composer.id) 
         wparms = new_work.attributes
         wparms.update( roles_attributes: [{ id: Role.music_composer.to_param }] )
         post author_works_path(@author), { work: wparms }
