@@ -4,6 +4,7 @@
 [![Build Status](https://api.travis-ci.org/SMERM/EMUForm.svg?branch=master)](https://travis-ci.org/SMERM/EMUForm)
 [![Code Climate](https://codeclimate.com/github/SMERM/EMUForm/badges/gpa.svg)](https://codeclimate.com/github/SMERM/EMUForm)
 [![Test Coverage](https://codeclimate.com/github/SMERM/EMUForm/badges/coverage.svg)](https://codeclimate.com/github/SMERM/EMUForm/coverage)
+[![Inline docs](http://inch-ci.org/github/SMERM/EMUForm.svg?branch=master&style=shields)](http://inch-ci.org/github/SMERM/EMUForm)
 [![Issue Count](https://codeclimate.com/github/SMERM/EMUForm/badges/issue_count.svg)](https://codeclimate.com/github/SMERM/EMUForm)
 
 Form for EMUFest submissions
