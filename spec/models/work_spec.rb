@@ -220,6 +220,15 @@ RSpec.describe Work, type: :model do
       end
     end
 
+    it 'displays roles properly' do
+      nr = 3
+      nw = 1
+      author = FactoryGirl.create(:author_with_works_and_roles, num_works: nw, num_roles: nr)
+      awrs = AuthorWorkRole.where('author_id = ? and work_id = ?', author.to_param, author.works.uniq.last.to_param).uniq
+      string_result = awrs.map { |awr| awr.role.description }.sort.join(', ')
+      expect(author.works.uniq.last.display_roles(author)).to eq(string_result)
+    end
+
   end
 
 private

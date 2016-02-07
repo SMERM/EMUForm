@@ -63,8 +63,7 @@ class Work < ActiveRecord::Base
   # display all the roles for a given author as a colon-separated list
   #
   def display_roles(author)
-    awrs = AuthorWorkRole.where('author_id = ? and work_id = ?', author.to_param, self.to_param)
-    awrs.map { |awr| awr.role.description }.join(', ')
+    self.roles.where('author_id = ?', author.to_param).uniq.map { |r| r.description }.sort.join(', ')
   end
 
   #

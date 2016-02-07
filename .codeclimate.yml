@@ -45,3 +45,8 @@ exclude_paths:
 - doc/**/*
 - log/**/*
 - tmp/**/*
+#
+# the following are untouched files from devise which we do not test ourselves
+#
+- app/models/account.rb
+- app/models/authorization.rb

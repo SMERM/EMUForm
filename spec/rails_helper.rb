@@ -1,8 +1,9 @@
 require 'codeclimate-test-reporter'
 SimpleCov.start do
   add_filter '/spec/'
-  add_filter '/lib/csoundAPI_ruby/lib/data/myflt.rb'
   add_filter '/lib/tasks/'
+  add_filter '/app/models/account.rb'         # these are two devise models which we are not
+  add_filter '/app/models/authorization.rb'   # going to test ourselves
   formatter SimpleCov::Formatter::MultiFormatter.new([
     SimpleCov::Formatter::HTMLFormatter,
     CodeClimate::TestReporter::Formatter

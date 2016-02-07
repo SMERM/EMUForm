@@ -17,6 +17,6 @@ RSpec.describe "works/show", type: :view do
     expect(rendered).to match(/#{@work.title}/)
     expect(rendered).to match(/#{@work.display_year}/)
     expect(rendered).to match(/#{@work.display_duration}/)
-    expect(rendered).to match(/#{@work.roles(true).uniq.map { |r| r.description }.join(', ')}/)
+    expect(rendered).to match(/#{@work.roles(true).map { |r| r.description }.uniq.sort.join(', ')}/)
   end
 end

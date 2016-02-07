@@ -17,7 +17,7 @@ RSpec.describe "authors/show", type: :view do
       expect(rendered).to match(/#{w.title}/)
       expect(rendered).to match(/#{w.display_year}/)
       expect(rendered).to match(/#{w.display_duration}/)
-      expect(rendered).to match(/#{w.roles(true).uniq.map { |r| r.description }.join(', ')}/)
+      expect(rendered).to match(/#{w.roles(true).uniq.map { |r| r.description }.sort.join(', ')}/)
     end
   end
 end
