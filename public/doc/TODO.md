@@ -2,7 +2,8 @@
 
 * for release 1.0
   - [x] add `authors` and sub-resource `works` (#14 - @nicb done in 1677a38)
-  - [x] add `account` and sub-resource both `authors` and `works` (#10 and #15 - @nicb - current task)
+  - [x] add `account` and sub-resource both `authors` and `works` (#10 and #15 - @nicb)
+  - [ ] add `admin` accounts to manage the whole application (#31 - @nicb - current task)
   - [ ] fix all the javascript working in file uploading form (#5)
   - [ ] create interface and binding to payment system (#4 - @nicb and @grammaton + M.L. and I.)
   - [ ] fix graphic looking of all pages
