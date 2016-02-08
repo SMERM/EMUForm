@@ -1,4 +1,4 @@
-<p id="notice"><%= notice %></p>
+<p class="notice"><%= notice %></p>
 
 <p>
   <strong>First name:</strong>
@@ -37,7 +37,7 @@
         <th colspan="3"></th>
       </tr>
     </thead>
-  
+
     <tbody>
       <%= render partial: 'works/index_table', collection: @author.works.uniq %>
     </tbody>

@@ -1,5 +1,4 @@
 class WorksController < EndUserBaseController
-  layout 'works'
   before_action :set_author
   before_action :set_extra_params, only: [:create, :update]
 
@@ -36,6 +35,7 @@ class WorksController < EndUserBaseController
   # Submitted files are uploaded on the fly before the response
   #
   def create
+
     @work = @author.works.new(@cleaned_params)
 
     respond_to do |format|
