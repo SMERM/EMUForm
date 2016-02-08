@@ -1,5 +1,7 @@
 # USER JOURNEY
 
+![whiteboard](./journey.jpg)
+
 1. landing page
   - EMUForm/app/views/accounts/sessions/new.html.erb
   - breve messaggio di benvenuto
