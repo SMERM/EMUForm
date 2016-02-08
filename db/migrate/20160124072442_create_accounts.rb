@@ -11,7 +11,6 @@ class CreateAccounts < ActiveRecord::Migration
     create_table table do |t|
       t.string :first_name
       t.string :last_name
-      t.string :image
       t.string :location
 
       # Devise stuff

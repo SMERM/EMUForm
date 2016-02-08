@@ -61,6 +61,7 @@
 </head>
 <body id="page">
   <div id="main" role="main">
+    <%= link_to 'Sign out', destroy_account_session_path, method: :delete %>
 
     <%= yield %>
 

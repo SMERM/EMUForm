@@ -1,4 +1,4 @@
-class PagesController < ApplicationController
+class PagesController < EndUserBaseController
 
   skip_before_action :authenticate_account!
 

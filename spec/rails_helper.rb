@@ -4,6 +4,7 @@ SimpleCov.start do
   add_filter '/lib/tasks/'
   add_filter '/app/models/account.rb'         # these are two devise models which we are not
   add_filter '/app/models/authorization.rb'   # going to test ourselves
+  add_filter '/app/admin/'                    # this is handled by ActiveAdmin (not really completely, will test later on)
   formatter SimpleCov::Formatter::MultiFormatter.new([
     SimpleCov::Formatter::HTMLFormatter,
     CodeClimate::TestReporter::Formatter

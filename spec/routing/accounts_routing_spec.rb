@@ -115,7 +115,7 @@ RSpec.describe Accounts::AccountsController, type: :routing do
     end
 
     it 'routes to #show' do
-      expect(:get => "/account/1").to route_to("accounts/accounts#show", :id => "1")
+      expect(:get => "/account/").to route_to("accounts/accounts#show")
     end
 
   end

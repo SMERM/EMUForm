@@ -1,5 +1,6 @@
-class Accounts::AccountsController < ApplicationController
+class Accounts::AccountsController < EndUserBaseController
 
+  before_action :set_account
   #
   # GET /accounts/accounts/1
   #
@@ -9,6 +10,12 @@ class Accounts::AccountsController < ApplicationController
   # works connected to them)
   #
   def show
+  end
+
+private
+
+  def set_account
+    @account = current_account 
   end
 
 end

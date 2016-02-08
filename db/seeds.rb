@@ -5,3 +5,13 @@
 #
 #   cities = City.create([{ name: 'Chicago' }, { name: 'Copenhagen' }])
 #   Mayor.create(name: 'Emanuel', city: cities.first)
+#
+# This was added by the ActiveAdmin installation
+#
+AdminAccount.create!(email: 'admin@emufest.org', password: 'minimoog', password_confirmation: 'minimoog')
+
+#
+# What follows is needed to install the static roles that should always be
+# present on an installed base.
+#
+EMUForm::RoleManager.setup

@@ -1,4 +1,4 @@
-class WorksController < ApplicationController
+class WorksController < EndUserBaseController
   layout 'works'
   before_action :set_author
   before_action :set_extra_params, only: [:create, :update]

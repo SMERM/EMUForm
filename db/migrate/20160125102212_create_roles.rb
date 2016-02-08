@@ -1,17 +1,4 @@
-require 'EMUForm/role_manager'
-
 class CreateRoles < ActiveRecord::Migration
-  def migrate(direction)
-    super
-    case direction
-    when :up then
-      say('... creating the default static roles...')
-      EMUForm::RoleManager.setup
-    when :down then
-      say('... removing the default static roles...')
-      EMUForm::RoleManager.clear
-    end
-  end
 
   def change
     create_table :roles do |t|
@@ -22,4 +9,5 @@ class CreateRoles < ActiveRecord::Migration
       t.timestamps null: false
     end
   end
+
 end
