@@ -3,7 +3,7 @@ script: bundle exec rake # do the default task
 before_install:
   - gem install bundler
   - bundle install
-  - bundle exec rake db:migrate
+  - bundle exec rake db:reset
 os:
   - linux
   - osx
