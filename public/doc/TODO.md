@@ -9,5 +9,7 @@
   - [ ] fix graphic looking of all pages
   - [ ] add `edition` object table (#6 - @nicb)
   - [ ] setup `capybara` for proper integration testing (#8 - @nicb or whoever else wants to pick this up)
+  - [ ] provide internal linking
+  - [ ] do partials 
   - [ ] add mail dispatching to account users (#18 - @nicb)
   - [ ] integrate into http://www.emufest.org call
