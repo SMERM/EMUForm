@@ -1,6 +1,6 @@
 FactoryGirl.define do
 
-  factory :account do
+  factory :account, aliases: [:owner] do
 
     first_name            { Forgery(:name).female_first_name }
     last_name             { Forgery(:name).last_name }

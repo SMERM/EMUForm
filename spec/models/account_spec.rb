@@ -10,17 +10,17 @@ RSpec.describe Account, type: :model do
   #
   context 'associations' do
 
-    it 'can add author as it pleases to' do
-      nw = 2
+    it 'can add works as it pleases to' do
+      na = 2
       nr = 3
       expect((account = FactoryGirl.create(:account)).valid?).to be(true)
-      expect((author = FactoryGirl.create(:author_with_works_and_roles, num_works: nw, num_roles: 3)).valid?).to be(true)
+      expect((work = FactoryGirl.create(:work_with_authors_and_roles, num_authors: na, num_roles: nr)).valid?).to be(true)
 
-      account.authors << author
+      account.works << work
 
-      expect(account.authors(true).count).to eq(1)
-      expect(account.authors.first.works.uniq.count).to eq(nw)
-      account.authors.first.works.uniq.each { |w| expect(w.roles.uniq.count).to be > 0 }
+      expect(account.works(true).uniq.count).to eq(1)
+      expect(account.works.first.authors(true).uniq.count).to eq(na)
+      account.works.uniq.first.authors.uniq.each { |a| expect(a.roles.uniq.count).to eq(nr) }
     end
 
   end

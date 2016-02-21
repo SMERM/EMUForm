@@ -7,6 +7,7 @@ RSpec.describe Work, type: :model do
     @authors = FactoryGirl.create_list(:author, @num_authors)
     @w = nil # this is where we set the work
     @num_submitted_files = Forgery(:basic).number(at_least: 1, at_most: 5)
+    @account = FactoryGirl.create(:account)
   end
 
   after :example do
@@ -21,6 +22,7 @@ RSpec.describe Work, type: :model do
       :instruments => 'pno, fl, cl',
       :program_notes_en => Forgery(:lorem_ipsum).paragraphs(Forgery(:basic).number(:at_least => 1, :at_most => 3)),
       :program_notes_it => Forgery(:lorem_ipsum).paragraphs(Forgery(:basic).number(:at_least => 1, :at_most => 3)),
+      :owner_id => @account.to_param,
     )
   }
 
@@ -62,9 +64,6 @@ RSpec.describe Work, type: :model do
     it 'creates an object along with its nested submitted files' do
       (cleaned_args, authors, roles, submitted_files) = Work.clean_args(ActionController::Parameters.new(work: full_args))
       expect((work = Work.create!(work_params(cleaned_args))).valid?).to eq(true)
-      #
-      # TODO?
-      #
     end
 
     it 'creates a work with many authors and many roles' do
@@ -157,26 +156,36 @@ RSpec.describe Work, type: :model do
 
     it 'actually destroys the links with the author when destroyed' do
       num_works = 3
-      expect((a = FactoryGirl.create(:author)).valid?).to be(true)
-      expect((r = Role.music_composer).valid?).to be(true)
-      expect((ws = FactoryGirl.create_list(:work, num_works)).size).to eq(num_works)
-      ws.each { |w| a.add_work_with_role(w, r) }
-      expect(a.works_with_roles(true).count).to eq(num_works)
-      ws.each { |w| expect(w.authors(true).uniq.count).to eq(1) }
-      ws.each { |w| w.destroy }
-      expect(a.works_with_roles(true).count).to eq(0)
+      num_authors = 1
+      expect((ws = FactoryGirl.create_list(:work_with_authors_and_roles, num_works, num_authors: 1)).size).to eq(num_works)
+      ws.each do
+        |w|
+        expect(w.authors_with_roles(true).count).to eq(num_authors)
+        expect(w.authors(true).uniq.count).to eq(num_authors)
+        #
+        # we have `num_authors` different authors linked to each work, so each
+        # author has just one work
+        #
+        w.authors(true).uniq.each do
+          |a|
+          expect(a.valid?).to be(true)
+          expect(a.works(true).uniq.count).to eq(1)
+          w.destroy
+          expect(a.works(true).count).to eq(0)
+        end
+      end
     end
 
   end
 
   context 'associations' do
 
-    it 'can link authors as a single work' do
+    it 'can link authors to a single work' do
       num_authors = 3
       expect((w = FactoryGirl.create(:work)).valid?).to be(true)
       expect((as = FactoryGirl.create_list(:author, num_authors)).class).to be(Array)
       expect((r = Role.music_composer).valid?).to be(true)
-      as.each { |a| a.add_work_with_role(w, r) }
+      as.each { |a| w.add_author_with_roles(a, r) }
       expect(w.authors(true).uniq.count).to eq(num_authors)
     end
 
@@ -186,7 +195,7 @@ RSpec.describe Work, type: :model do
       expect((r = Role.music_composer).valid?).to be(true)
       expect((as = FactoryGirl.create_list(:author, num_authors)).class).to be(Array)
       expect((ws = FactoryGirl.create_list(:work, num_works)).class).to be(Array)
-      ws.each { |w| as.each { |a| a.add_work_with_role(w, r) } }
+      ws.each { |w| as.each { |a| w.add_author_with_roles(a, r) } }
       ws.each { |w| expect(w.authors(true).uniq.count).to eq(num_authors) }
       as.each { |a| expect(a.works(true).uniq.count).to eq(num_works) }
     end
@@ -194,18 +203,7 @@ RSpec.describe Work, type: :model do
     it 'lists authors and works properly' do
       num_works = 3
       num_authors = 5
-      expect((as = FactoryGirl.create_list(:author, num_authors)).class).to be(Array)
-      expect((ws = FactoryGirl.create_list(:work, num_works)).class).to be(Array)
-      ws.each do
-        |w| 
-        as.each do
-          |a|
-          start_role = Forgery(:basic).number(:at_least => 0, :at_most => (Role.count/2).floor)
-          end_role = Forgery(:basic).number(:at_least => start_role + 1, :at_most => Role.count-1)
-          roles = Role.all[start_role..end_role]
-          roles.each { |r| a.add_work_with_role(w, r) }
-        end
-      end
+      expect((ws = FactoryGirl.create_list(:work_with_authors_and_roles, num_works, num_authors: num_authors)).class).to be(Array)
       ws.each do
         |work|
         expect(work.authors_with_roles(true).size).to eq(num_authors)
@@ -222,11 +220,12 @@ RSpec.describe Work, type: :model do
 
     it 'displays roles properly' do
       nr = 3
-      nw = 1
-      author = FactoryGirl.create(:author_with_works_and_roles, num_works: nw, num_roles: nr)
-      awrs = AuthorWorkRole.where('author_id = ? and work_id = ?', author.to_param, author.works.uniq.last.to_param).uniq
+      na = 1
+      work = FactoryGirl.create(:work_with_authors_and_roles, num_authors: na, num_roles: nr)
+      author = work.authors(true).last
+      awrs = AuthorWorkRole.where('author_id = ? and work_id = ?', author.to_param, work.to_param).uniq
       string_result = awrs.map { |awr| awr.role.description }.sort.join(', ')
-      expect(author.works.uniq.last.display_roles(author)).to eq(string_result)
+      expect(work.display_roles(author)).to eq(string_result)
     end
 
   end
@@ -276,11 +275,7 @@ private
   # lifted from app/controllers/works_controller.rb (needed for parameter permission check)
   #
   def work_params(parms)
-    parms.require(:work).permit(:title, :year, :duration, :instruments, :program_notes_en, :program_notes_it,
-                                :roles_attributes => [:id],
-                                :authors_attributes => [:id],
-                                :submitted_files_attributes => [:id, :http_request, :filename, :content_type, :size, :_destroy]
-                               )
+    WorksController.new.send(:work_params, parms)
   end
 
   #
