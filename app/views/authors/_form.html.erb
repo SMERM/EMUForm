@@ -1,4 +1,5 @@
-<%= form_for [@work, @author], enctype: 'multipart/form-data' do |f| %>
+<%# form_for([@work, @author], enctype: 'multipart/form-data') do |f| %>
+<%= form_for([@work, @author]) do |f| %>
   <% if @author.errors.any? %>
     <div id="error_explanation">
       <h2><%= pluralize(@author.errors.count, "error") %> prohibited this author from being saved:</h2>

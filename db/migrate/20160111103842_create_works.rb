@@ -1,6 +1,7 @@
 class CreateWorks < ActiveRecord::Migration
   def change
     create_table :works do |t|
+      t.integer :owner_id, :null => false
       t.string :title, :null=>false
       t.datetime :year, :null=>false
       t.datetime :duration, :null=>false

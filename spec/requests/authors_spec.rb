@@ -1,75 +1,80 @@
 #
-#                     authors GET        /authors(.:format)                           authors#index
-#                             POST       /authors(.:format)                           authors#create
-#                  new_author GET        /authors/new(.:format)                       authors#new
-#                 edit_author GET        /authors/:id/edit(.:format)                  authors#edit
-#                      author GET        /authors/:id(.:format)                       authors#show
-#                             PATCH      /authors/:id(.:format)                       authors#update
-#                             PUT        /authors/:id(.:format)                       authors#update
-#                             DELETE     /authors/:id(.:format)                       authors#destroy
+#                    work_authors GET        /works/:work_id/authors(.:format)            authors#index
+#                                 POST       /works/:work_id/authors(.:format)            authors#create
+#                 new_work_author GET        /works/:work_id/authors/new(.:format)        authors#new
+#                edit_work_author GET        /works/:work_id/authors/:id/edit(.:format)   authors#edit
+#                     work_author GET        /works/:work_id/authors/:id(.:format)        authors#show
+#                                 PATCH      /works/:work_id/authors/:id(.:format)        authors#update
+#                                 PUT        /works/:work_id/authors/:id(.:format)        authors#update
+#                                 DELETE     /works/:work_id/authors/:id(.:format)        authors#destroy
 #
 require 'rails_helper'
 
 RSpec.describe "Authors", type: :request do
 
   before :example do
-    @author = FactoryGirl.create(:author)
+    @work = FactoryGirl.create(:work_with_authors_and_roles)
+    @author = @work.authors(true).uniq.first
   end
 
   context 'user not signed in' do
 
-    describe "GET /authors" do
+    describe "GET /work/:id/authors" do
       it "works! redirected to sign-up " do
-        get authors_path
+        get work_authors_path(@work)
         expect(response).to redirect_to(new_account_session_path)
       end
     end
 
-    describe "POST /authors" do
+    describe "POST /works/:id/authors" do
       it "works! redirected to sign-up " do
-        post authors_path
+        new_author = FactoryGirl.build(:author)
+        awr = AuthorWorkRole.new(:work => @work, :role => Role.music_composer) 
+        aparms = new_author.attributes
+        aparms.update( roles_attributes: [{ id: awr.role.to_param }] )
+        post work_authors_path(@work), { author: aparms }
         expect(response).to redirect_to(new_account_session_path)
       end
     end
 
-    describe "GET /authors/new" do
+    describe "GET /works/:id/authors/new" do
       it "works! redirected to sign-up " do
-        get new_author_path
+        get new_work_author_path(@work)
         expect(response).to redirect_to(new_account_session_path)
       end
     end
 
-    describe "GET /authors/:id/edit" do
+    describe "GET /works/:id/authors/:id/edit" do
       it "works! redirected to sign-up " do
-        get edit_author_path(@author)
+        get edit_work_author_path(@work, @author), { :author => @author.attributes }
         expect(response).to redirect_to(new_account_session_path)
       end
     end
 
-    describe "GET /authors/:id" do
+    describe "GET /author/:id/works/:id" do
       it "works! redirected to sign-up " do
-        get author_path(@author)
+        get work_author_path(@work, @author)
         expect(response).to redirect_to(new_account_session_path)
       end
     end
 
-    describe "PATCH /authors/:id" do
+    describe "PATCH /author/:id/works/:id" do
       it "works! redirected to sign-up " do
-        patch author_path(@author), { :author => @author.attributes }
+        patch work_author_path(@work, @author), { :work => @work.attributes }
         expect(response).to redirect_to(new_account_session_path)
       end
     end
 
-    describe "PUT /authors/:id" do
+    describe "PUT /author/:id/works/:id" do
       it "works! redirected to sign-up " do
-        put author_path(@author), { :author => @author.attributes }
+        put work_author_path(@work, @author), { :work => @work.attributes }
         expect(response).to redirect_to(new_account_session_path)
       end
     end
 
-    describe "DELETE /authors/:id" do
+    describe "DELETE /works/:id/authors/:id" do
       it "works! redirected to sign-up " do
-        delete author_path(@author)
+        delete work_author_path(@work, @author)
         expect(response).to redirect_to(new_account_session_path)
       end
     end
@@ -80,7 +85,7 @@ RSpec.describe "Authors", type: :request do
 
     before :each do
       @account = FactoryGirl.create(:account)
-      @account.authors << @author
+      @account.works << @work
       sign_in @account
     end
 
@@ -88,61 +93,69 @@ RSpec.describe "Authors", type: :request do
       sign_out @account
     end
 
-    describe "GET /authors" do
+    describe "GET /works/:id/authors" do
       it "works! " do
-        get authors_path
+        get work_authors_path(@work)
         expect(response).to have_http_status(200)
       end
     end
 
-    describe "POST /authors" do
+    describe "POST /works/:id/authors" do
       it "works! " do
-        new_author = FactoryGirl.build(:author, owner_id: @account.id)
-        post authors_path, { :author => new_author.attributes }
-        a = Author.where('last_name = ? and first_name = ? and owner_id = ?', new_author.last_name, new_author.first_name, new_author.owner_id).first
-        expect(response).to redirect_to(author_path(a))
+        new_author = FactoryGirl.build(:author) # need some proper attributes to save
+        aparms = new_author.attributes
+        aparms.update( roles_attributes: [{ id: Role.music_composer.to_param }] )
+        post work_authors_path(@work, new_author), { author: aparms }
+        a = @work.authors(true).where('last_name = ? and first_name = ?', new_author.last_name, new_author.first_name).uniq.first
+        expect(response).to redirect_to(work_author_path(@work, a))
       end
     end
 
-    describe "GET /authors/new" do
+    describe "GET /works/:id/authors/new" do
       it "works! " do
-        get new_author_path
+        new_author = @work.authors.build
+        get new_work_author_path(@work, new_author)
         expect(response).to have_http_status(200)
       end
     end
 
-    describe "GET /authors/:id/edit" do
+    describe "GET /works/:id/authors/:id/edit" do
       it "works! " do
-        get edit_author_path(@author)
+        expect(@author.valid?).to be(true)
+        get edit_work_author_path(@work, @author)
         expect(response).to have_http_status(200)
       end
     end
 
-    describe "GET /authors/:id" do
+    describe "GET /works/:id/authors/:id" do
       it "works! " do
-        get author_path(@author)
+        expect(@author.valid?).to be(true)
+        get work_author_path(@work, @author)
         expect(response).to have_http_status(200)
       end
     end
 
-    describe "PATCH /authors/:id" do
+    describe "PATCH /works/:id/authors/:id" do
       it "works! " do
-        patch author_path(@author), { :author => @author.attributes }
-        expect(response).to redirect_to(author_path(@author))
+        expect(@author.valid?).to be(true)
+        patch work_author_path(@work, @author), { :author => @author.attributes }
+        expect(response).to redirect_to(work_author_path(@work, @author))
       end
     end
 
-    describe "PUT /authors/:id" do
+    describe "PUT /works/:id/authors/:id" do
       it "works! " do
-        put author_path(@author), { :author => @author.attributes }
-        expect(response).to redirect_to(author_path(@author))
+        expect(@author.valid?).to be(true)
+        put work_author_path(@work, @author), { :author => @author.attributes }
+        expect(response).to redirect_to(work_author_path(@work, @author))
       end
     end
 
-    describe "DELETE /authors/:id" do
+    describe "DELETE /works/:id/authors/:id" do
       it "works! " do
-        delete author_path(@author)
-        expect(response).to redirect_to(account_path(@account))
+        expect(@author.valid?).to be(true)
+        delete work_author_path(@work, @author)
+        expect(response).to redirect_to(account_path)
       end
     end
 
