@@ -19,13 +19,13 @@
   </thead>
 
   <tbody>
-    <%= render partial: 'index_table', collection: @author.works.uniq %>
+    <%= render partial: 'work_item', collection: @works %>
   </tbody>
 </table>
 
   <br>
 
-  <%= link_to 'New Work', new_author_work_path(@author) %>
-  <%= link_to 'Back', author_path(@author) %>
+  <%= link_to 'New Work', new_work_path() %>
+  <%= link_to 'Back', works_path() %>
 
 </div>

@@ -7,17 +7,15 @@ RSpec.describe "works/edit", type: :view do
   end
 
   before(:each) do
-    @author = assign(:author, FactoryGirl.create(:author_with_works_and_roles))
-    @work = @author.works.uniq.first
-    @minimum_roles = Role.static_roles.size
+    @work = assign(:work, FactoryGirl.create(:work))
   end
 
   it "renders the edit work form" do
     render
 
-    assert_select "form[action=?][method=?]", author_work_path(@author, @work), "post" do
+    assert_select "form[action=?][method=?]", work_path(@work), "post" do
       |el|
-      assert_select el, 'input[type=checkbox]', { minimum: @minimum_roles }
+      assert_select el, "input#work_title[name=?]", "work[title]"
     end
   end
 end

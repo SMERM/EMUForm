@@ -2,19 +2,14 @@ require 'rails_helper'
 
 RSpec.describe "authors/edit", type: :view do
   before(:each) do
-    @author = assign(:author, Author.create!(
-      :first_name => "MyString",
-      :last_name => "MyString",
-      :birth_year => 1,
-      :bio_en => "MyText",
-      :bio_it => "MyText"
-    ))
+    @work = FactoryGirl.create(:work_with_authors_and_roles, num_authors: 1)
+    @author = assign(:author, @work.authors.uniq.last)
   end
 
   it "renders the edit author form" do
     render
 
-    assert_select "form[action=?][method=?]", author_path(@author), "post" do
+    assert_select "form[action=?][method=?]", work_author_path(@work, @author), "post" do
 
       assert_select "input#author_first_name[name=?]", "author[first_name]"
 

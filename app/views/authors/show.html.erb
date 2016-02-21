@@ -39,12 +39,12 @@
     </thead>
 
     <tbody>
-      <%= render partial: 'works/index_table', collection: @author.works.uniq %>
+      <%= render partial: 'works/work_item', collection: @author.works.uniq %>
     </tbody>
   </table>
   <br />
-  <%= link_to 'Add new work', new_author_work_path(@author) %>
+  <%= link_to 'Add new work', new_work_author_path(@work, @author) %>
 </p>
 
-<%= link_to 'Edit', edit_author_path(@author) %> |
-<%= link_to 'Back', authors_path %>
+<%= link_to 'Edit', edit_work_author_path(@work, @author) %> |
+<%= link_to 'Back', work_authors_path(@work) %>

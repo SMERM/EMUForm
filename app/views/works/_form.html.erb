@@ -1,4 +1,4 @@
-<%= form_for([@author, @work], :enctype => 'multipart/form-data') do |f| %>
+<%= form_for(@work) do |f| %>
   <% if @work.errors.any? %>
     <div id="error_explanation">
 
@@ -10,7 +10,6 @@
     </div>
   <% end %>
 
-    <%= render partial: 'select_role', locals: { form: f } %>
     <div class="field">
       <%= f.label :title %><br>
       <%= f.text_field :title %>
@@ -33,6 +32,15 @@
     <div class="field"> <%= f.label 'Note di Programma (in italiano - optional)' %><br>
       <%= f.text_area :program_notes_it %>
     </div>
+    <% unless @work.new_record? %>
+      <div class="authors">
+         <%= f.label 'Associated authors' %><br />
+         <%= render partial: 'authors/author_item', collection: @work.authors.uniq %>
+      </div>
+      <div class="add_new_author">
+        <%= link_to 'Add new author', new_work_author_path(@work) %>
+      </div>
+    <% end %>
 
     <h3>Multiple file upload</h3>
 
@@ -72,11 +80,10 @@
   </div>
 <% end %>
 <br>
-    <h3 class="panel-title">Upload Instructions</h3>
-    <ul>
-      <li>The maximum file size for uploads is <strong>1 GB</strong>.</li>
-      <li>Only <strong>PDF, WAV, AIF</strong> files are allowed.</li>
-      <li>If your browser does not suck you can <strong>drag &amp; drop</strong> files from your desktop on this webpage.
-      If it does, you won't be able to drag &amp; drop (there's a story to be learned here).</li>
-    </ul>
-  
+<h3 class="panel-title">Upload Instructions</h3>
+<ul>
+  <li>The maximum file size for uploads is <strong>1 GB</strong>.</li>
+  <li>Only <strong>PDF, WAV, AIF</strong> files are allowed.</li>
+  <li>If your browser does not suck you can <strong>drag &amp; drop</strong> files from your desktop on this webpage.
+  If it does, you won't be able to drag &amp; drop (there's a story to be learned here).</li>
+</ul>

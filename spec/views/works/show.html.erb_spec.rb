@@ -7,8 +7,8 @@ RSpec.describe "works/show", type: :view do
   end
 
   before(:each) do
-    @author = FactoryGirl.create(:author_with_works_and_roles, num_works: 2)
-    @work = @author.works.uniq.first
+    @work = FactoryGirl.create(:work_with_authors_and_roles, num_authors: 2)
+    @author = @work.authors.uniq.first
   end
 
   it "renders attributes in <p>" do
@@ -16,7 +16,6 @@ RSpec.describe "works/show", type: :view do
 
     expect(rendered).to match(/#{@work.title}/)
     expect(rendered).to match(/#{@work.display_year}/)
-    expect(rendered).to match(/#{@work.display_duration}/)
-    expect(rendered).to match(/#{@work.roles(true).map { |r| r.description }.uniq.sort.join(', ')}/)
+    expect(rendered).to match(/#{@work.authors.where('authors.id = ?', @author.to_param).uniq.first.roles(true).map { |r| r.description }.uniq.sort.join(', ')}/)
   end
 end

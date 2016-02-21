@@ -4,5 +4,5 @@
 
 <%= render 'form' %>
 
-<%= link_to 'Show', @author %> |
-<%= link_to 'Back', authors_path %>
+<%= link_to 'Show', work_author_path(@work, @author) %> |
+<%= link_to 'Back', work_path(@work) %>

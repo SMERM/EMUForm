@@ -7,17 +7,18 @@ RSpec.describe "works/new", type: :view do
   end
 
   before(:each) do
-    @author = assign(:author, FactoryGirl.create(:author))
-    @work = @author.works.new
+    @work = Work.new
     @minimum_roles = Role.static_roles.size
   end
 
   it "renders new work form" do
     render
 
-    assert_select "form[action=?][method=?]", author_works_path(@author), "post" do
+    assert_select "form[action=?][method=?]", works_path, "post" do
       |el|
-      assert_select el, 'input[type=checkbox]', { minimum: @minimum_roles }
+
+      assert_select el, "input#work_title[name=?]", "work[title]"
+
     end
   end
 

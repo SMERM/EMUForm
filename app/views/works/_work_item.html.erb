@@ -1,0 +1,8 @@
+<tr>
+  <td><%= link_to work_item.title, work_path(work_item) %></td>
+  <td><%= work_item.display_year %></td>
+  <td><%= work_item.display_duration %></td>
+  <td><%= work_item.display_authors_with_roles { |awr, a_id| link_to awr, work_author_path(work_item, a_id) }.join(', ') %></td>
+  <td><%= link_to 'Edit', edit_work_path(work_item) %></td>
+  <td><%= link_to 'Destroy', work_path(work_item), method: :delete, data: { confirm: 'Are you sure?' } %></td>
+</tr>
