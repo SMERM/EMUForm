@@ -27,8 +27,8 @@ Rails.application.routes.draw do
 
   end
 
-  resources :authors do
-    resources :works
+  resources :works do
+    resources :authors
   end
   resources :roles
 

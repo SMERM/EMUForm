@@ -16,7 +16,6 @@ ActiveRecord::Schema.define(version: 20160128210326) do
   create_table "accounts", force: :cascade do |t|
     t.string   "first_name"
     t.string   "last_name"
-    t.string   "image"
     t.string   "location"
     t.string   "email",                  default: ""
     t.string   "encrypted_password",     default: "", null: false
@@ -61,7 +60,6 @@ ActiveRecord::Schema.define(version: 20160128210326) do
   create_table "admin_accounts", force: :cascade do |t|
     t.string   "first_name"
     t.string   "last_name"
-    t.string   "image"
     t.string   "location"
     t.string   "email",                  default: ""
     t.string   "encrypted_password",     default: "", null: false
@@ -136,6 +134,7 @@ ActiveRecord::Schema.define(version: 20160128210326) do
   end
 
   create_table "works", force: :cascade do |t|
+    t.integer  "owner_id",         null: false
     t.string   "title",            null: false
     t.datetime "year",             null: false
     t.datetime "duration",         null: false
