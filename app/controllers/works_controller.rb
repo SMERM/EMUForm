@@ -1,31 +1,30 @@
 class WorksController < EndUserBaseController
-  before_action :set_author
+  before_action :set_work, only: [:show, :edit, :update, :destroy]
   before_action :set_extra_params, only: [:create, :update]
 
-  # GET authors/1/works
-  # GET authors/1/works.json
+  # GET /works
+  # GET /works.json
   def index
-    @works = @author.works_with_roles
+    @works = current_account.works.uniq
   end
 
-  # GET /authors/1/works/1
-  # GET /authors/1/works/1.json
+  # GET /works/1
+  # GET /works/1.json
   def show
-    @work = @author.works.find(params[:id])
+    @authors = @work.authors
   end
 
-  # GET /authors/1/works/new
+  # GET /works/new
   def new
-    @work = @author.works.new
+    @work = current_account.works.new
   end
 
-  # GET /authors/1/works/1/edit
+  # GET /works/1/edit
   def edit
-    @work = @author.works.find(params[:id])
   end
 
-  # POST /authors/1/works
-  # POST /authors/1//works.json
+  # POST /works
+  # POST //works.json
   #
   # +create+
   #
@@ -35,13 +34,13 @@ class WorksController < EndUserBaseController
   # Submitted files are uploaded on the fly before the response
   #
   def create
-
-    @work = @author.works.new(@cleaned_params)
+    parms = params.has_key?(:work) ? work_params(params) : nil
+    @work = current_account.works.new(@cleaned_params)
 
     respond_to do |format|
       if @work.save
         @work.update_extra_features(@author, @roles, @submitted_files)
-        format.html { redirect_to author_work_path(@author, @work), notice: 'Work was successfully created.' }
+        format.html { redirect_to work_path(@work), notice: 'Work was successfully created.' }
         format.json { render :show, status: :created, location: @work }
       else
         format.html { render :new }
@@ -51,15 +50,13 @@ class WorksController < EndUserBaseController
 
   end
 
-  # PATCH/PUT /authors/1/works/1
-  # PATCH/PUT /authors/1/works/1.json
+  # PATCH/PUT /works/1
+  # PATCH/PUT /works/1.json
   def update
-    @work = @author.works.find(params[:id])
-
     respond_to do |format|
       if @work.update(@cleaned_params)
-        @work.update_extra_features(@author, @roles, @submitted_files)
-        format.html { redirect_to author_work_path(@author, @work), notice: 'Work was successfully updated.' }
+        @work.update_extra_features(@authors, @roles, @submitted_files)
+        format.html { redirect_to work_path(@work), notice: 'Work was successfully updated.' }
         format.json { render :show, status: :ok, location: @work }
       else
         format.html { render :edit }
@@ -68,21 +65,21 @@ class WorksController < EndUserBaseController
     end
   end
 
-  # DELETE authors/1/works/1
-  # DELETE authors/1/works/1.json
+  # DELETE /works/1
+  # DELETE /works/1.json
   def destroy
-    @work = @author.works.find(params[:id])
+    owner = @work.owner
     @work.destroy
     respond_to do |format|
-      format.html { redirect_to author_path(@author), notice: 'Work was successfully destroyed.' }
+      format.html { redirect_to account_path, notice: 'Work was successfully destroyed.' }
       format.json { head :no_content }
     end
   end
 
 private
   # Use callbacks to share common setup or constraints between actions.
-  def set_author
-    @author = Author.find(params[:author_id])
+  def set_work
+    @work = current_account.works.find(params[:id])
   end
 
   def set_extra_params
@@ -96,10 +93,9 @@ private
 
   # Never trust parameters from the scary internet, only allow the white list through.
   def work_params(parms)
-    parms.require(:work).permit(:title, :year, :duration, :instruments, :program_notes_en, :program_notes_it,
-                                :roles_attributes => [:id],
-                                :authors_attributes => [:id],
-                                :submitted_files_attributes => [:id, :http_request, :filename, :content_type, :size, :_destroy]
+    parms.require(:work).permit(:title, :year, :duration, :instruments, :program_notes_en, :program_notes_it, :owner_id,
+                                authors_attributes: [:id, roles_attributes: [:id]],
+                                submitted_files_attributes: [:id, :http_request, :filename, :content_type, :size, :_destroy],
                                )
   end
 

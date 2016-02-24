@@ -196,16 +196,19 @@ class Work < ActiveRecord::Base
   end
 
   #
-  # <tt>update_extra_features(authors_with_roles, submitted_files = {})</tt>
+  # <tt>update_extra_features(authors, roles, submitted_files = {})</tt>
   #
   # +update_extra_features+ performs all extra functionality-related duties
   # when saving or updating a +Work+ object for a given author.
   #
   # After performing all duties this function reloads the model.
   #
+  # FIXME: this can't work in this way. The roles have to be dependent on each
+  # author, so the roles have to be a nested resource for an author.
+  #
   def update_extra_features(authors, roles, submitted_files)
     self.add_submitted_files(submitted_files) unless submitted_files[:submitted_files_attributes].blank?
-    self.update_all_roles(authors_with_roles) unless roles[:roles_attributes].blank?
+    self.update_all_roles(self.authors_with_roles) unless roles[:roles_attributes].blank?
     self.reload
   end
 
