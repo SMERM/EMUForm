@@ -23,7 +23,7 @@ FactoryGirl.define do
 
       after :create do
         |w, evaluator|
-        authors = FactoryGirl.create_list(:author, evaluator.num_authors)
+        authors = FactoryGirl.create_list(:author, evaluator.num_authors, owner_id: w.owner_id)
         authors.each do
           |author|
           role_start = Forgery(:basic).number(:at_least => 0, :at_most => Role.count - evaluator.num_roles - 1)

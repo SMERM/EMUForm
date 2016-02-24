@@ -28,7 +28,7 @@ RSpec.describe WorksController, type: :controller do
     @num_authors = 3
     @num_attachments = 3
     @work = FactoryGirl.create(:work)
-    @authors = FactoryGirl.create_list(:author, @num_authors)
+    @authors = FactoryGirl.create_list(:author, @num_authors, owner_id: 9999)
     @role = Role.music_composer
     @roles = [Role.music_composer, Role.text_author, Role.conductor]
     @submitted_files_attributes = build_submitted_files_attributes(@num_attachments)
@@ -201,6 +201,11 @@ RSpec.describe WorksController, type: :controller do
   context 'account signed in (should be able to do most things)' do
 
     login_account
+
+    before :example do
+      subject.current_account.authors.concat(@authors)
+      subject.current_account.reload
+    end
 
     describe 'it should have a current valid account' do
       it 'does, indeed' do

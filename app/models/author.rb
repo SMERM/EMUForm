@@ -6,7 +6,8 @@ class Author < ActiveRecord::Base
   has_many :works, -> { includes :roles }, through: :author_work_roles, source: :work
   has_many :roles, -> { includes :works }, through: :author_work_roles, source: :role
 
-  validates_presence_of :first_name, :last_name
+  validates_presence_of :first_name, :last_name, :owner_id
+  accepts_nested_attributes_for :works
   accepts_nested_attributes_for :roles
 
   def full_name

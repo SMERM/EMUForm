@@ -29,6 +29,7 @@ RSpec.describe AuthorsController, type: :controller do
 	    :birth_year => Forgery(:basic).number(:at_least => Time.zone.now.year - 200, :at_most => Time.zone.now.year - 15),
 	    :bio_en => Forgery(:lorem_ipsum).paragraphs(Forgery(:basic).number(:at_least => 1, :at_most => 10)),
 	    :bio_it => Forgery(:lorem_ipsum).paragraphs(Forgery(:basic).number(:at_least => 1, :at_most => 10)),
+      :owner_id => 9999, # fake owner which (supposedly) does not exist
     }
   }
 
@@ -41,70 +42,73 @@ RSpec.describe AuthorsController, type: :controller do
     }
   }
 
+  after :example do
+    Author.destroy_all
+  end
+
   before :example do
     @num_authors = 3
-    Author.destroy_all
+    @work = FactoryGirl.create(:work)
   end
 
   context 'without logging in (there\'s little that we can do)' do
 
     describe "GET #index" do
-      it "assigns all authors as @authors" do
-        authors = FactoryGirl.create_list(:author_with_works_and_roles, @num_authors).sort { |a, b| a.last_name <=> b.last_name }
-        get :index, {}
+      it "does not assign all authors as @authors" do
+        get :index, { :work_id => @work.to_param } 
         expect(response).to redirect_to(new_account_session_path)
       end
     end
   
     describe "GET #show" do
-      it "assigns the requested author as @author" do
-        author = FactoryGirl.create(:author_with_works_and_roles)
-        get :show, {:id => author.to_param}
+      it "does not assign the requested author as @author" do
+        author = create_author
+        get :show, {id: author.to_param, work_id: @work.to_param }
         expect(response).to redirect_to(new_account_session_path)
       end
     end
   
     describe "GET #new" do
-      it "assigns a new author as @author" do
-        get :new, {}
+      it "does not assign a new author as @author" do
+        get :new, { work_id: @work.to_param }
         expect(response).to redirect_to(new_account_session_path)
       end
     end
   
     describe "GET #edit" do
-      it "assigns the requested author as @author" do
-        author = Author.create! valid_attributes
-        get :edit, {:id => author.to_param}
+      it "does not assign the requested author as @author" do
+        author = create_author
+        get :edit, {id: author.to_param, work_id: @work.to_param}
         expect(response).to redirect_to(new_account_session_path)
       end
     end
   
     describe "POST #create" do
       context "with valid params" do
-        it "creates a new Author" do
-          post :create, {:author => valid_attributes}
+        it "cannot create a new Author" do
+          post :create, {author: valid_attributes, work_id: @work.to_param }
           expect(response).to redirect_to(new_account_session_path)
         end
   
-        it "assigns a newly created author as @author" do
-          post :create, {:author => valid_attributes}
+        it "cannot assign a newly created author as @author" do
+          post :create, {author: valid_attributes, work_id: @work.to_param }
           expect(response).to redirect_to(new_account_session_path)
         end
   
-        it "redirects to the created author" do
-          post :create, {:author => valid_attributes}
+        it "does not redirect to the created author" do
+          post :create, {author: valid_attributes, work_id: @work.to_param }
           expect(response).to redirect_to(new_account_session_path)
         end
       end
   
       context "with invalid params" do
-        it "assigns a newly created but unsaved author as @author" do
-          post :create, {:author => invalid_attributes}
+        it "does not assign a newly created but unsaved author as @author" do
+          post :create, {author: invalid_attributes, work_id: @work.to_param }
           expect(response).to redirect_to(new_account_session_path)
         end
   
-        it "re-renders the 'new' template" do
-          post :create, {:author => invalid_attributes}
+        it "does not re-render the 'new' template" do
+          post :create, {author: invalid_attributes, work_id: @work.to_param }
           expect(response).to redirect_to(new_account_session_path)
         end
       end
@@ -113,53 +117,58 @@ RSpec.describe AuthorsController, type: :controller do
     describe "PUT #update" do
       context "with valid params" do
         let(:new_attributes) {
-          valid_attributes
+          {
+            :first_name => Forgery(:name).female_first_name, :last_name => Forgery(:name).last_name,
+            :birth_year => Forgery(:basic).number(:at_least => Time.zone.now.year - 200, :at_most => Time.zone.now.year - 15),
+            :bio_en => Forgery(:lorem_ipsum).paragraphs(Forgery(:basic).number(:at_least => 1, :at_most => 10)),
+            :bio_it => Forgery(:lorem_ipsum).paragraphs(Forgery(:basic).number(:at_least => 1, :at_most => 10)),
+          }
         }
   
-        it "updates the requested author" do
-          author = Author.create! valid_attributes
-          put :update, {:id => author.to_param, :author => new_attributes}
+        it "does not update the requested author" do
+          author = create_author
+          put :update, { id: author.to_param, author: new_attributes, work_id: @work.to_param }
           expect(response).to redirect_to(new_account_session_path)
         end
   
-        it "assigns the requested author as @author" do
-          author = Author.create! valid_attributes
-          put :update, {:id => author.to_param, :author => valid_attributes}
+        it "does not assign the requested author as @author" do
+          author = create_author
+          put :update, {:id => author.to_param, :author => new_attributes, work_id: @work.to_param }
           expect(response).to redirect_to(new_account_session_path)
         end
   
-        it "redirects to the author" do
-          author = Author.create! valid_attributes
-          put :update, {:id => author.to_param, :author => valid_attributes}
+        it "does not redirect to the author" do
+          author = create_author
+          put :update, {:id => author.to_param, :author => new_attributes, work_id: @work.to_param }
           expect(response).to redirect_to(new_account_session_path)
         end
       end
   
       context "with invalid params" do
-        it "assigns the author as @author" do
-          author = Author.create! valid_attributes
-          put :update, {:id => author.to_param, :author => invalid_attributes}
+        it "does not assign the author as @author" do
+          author = create_author
+          put :update, {:id => author.to_param, :author => invalid_attributes, work_id: @work.to_param }
           expect(response).to redirect_to(new_account_session_path)
         end
   
-        it "re-renders the 'edit' template" do
-          author = Author.create! valid_attributes
-          put :update, {:id => author.to_param, :author => invalid_attributes}
+        it "does not re-render the 'edit' template" do
+          author = create_author
+          put :update, {:id => author.to_param, :author => invalid_attributes, work_id: @work.to_param }
           expect(response).to redirect_to(new_account_session_path)
         end
       end
     end
   
     describe "DELETE #destroy" do
-      it "destroys the requested author" do
-        author = Author.create! valid_attributes
-        delete :destroy, {:id => author.to_param}
+      it "does not destroy the requested author" do
+        author = create_author
+        delete :destroy, {:id => author.to_param, work_id: @work.to_param }
         expect(response).to redirect_to(new_account_session_path)
       end
   
-      it "redirects to the authors list" do
-        author = Author.create! valid_attributes
-        delete :destroy, {:id => author.to_param}
+      it "does not redirect to the authors list" do
+        author = create_author
+        delete :destroy, {:id => author.to_param, work_id: @work.to_param }
         expect(response).to redirect_to(new_account_session_path)
       end
   
@@ -171,33 +180,38 @@ RSpec.describe AuthorsController, type: :controller do
 
     login_account
 
+    before :example do
+      subject.current_account.works << @work
+      subject.current_account.reload
+    end
+
     describe "GET #index" do
       it "assigns all authors as @authors" do
-        authors = FactoryGirl.create_list(:author_with_works_and_roles, @num_authors).sort { |a, b| a.last_name <=> b.last_name }
-        get :index, {}
+        authors = @work.authors.uniq
+        get :index, { work_id: @work.to_param }
         expect(assigns(:authors)).to eq(authors)
       end
     end
   
     describe "GET #show" do
       it "assigns the requested author as @author" do
-        author = FactoryGirl.create(:author_with_works_and_roles, owner_id: subject.current_account.to_param)
-        get :show, {:id => author.to_param}
+        author = create_author(subject.current_account.to_param)
+        get :show, {:id => author.to_param, work_id: @work.to_param }
         expect(assigns(:author)).to eq(author)
       end
     end
   
     describe "GET #new" do
       it "assigns a new author as @author" do
-        get :new, {}
+        get :new, { work_id: @work.to_param }
         expect(assigns(:author)).to be_a_new(Author)
       end
     end
   
     describe "GET #edit" do
       it "assigns the requested author as @author" do
-        author = FactoryGirl.create(:author, owner_id: subject.current_account.to_param)
-        get :edit, {:id => author.to_param}
+        author = create_author(subject.current_account.to_param)
+        get :edit, {:id => author.to_param, work_id: @work.to_param }
         expect(assigns(:author)).to eq(author)
       end
     end
@@ -206,31 +220,31 @@ RSpec.describe AuthorsController, type: :controller do
       context "with valid params" do
         it "creates a new Author" do
           expect {
-            post :create, {:author => valid_attributes}
+            post :create, {:author => valid_attributes, work_id: @work.to_param }
           }.to change(Author, :count).by(1)
         end
   
         it "assigns a newly created author as @author" do
-          post :create, {:author => valid_attributes}
+          post :create, {:author => valid_attributes, work_id: @work.to_param }
           expect(assigns(:author)).to be_a(Author)
           expect(assigns(:author)).to be_persisted
         end
   
         it "redirects to the created author" do
-          post :create, {:author => valid_attributes}
-          expect(response).to redirect_to(Author.last)
+          post :create, {:author => valid_attributes, work_id: @work.to_param }
+          expect(response).to redirect_to(work_author_path(@work, Author.last))
         end
       end
   
       context "with invalid params" do
         it "assigns a newly created but unsaved author as @author" do
-          post :create, {:author => invalid_attributes}
+          post :create, {:author => invalid_attributes, work_id: @work.to_param }
           expect(assigns(:author)).to be_a_new(Author)
         end
   
         it "re-renders the 'new' template" do
-          post :create, {:author => invalid_attributes}
-          expect(response).to render_template("new")
+          post :create, {:author => invalid_attributes, work_id: @work.to_param }
+          expect(response).to redirect_to(new_work_author_path(@work))
         end
       end
     end
@@ -238,39 +252,44 @@ RSpec.describe AuthorsController, type: :controller do
     describe "PUT #update" do
       context "with valid params" do
         let(:new_attributes) {
-          valid_attributes
+          {
+            :first_name => Forgery(:name).female_first_name, :last_name => Forgery(:name).last_name,
+            :birth_year => Forgery(:basic).number(:at_least => Time.zone.now.year - 200, :at_most => Time.zone.now.year - 15),
+            :bio_en => Forgery(:lorem_ipsum).paragraphs(Forgery(:basic).number(:at_least => 1, :at_most => 10)),
+            :bio_it => Forgery(:lorem_ipsum).paragraphs(Forgery(:basic).number(:at_least => 1, :at_most => 10)),
+          }
         }
   
         it "updates the requested author" do
-          author = FactoryGirl.create(:author, owner_id: subject.current_account.to_param)
-          put :update, {:id => author.to_param, :author => new_attributes}
+          author = create_author(subject.current_account.to_param)
+          put :update, {:id => author.to_param, :author => new_attributes, work_id: @work.to_param }
           author.reload
           new_attributes.keys.each { |na| expect(author.send(na)).to eq(new_attributes[na]) }
         end
   
         it "assigns the requested author as @author" do
-          author = FactoryGirl.create(:author, owner_id: subject.current_account.to_param)
-          put :update, {:id => author.to_param, :author => valid_attributes}
+          author = create_author(subject.current_account.to_param)
+          put :update, {:id => author.to_param, :author => valid_attributes, work_id: @work.to_param }
           expect(assigns(:author)).to eq(author)
         end
   
         it "redirects to the author" do
-          author = FactoryGirl.create(:author, owner_id: subject.current_account.to_param)
-          put :update, {:id => author.to_param, :author => valid_attributes}
-          expect(response).to redirect_to(author)
+          author = create_author(subject.current_account.to_param)
+          put :update, {:id => author.to_param, :author => valid_attributes, work_id: @work.to_param }
+          expect(response).to redirect_to(work_author_path(@work, author))
         end
       end
   
       context "with invalid params" do
         it "assigns the author as @author" do
-          author = FactoryGirl.create(:author, owner_id: subject.current_account.to_param)
-          put :update, {:id => author.to_param, :author => invalid_attributes}
+          author = create_author(subject.current_account.to_param)
+          put :update, {:id => author.to_param, :author => invalid_attributes, work_id: @work.to_param }
           expect(assigns(:author)).to eq(author)
         end
   
         it "re-renders the 'edit' template" do
-          author = FactoryGirl.create(:author, owner_id: subject.current_account.to_param)
-          put :update, {:id => author.to_param, :author => invalid_attributes}
+          author = create_author(subject.current_account.to_param)
+          put :update, {:id => author.to_param, :author => invalid_attributes, work_id: @work.to_param }
           expect(response).to render_template("edit")
         end
       end
@@ -278,19 +297,26 @@ RSpec.describe AuthorsController, type: :controller do
   
     describe "DELETE #destroy" do
       it "destroys the requested author" do
-        author = FactoryGirl.create(:author, owner_id: subject.current_account.to_param)
+        author = create_author(subject.current_account.to_param)
         expect {
-          delete :destroy, {:id => author.to_param }
+          delete :destroy, {:id => author.to_param, work_id: @work.to_param }
         }.to change(Author, :count).by(-1)
       end
   
       it "redirects to the account list of authors" do
-        author = FactoryGirl.create(:author, owner_id: subject.current_account.to_param)
-        delete :destroy, {:id => author.to_param }
-        expect(response).to redirect_to(account_path(subject.current_account))
+        author = create_author(subject.current_account.to_param)
+        delete :destroy, {:id => author.to_param, work_id: @work.to_param }
+        expect(response).to redirect_to(account_path)
       end
     end
 
+  end
+
+private
+
+  def create_author(owner_id = 9999)
+    args = valid_attributes.update(works_attributes: [ { id: @work.to_param } ], owner_id: owner_id)
+    FactoryGirl.create(:author, args)
   end
 
 end

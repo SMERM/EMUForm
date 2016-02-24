@@ -72,6 +72,7 @@ class AuthorsController < EndUserBaseController
     # Never trust parameters from the scary internet, only allow the white list through.
     def author_params
       params.require(:author).permit(:first_name, :last_name, :birth_year, :bio_en, :bio_it, :owner_id, :work_id, :owner_id,
+                                     works_attributes: [:id],
                                      roles_attributes: [:id])
     end
 end
