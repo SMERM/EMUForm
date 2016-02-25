@@ -4,10 +4,10 @@ RSpec.describe Work, type: :model do
 
   before :example do
     @num_authors = 3
-    @authors = FactoryGirl.create_list(:author, @num_authors)
+    @account = FactoryGirl.create(:account)
+    @authors = FactoryGirl.create_list(:author, @num_authors, owner_id: @account.to_param)
     @w = nil # this is where we set the work
     @num_submitted_files = Forgery(:basic).number(at_least: 1, at_most: 5)
-    @account = FactoryGirl.create(:account)
   end
 
   after :example do
@@ -183,7 +183,7 @@ RSpec.describe Work, type: :model do
     it 'can link authors to a single work' do
       num_authors = 3
       expect((w = FactoryGirl.create(:work)).valid?).to be(true)
-      expect((as = FactoryGirl.create_list(:author, num_authors)).class).to be(Array)
+      expect((as = FactoryGirl.create_list(:author, num_authors, owner_id: @account.to_param)).class).to be(Array)
       expect((r = Role.music_composer).valid?).to be(true)
       as.each { |a| w.add_author_with_roles(a, r) }
       expect(w.authors(true).uniq.count).to eq(num_authors)
@@ -193,7 +193,7 @@ RSpec.describe Work, type: :model do
       num_works = 3
       num_authors = 5
       expect((r = Role.music_composer).valid?).to be(true)
-      expect((as = FactoryGirl.create_list(:author, num_authors)).class).to be(Array)
+      expect((as = FactoryGirl.create_list(:author, num_authors, owner_id: @account.to_param)).class).to be(Array)
       expect((ws = FactoryGirl.create_list(:work, num_works)).class).to be(Array)
       ws.each { |w| as.each { |a| w.add_author_with_roles(a, r) } }
       ws.each { |w| expect(w.authors(true).uniq.count).to eq(num_authors) }

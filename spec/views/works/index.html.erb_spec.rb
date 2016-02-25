@@ -7,8 +7,8 @@ RSpec.describe "works/index", type: :view do
   end
 
   before(:each) do
-    @author = assign(:author, FactoryGirl.create(:author))
-    @works = assign(:work, FactoryGirl.create_list(:work, 3))
+    @author = assign(:author, FactoryGirl.create(:author, owner_id: 9999))
+    @works = assign(:work, FactoryGirl.create_list(:work, 3, owner_id: 9999))
     @role = Role.music_composer
     @works.each { |w| w.add_author_with_roles(@author, @role) }
   end

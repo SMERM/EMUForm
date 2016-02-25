@@ -8,12 +8,17 @@ RSpec.describe Author, type: :model do
       :birth_year => Forgery(:basic).number(:at_least => Time.zone.now.year - 200, :at_most => Time.zone.now.year - 15).to_s,
       :bio_en => Forgery(:lorem_ipsum).paragraphs(Forgery(:basic).number(:at_least => 1, :at_most => 10)),
       :bio_it => Forgery(:lorem_ipsum).paragraphs(Forgery(:basic).number(:at_least => 1, :at_most => 10)),
+      :owner_id => @account.to_param,
     }
   }
 
   let(:mandatory_parameters) {
     [:first_name, :last_name]
   }
+
+  before :example do
+    @account = FactoryGirl.create(:account)
+  end
 
   context 'object creation' do
 
@@ -50,11 +55,11 @@ RSpec.describe Author, type: :model do
     end
 
     it 'can be created from factory' do
-      expect(FactoryGirl.create(:author).valid?).to be(true)
+      expect(FactoryGirl.create(:author, owner_id: @account.to_param).valid?).to be(true)
     end
 
     it 'can be built and saved with complete work/role relationships' do
-      work = FactoryGirl.create(:work_with_authors_and_roles) # work can also have *other* authors and roles
+      work = FactoryGirl.create(:work_with_authors_and_roles, owner_id: @account.to_param) # work can also have *other* authors and roles
       vps = valid_parameters.dup
       vps.update(roles_attributes: [ {id: 1}, {id: 2}, {id: 3} ], work_id: work.to_param)
       (a, ras) = Author.build(vps)
