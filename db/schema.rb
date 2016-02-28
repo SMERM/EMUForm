@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160128210326) do
+ActiveRecord::Schema.define(version: 20160227190815) do
 
   create_table "accounts", force: :cascade do |t|
     t.string   "first_name"
@@ -85,14 +85,6 @@ ActiveRecord::Schema.define(version: 20160128210326) do
   add_index "admin_accounts", ["email"], name: "index_admin_accounts_on_email", unique: true
   add_index "admin_accounts", ["reset_password_token"], name: "index_admin_accounts_on_reset_password_token", unique: true
 
-  create_table "author_work_roles", force: :cascade do |t|
-    t.integer  "author_id",  null: false
-    t.integer  "work_id",    null: false
-    t.integer  "role_id",    null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-  end
-
   create_table "authorizations", force: :cascade do |t|
     t.string   "account_name"
     t.string   "provider"
@@ -145,5 +137,13 @@ ActiveRecord::Schema.define(version: 20160128210326) do
     t.datetime "created_at",       null: false
     t.datetime "updated_at",       null: false
   end
+
+  create_table "works_roles_authors", id: false, force: :cascade do |t|
+    t.integer "work_id"
+    t.integer "role_id"
+    t.integer "author_id"
+  end
+
+  add_index "works_roles_authors", ["work_id", "role_id", "author_id"], name: "index_works_roles_authors_on_work_id_and_role_id_and_author_id", unique: true
 
 end

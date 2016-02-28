@@ -21,9 +21,9 @@ end
 class Role < ActiveRecord::Base
   validates :description, presence: true, uniqueness: true
 
-  has_many :author_work_roles
-  has_many :authors, through: :author_work_roles
-  has_many :works, through: :author_work_roles
+  has_many :works_roles_authors
+  has_many :works, through: :works_roles_authors, source: :work, dependent: :destroy
+  has_many :authors, through: :works_roles_authors, source: :author, dependent: :destroy
 
   include RoleStaticMethods
 

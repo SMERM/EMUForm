@@ -2,12 +2,10 @@ class Author < ActiveRecord::Base
 
   belongs_to :owner, class_name: 'Account'
 
-  has_many :author_work_roles
-  has_many :works, -> { includes :roles }, through: :author_work_roles, source: :work
-  has_many :roles, -> { includes :works }, through: :author_work_roles, source: :role
+  has_many :works_roles_authors
+  has_many :roles, -> { includes :works }, through: :works_roles_authors, dependent: :destroy
 
   validates_presence_of :first_name, :last_name, :owner_id
-  accepts_nested_attributes_for :works
   accepts_nested_attributes_for :roles
 
   def full_name

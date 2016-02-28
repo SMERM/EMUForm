@@ -157,7 +157,8 @@ RSpec.describe Work, type: :model do
     it 'actually destroys the links with the author when destroyed' do
       num_works = 3
       num_authors = 1
-      expect((ws = FactoryGirl.create_list(:work_with_authors_and_roles, num_works, num_authors: 1)).size).to eq(num_works)
+      num_roles = 2
+      expect((ws = FactoryGirl.create_list(:work_with_authors_and_roles, num_works, num_authors: 1, num_roles: 2)).size).to eq(num_works)
       ws.each do
         |w|
         expect(w.authors_with_roles(true).count).to eq(num_authors)
@@ -166,13 +167,9 @@ RSpec.describe Work, type: :model do
         # we have `num_authors` different authors linked to each work, so each
         # author has just one work
         #
-        w.authors(true).uniq.each do
-          |a|
-          expect(a.valid?).to be(true)
-          expect(a.works(true).uniq.count).to eq(1)
-          w.destroy
-          expect(a.works(true).count).to eq(0)
-        end
+        expect(wras = w.works_roles_authors(true).count).to eq(num_authors*num_roles)
+        w.destroy
+        expect(WorkRoleAuthor.where('work_id = ?', w.id).count).to eq(0)
       end
     end
 
@@ -197,7 +194,6 @@ RSpec.describe Work, type: :model do
       expect((ws = FactoryGirl.create_list(:work, num_works)).class).to be(Array)
       ws.each { |w| as.each { |a| w.add_author_with_roles(a, r) } }
       ws.each { |w| expect(w.authors(true).uniq.count).to eq(num_authors) }
-      as.each { |a| expect(a.works(true).uniq.count).to eq(num_works) }
     end
 
     it 'lists authors and works properly' do
@@ -208,12 +204,12 @@ RSpec.describe Work, type: :model do
         |work|
         expect(work.authors_with_roles(true).size).to eq(num_authors)
         work.authors_with_roles.each do
-          |awr_hash|
-          expect(awr_hash.has_key?(:author_id)).to be(true)
-          expect(awr_hash.has_key?(:roles_attributes)).to be(true)
-          expect((auth = Author.find(awr_hash[:author_id])).kind_of?(Author)).to be(true)
-          expect(awr_hash[:roles_attributes].size).to eq(AuthorWorkRole.where('author_id = ? and work_id = ?', auth.to_param, work.to_param).count)
-          awr_hash[:roles_attributes].each { |r_a| expect(auth.roles.where('roles.id = ?', r_a[:id]).uniq.count).to eq(1) }
+          |wra_hash|
+          expect(wra_hash.has_key?(:author_id)).to be(true)
+          expect(wra_hash.has_key?(:roles_attributes)).to be(true)
+          expect((auth = Author.find(wra_hash[:author_id])).kind_of?(Author)).to be(true)
+          expect(wra_hash[:roles_attributes].size).to eq(WorkRoleAuthor.where('author_id = ? and work_id = ?', auth.to_param, work.to_param).count)
+          wra_hash[:roles_attributes].each { |r_a| expect(auth.roles.where('roles.id = ?', r_a[:id]).uniq.count).to eq(1) }
         end
       end
     end
@@ -222,9 +218,9 @@ RSpec.describe Work, type: :model do
       nr = 3
       na = 1
       work = FactoryGirl.create(:work_with_authors_and_roles, num_authors: na, num_roles: nr)
-      author = work.authors(true).last
-      awrs = AuthorWorkRole.where('author_id = ? and work_id = ?', author.to_param, work.to_param).uniq
-      string_result = awrs.map { |awr| awr.role.description }.sort.join(', ')
+      author = work.authors(true).uniq.last
+      expect((wras = WorkRoleAuthor.where('author_id = ? and work_id = ?', author.to_param, work.to_param)).size).to eq(nr)
+      string_result = wras.map { |wra| wra.role.description }.sort.join(', ')
       expect(work.display_roles(author)).to eq(string_result)
     end
 

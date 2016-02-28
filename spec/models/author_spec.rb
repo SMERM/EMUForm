@@ -60,13 +60,14 @@ RSpec.describe Author, type: :model do
 
     it 'can be built and saved with complete work/role relationships' do
       work = FactoryGirl.create(:work_with_authors_and_roles, owner_id: @account.to_param) # work can also have *other* authors and roles
+      author_count = work.authors(true).uniq.count
       vps = valid_parameters.dup
       vps.update(roles_attributes: [ {id: 1}, {id: 2}, {id: 3} ], work_id: work.to_param)
       (a, ras) = Author.build(vps)
       expect(a.valid?).to be(true)
       expect(a.new_record?).to be(true)
       expect(a.save_with_work(work, ras)).to be(true)
-      expect(a.works(true).uniq.count).to eq(1)
+      expect(work.authors(true).uniq.count).to eq(author_count + 1)
       expect(a.roles(true).uniq.count).to eq(3)
     end
      

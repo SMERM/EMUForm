@@ -10,9 +10,8 @@ class Work < ActiveRecord::Base
   validates_presence_of :title, :year, :duration, :instruments, :program_notes_en, :owner_id
 
   has_many :submitted_files
-  has_many :author_work_roles
-  has_many :authors, -> { includes :roles }, through: :author_work_roles, source: :author
-  has_many :roles, -> { includes :works }, through: :author_work_roles, source: :role
+  has_many :works_roles_authors
+  has_many :authors, -> { includes :roles }, through: :works_roles_authors, dependent: :destroy
 
   accepts_nested_attributes_for :submitted_files, :allow_destroy => true, :reject_if => proc { |attrs| attrs[:http_channel].blank? }
   accepts_nested_attributes_for :authors
@@ -64,7 +63,7 @@ class Work < ActiveRecord::Base
   # display all the roles for a given author as a colon-separated list
   #
   def display_roles(author)
-    self.roles.where('author_id = ?', author.to_param).uniq.map { |r| r.description }.sort.join(', ')
+    self.authors.where('authors.id = ?', author.to_param).uniq.first.roles.map { |r| r.description }.sort.join(', ')
   end
 
   #
@@ -124,7 +123,7 @@ class Work < ActiveRecord::Base
     as.each do
       |a|
       h = { :author_id => a.to_param }
-      h.update(:roles_attributes => AuthorWorkRole.where('author_id = ? and work_id = ?', a.to_param, self.to_param).map { |awr| awr.role })
+      h.update(:roles_attributes => WorkRoleAuthor.where('author_id = ? and work_id = ?', a.to_param, self.to_param).map { |awr| awr.role })
       res << h
     end
     res
@@ -244,31 +243,31 @@ class Work < ActiveRecord::Base
     # method)
     #
     def add_author_with_role(w_id, a_id, r_id)
-      AuthorWorkRole.create(:author_id => a_id, :work_id => w_id, :role_id => r_id)
+      WorkRoleAuthor.create(:work_id => w_id, :role_id => r_id, :author_id => a_id)
     end
   
     #
-    # <tt>detach_role_from_an_author(w_id, a_id, r_id)</tt>
+    # <tt>remove_a_role_from_an_author(w_id, r_id, a_id)</tt>
     #
-    # removes a three-way link between an author, a work and a role (class
-    # method). This does not destroy any of the linked records (author, work,
-    # or role).
+    # removes a three-way link between a work, a role and an author (class
+    # method). This does not destroy any of the linked records (work, role
+    # or author).
     #
-    def detach_role_from_an_author(w_id, a_id, r_id)
-      awr = AuthorWorkRole.where("author_id = #{a_id} and work_id = #{w_id} and role_id = #{r_id}").first
-      awr.valid? && awr.destroy
-      awr
+    def remove_a_role_from_an_author(w_id, r_id, a_id)
+      wra = WorkRoleAuthor.where("author_id = #{a_id} and work_id = #{w_id} and role_id = #{r_id}").first
+      wra.valid? && wra.destroy
+      wra
     end
 
     #
-    # <tt>detach_an_author(a_id, w_id)</tt>
+    # <tt>detach_an_author(w_id, a_id)</tt>
     #
     # removes all three-way links between an author and a work (class method).
     # This does not destroy any of the linked records (author, work,
     # or role), but just any connection between an author and a work.
     #
-    def detach_an_author(a_id, w_id)
-      AuthorWorkRole.destroy_all("author_id = #{a_id} and work_id = #{w_id}") if a_id && w_id
+    def detach_an_author(w_id, a_id)
+      WorkRoleAuthor.destroy_all("author_id = #{a_id} and work_id = #{w_id}") if a_id && w_id
     end
 
   private
@@ -291,14 +290,14 @@ class Work < ActiveRecord::Base
   end
 
   #
-  # <tt>detach_role_from_an_author(author, role)</tt>
+  # <tt>remove_a_role_from_an_author(role, author)</tt>
   #
   # removes a three-way link between a work, an author and a role (instance
   # method). This does not destroy any of the linked records (author, work,
   # or role).
   #
-  def detach_role_from_an_author(a, r)
-    self.class.detach_role_from_an_author(self.to_param, a.to_param, r.to_param)
+  def remove_a_role_from_an_author(r, a)
+    self.class.remove_a_role_from_an_author(self.to_param, a.to_param, r.to_param)
   end
 
   #

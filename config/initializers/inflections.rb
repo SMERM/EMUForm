@@ -14,3 +14,8 @@
 # ActiveSupport::Inflector.inflections(:en) do |inflect|
 #   inflect.acronym 'RESTful'
 # end
+
+
+ActiveSupport::Inflector.inflections(:en) do |inflect|
+  inflect.irregular 'work_role_author', 'works_roles_authors'
+end
