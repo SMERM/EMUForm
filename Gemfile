@@ -40,7 +40,8 @@ group :development, :test do
   # use FactoryGirl instead of static fixtures
   gem 'factory_girl_rails', '~> 4.0'
   gem 'forgery'
-  gem "codeclimate-test-reporter", require: nil
+  gem 'codeclimate-test-reporter', require: nil
+  gem 'capybara'
 end
 
 group :development do

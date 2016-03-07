@@ -79,6 +79,13 @@ GEM
       thor (~> 0.19)
     builder (3.2.2)
     byebug (8.2.1)
+    capybara (2.6.2)
+      addressable
+      mime-types (>= 1.16)
+      nokogiri (>= 1.3.3)
+      rack (>= 1.0.0)
+      rack-test (>= 0.5.4)
+      xpath (~> 2.0)
     carrierwave (0.10.0)
       activemodel (>= 3.2.0)
       activesupport (>= 3.2.0)
@@ -295,6 +302,8 @@ GEM
       binding_of_caller (>= 0.7.2)
       railties (>= 4.0)
       sprockets-rails (>= 2.0, < 4.0)
+    xpath (2.0.0)
+      nokogiri (~> 1.3)
 
 PLATFORMS
   ruby
@@ -303,6 +312,7 @@ DEPENDENCIES
   activeadmin!
   blueimp-file-upload-rails
   byebug
+  capybara
   carrierwave
   codeclimate-test-reporter
   coffee-rails (~> 4.1.0)
