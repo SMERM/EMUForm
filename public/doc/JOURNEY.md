@@ -17,6 +17,7 @@
       - authors
 4. add new work
   - EMUForm/app/views/works/new…
+  - aggiunge lavoro e poi va a aggiungi autori (che però è un select_author)
 5. add author
   - existing? -> authors/:id/show + select roles
   - create -> authors/new + select roles
