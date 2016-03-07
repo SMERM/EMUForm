@@ -2,6 +2,8 @@
 
 ![whiteboard](./journey.jpg)
 
+![whiteboard](./20160307_session_whiteboard.jpg)
+
 1. landing page
   - EMUForm/app/views/accounts/sessions/new.html.erb
   - breve messaggio di benvenuto
