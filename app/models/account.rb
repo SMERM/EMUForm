@@ -12,7 +12,7 @@ class Account < ActiveRecord::Base
 
   accepts_nested_attributes_for :authors, allow_destroy: true
 
-  validates_presence_of :email
+  validates_presence_of :email, :last_name, :first_name
 
 # mount_uploader :image, ImageUploader
 
@@ -36,8 +36,8 @@ class Account < ActiveRecord::Base
        account.password = Devise.friendly_token[0,10]
        account.name = auth.info.name
        account.email = auth.info.email
-       if auth.provider == "twitter" 
-         account.save(:validate => false) 
+       if auth.provider == "twitter"
+         account.save(:validate => false)
        else
          account.save
        end

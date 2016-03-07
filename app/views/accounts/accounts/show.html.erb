@@ -22,8 +22,15 @@
 
 <p>
   <strong>Account created on:</strong>
-  <%= @account.remember_created_at %>
+  <%= @account.created_at %>
 </p>
 
-<%= link_to 'Edit', edit_account_registration_path(@account) %> |
-<%= link_to 'Back', account_registration_path(@account) %>
+<% if @account.remember_created_at %>
+<p>
+  <strong>Last Login on:</strong>
+  <%= @account.remember_created_at %>
+</p>
+<% end %>
+
+<%= link_to 'Edit', edit_account_registration_path %> |
+<%= link_to 'List of Works', works_path %>

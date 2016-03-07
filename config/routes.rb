@@ -19,11 +19,12 @@ Rails.application.routes.draw do
     get '/account/', to: 'accounts/accounts#show', as: '/account/'
 
     # added to please devise
-    root to: 'accounts/sessions#new'
+    # root to: 'accounts/sessions#new'
+    root to: 'accounts/accounts#show'
 
-    authenticated do
-      root to: 'accounts/accounts#show', as: :authenticated_root
-    end
+    # authenticated do
+    #   root to: 'accounts/accounts#show', as: :authenticated_root
+    # end
 
   end
 

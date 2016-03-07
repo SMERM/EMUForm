@@ -20,6 +20,6 @@ class Accounts::SessionsController < Devise::SessionsController
 
   # If you have extra params to permit, append them to the sanitizer.
   def configure_sign_in_params
-    devise_parameter_sanitizer.for(:sign_in) << [ :last_name,  :first_name, :location ]
+    devise_parameter_sanitizer.for(:sign_in) << [ :last_name,  :first_name, :location, :remember_created_at]
   end
 end

@@ -6,12 +6,12 @@ RSpec.describe "Sessions" do
     account = FactoryGirl.create(:account)
 
     sign_in account
-    get authenticated_root_path
+    get root_path
     expect(controller.current_account).to eq(account)
 
     sign_out account
-    get authenticated_root_path
-    expect(controller.current_account).to be_nil
+    get root_path
+    expect(controller.respond_to?(:current_account)).to be(false)
   end
 
 end
