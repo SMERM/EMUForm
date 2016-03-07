@@ -21,15 +21,19 @@ FactoryGirl.define do
         num_roles 3
       end
 
-      after :create do
-        |w, evaluator|
-        authors = FactoryGirl.create_list(:author, evaluator.num_authors, owner_id: w.owner_id)
+      authors_attributes do
+        res = []
+        authors = FactoryGirl.create_list(:author, num_authors, owner_id: self.owner_id)
         authors.each do
-          |author|
-          role_start = Forgery(:basic).number(:at_least => 0, :at_most => Role.count - evaluator.num_roles - 1)
-          roles = Role.all[role_start..role_start + evaluator.num_roles-1]
-          w.add_author_with_roles(author, roles)
+          |a|
+          h = { id: a.to_param }
+          r_ids = []
+          1.upto(num_roles) { r_ids << Forgery(:basic).unique_number(r_ids, at_least: 1, at_most: Role.count) }
+          rh = r_ids.map { |r_id| { id: r_id } }
+          h.update(roles_attributes: rh)
+          res << h
         end
+        res
       end
 
     end

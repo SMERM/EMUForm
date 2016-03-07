@@ -2,11 +2,22 @@ class Author < ActiveRecord::Base
 
   belongs_to :owner, class_name: 'Account'
 
+
   has_many :works_roles_authors
-  has_many :roles, -> { includes :works }, through: :works_roles_authors, dependent: :destroy
+  has_many :roles, through: :works_roles_authors, dependent: :destroy do
+    #
+    # <tt>for_work(work_id, force = false)</tt>
+    #
+    # this extension allows to select the roles for a specific work, something
+    # that is impossible to do with the regular relationship accessors.
+    #
+    def for_work(work_id, force = false)
+      where('works_roles_authors.work_id = ?', work_id)
+    end
+  end
+  accepts_nested_attributes_for :roles
 
   validates_presence_of :first_name, :last_name, :owner_id
-  accepts_nested_attributes_for :roles
 
   def full_name
     [self.first_name, self.last_name].join(' ')
@@ -16,42 +27,16 @@ class Author < ActiveRecord::Base
   # +display_birth_year+
   #
   def display_birth_year
-    self.birth_year
-  end
-
-  class << self
-
-    #
-    # <tt>build(parms)</tt>
-    #
-    # creates a new +Author+ record stripping out all attributes that create
-    # connections with roles
-    # it returns a tuple with:
-    # * the new record
-    # * the `roles_ids` array
-    #
-    def build(params = {})
-      roles_ids = params.has_key?(:roles_attributes) ? params.delete(:roles_attributes) : []
-      roles_ids = roles_ids.map { |rid| rid[:id] }
-      params.delete(:work_id)
-      obj = Author.new(params)
-      [ obj, roles_ids ]
-    end
-
+    self.birth_year.to_s
   end
 
   #
-  # <tt>save_with_roles(work, roles_ids)</tt>
+  # +display_roles_for_work(work_id)+
   #
-  # saves the +Author+ record along with the work and roles relationships
+  # creates a comma separated list of roles
   #
-  def save_with_work(work, roles_ids)
-    res = save
-    if res
-      roles = Role.find(roles_ids)
-      work.add_author_with_roles(self, roles)
-    end
-    res
+  def display_roles_for_work(work_id)
+    self.roles.for_work(work_id).map { |r| r.description }.uniq.sort.join(', ')
   end
 
 end

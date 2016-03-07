@@ -11,7 +11,7 @@ class Work < ActiveRecord::Base
 
   has_many :submitted_files
   has_many :works_roles_authors
-  has_many :authors, -> { includes :roles }, through: :works_roles_authors, dependent: :destroy
+  has_many :authors, through: :works_roles_authors, dependent: :destroy
 
   accepts_nested_attributes_for :submitted_files, :allow_destroy => true, :reject_if => proc { |attrs| attrs[:http_channel].blank? }
   accepts_nested_attributes_for :authors
@@ -20,6 +20,45 @@ class Work < ActiveRecord::Base
   UPLOAD_BASE_PATH = File.join(Rails.root, UPLOAD_COND_PATH, 'private', 'uploads')
   UPLOAD_PREFIX = "EF#{Time.zone.now.year}_"
   UPLOAD_SUFFIX = ''
+
+  #
+  # +authors_attributes=(attrs)+ + +after_save+
+  #
+  # overrides the default in order to take care of the three-way many-to-many
+  # relationship between work, roles and authors.
+  #
+  # This prepares the records which are saved at a later time through the
+  # +after_save+ callback +:create_authors_roles_links+
+  #
+  # It clears the all the previous attributions (if any) so that the work
+  # record may be updated.
+  #
+  after_save :create_authors_roles_links
+
+  def authors_attributes=(attrs)
+    @_wras_ = []
+    attrs.each do
+      |h|
+      h[:roles_attributes].each do
+        |rh|
+        # add only if rh[:id] is actually present (view adds an empty one at the end)
+        @_wras_ << WorkRoleAuthor.new(author_id: h[:id], role_id: rh[:id]) unless rh[:id].blank?
+      end
+    end
+    @_wras_
+  end
+
+  #
+  # +submitted_files_attributes=(attrs)+ + +after_save+
+  #
+  # This prepares the records which are saved at a later time through the
+  # +after_save+ callback +:create_submitted_files_links+
+  #
+  after_save :create_submitted_files_links
+
+  def submitted_files_attributes=(attrs)
+    @_sfs_ = attrs
+  end
 
   #
   # +after_validation+
@@ -32,12 +71,9 @@ class Work < ActiveRecord::Base
   after_validation :create_directory
 
   #
-  # +destroy+ will remove the record and the file directory
+  # +before_destroy+ clears the directory containing the media
   #
-  def destroy
-    self.clear_directory
-    super
-  end
+  before_destroy :clear_directory
 
   #
   # displaying these attribute requires some conditioning
@@ -55,15 +91,6 @@ class Work < ActiveRecord::Base
   def display_year
     res = self.year
     res.kind_of?(Time) ? res.year : ''
-  end
-
-  #
-  # <tt>display_roles(author)</tt> 
-  #
-  # display all the roles for a given author as a colon-separated list
-  #
-  def display_roles(author)
-    self.authors.where('authors.id = ?', author.to_param).uniq.first.roles.map { |r| r.description }.sort.join(', ')
   end
 
   #
@@ -108,28 +135,6 @@ class Work < ActiveRecord::Base
   end
 
   #
-  # <tt>authors_with_roles(force = false)</tt>
-  #
-  # +authors_with_roles+:
-  # * find all the relations between a work and an author (uniqe name)
-  # * returns an array of hashes with the author id and a list of role ids for it
-  #   like:
-  #
-  #   <tt>=> [{ :author_id => author_id, :roles_attributes => [ role_id, role_id, ...  ] }, { :author_id => .... } ]</tt>
-  #
-  def authors_with_roles(force = false)
-    res = []
-    as = self.authors(force).uniq
-    as.each do
-      |a|
-      h = { :author_id => a.to_param }
-      h.update(:roles_attributes => WorkRoleAuthor.where('author_id = ? and work_id = ?', a.to_param, self.to_param).map { |awr| awr.role })
-      res << h
-    end
-    res
-  end
-
-  #
   # <tt>display_authors_with_roles(force = false)</tt>
   #
   # creates a string with authors and roles in the form:
@@ -137,178 +142,7 @@ class Work < ActiveRecord::Base
   # `Evelyn Fernandez (Music Composer, Text Author), Sheila Shanti (Video Director), ...`
   #
   def display_authors_with_roles(force = false)
-    self.authors_with_roles(force).map do
-      |awr|
-      a = Author.find(awr[:author_id])
-      awr_string = '%s (%s)' % [ a.full_name, self.display_roles(a) ]
-      yield(awr_string, awr[:author_id])
-    end 
-  end
-
-  #
-  # <tt>update_all_roles(role_params_with_authors)</tt>
-  #
-  # updates the roles when editing a work for all authors
-  # +role_params+ is an array of hashes with an +id:+ field, like this:
-  # <tt>=> [ { author_id: '23', roles_attributes: [ { id: '1' }, { id: '2' }, ... ] } ]</tt>
-  #
-  # This method erases all previous roles and sets up new roles for each
-  # author, which are to be saved *after* the work model is saved (that's when
-  # it can be called by the controller).
-  #
-  def update_all_roles(role_params_with_authors)
-    rpwa = role_params_with_authors.deep_dup
-    raise ArgumentError, "the argument to Work#update_roles must be an Array (was a #{rpwa.class} instead)" unless rpwa.kind_of?(Array)
-    rpwa.each do
-      |el|
-      el.stringify_keys!
-      raise ArgumentError, "Elements of the argument to Work#update_all_roles must contain an ':author_id' and a ':roles_attributes' keys (#{el.inspect})" unless el.has_key?('author_id') && el.has_key?('roles_attributes')
-      author = Author.find(el.delete('author_id'))
-      self.update_roles_for_an_author(author, el)
-    end
-  end
-
-  #
-  # <tt>update_roles_for_an_author(author, role_params)</tt>
-  #
-  # updates the roles when editing a work for a given author
-  # +role_params+ is a array of hashes each with an +id:+ field, like this:
-  # <tt>=> [ { id: '1' }, { id: '2' }, ... ]</tt>
-  #
-  # This method erases all previous roles and sets up new roles for each
-  # author, which are to be saved *after* the work model is saved (that's when
-  # it can be called by the controller).
-  #
-  def update_roles_for_an_author(author, role_params)
-    raise ArgumentError, "the second argument to Work#update_roles_for_an_author must be an Hash (was a #{role_params.class} instead)" unless role_params.kind_of?(Hash) && role_params.has_key?(:roles_attributes)
-    rps = role_params[:roles_attributes]
-    raise ArgumentError, "the value of the second argument to Work#update_roles_for_an_author must be an Array (was a #{rps.class} instead)" unless rps.kind_of?(Array)
-    roles = []
-    rps.each do
-      |r|
-      r.stringify_keys!
-      raise ArgumentError, "Elements of the argument to Work#update_roles_for_an_author must be Hashes and contain an ':id' key (#{r.inspect})" unless r.kind_of?(Hash) && r.has_key?('id')
-      roles << Role.find(r['id']) unless r['id'].blank?
-    end
-    self.detach_an_author(author)
-    self.add_author_with_roles(author, roles)
-  end
-
-  #
-  # <tt>update_extra_features(authors, roles, submitted_files = {})</tt>
-  #
-  # +update_extra_features+ performs all extra functionality-related duties
-  # when saving or updating a +Work+ object for a given author.
-  #
-  # After performing all duties this function reloads the model.
-  #
-  # FIXME: this can't work in this way. The roles have to be dependent on each
-  # author, so the roles have to be a nested resource for an author.
-  #
-  def update_extra_features(authors, roles, submitted_files)
-    self.add_submitted_files(submitted_files) unless submitted_files[:submitted_files_attributes].blank?
-    self.update_all_roles(self.authors_with_roles) unless roles[:roles_attributes].blank?
-    self.reload
-  end
-
-  class << self
-
-    #
-    # <tt>clean_args(args)</tt>
-    #
-    # returns the input arguments without the `authors_attributes`,
-    # `roles_attributes` and `submitted_files_attributes` args in
-    # order to save the object first. The latter can be added with the
-    # `update_roles` method explained above.
-    #
-    # It returns an array with four elements:
-    # * the cleaned up args
-    # * the authors
-    # * the roles
-    # * the submitted files
-    #
-    def clean_args(args)
-      raise ArgumentError, "argument #{args} is not a Hash or doesn't have a 'work' key" unless args.kind_of?(Hash) && args.has_key?('work')
-      cargs = args.dup
-      authors = prepare_for_permission(cargs, :authors_attributes)
-      roles   = prepare_for_permission(cargs, :roles_attributes)
-      submitted_files = prepare_for_permission(cargs, :submitted_files_attributes)
-      [cargs, authors, roles, submitted_files]
-    end
-
-    #
-    # <tt>add_author_with_role(w_id, a_id, r_id)</tt>
-    #
-    # adds a three-way link between a work, an author and a role (class
-    # method)
-    #
-    def add_author_with_role(w_id, a_id, r_id)
-      WorkRoleAuthor.create(:work_id => w_id, :role_id => r_id, :author_id => a_id)
-    end
-  
-    #
-    # <tt>remove_a_role_from_an_author(w_id, r_id, a_id)</tt>
-    #
-    # removes a three-way link between a work, a role and an author (class
-    # method). This does not destroy any of the linked records (work, role
-    # or author).
-    #
-    def remove_a_role_from_an_author(w_id, r_id, a_id)
-      wra = WorkRoleAuthor.where("author_id = #{a_id} and work_id = #{w_id} and role_id = #{r_id}").first
-      wra.valid? && wra.destroy
-      wra
-    end
-
-    #
-    # <tt>detach_an_author(w_id, a_id)</tt>
-    #
-    # removes all three-way links between an author and a work (class method).
-    # This does not destroy any of the linked records (author, work,
-    # or role), but just any connection between an author and a work.
-    #
-    def detach_an_author(w_id, a_id)
-      WorkRoleAuthor.destroy_all("author_id = #{a_id} and work_id = #{w_id}") if a_id && w_id
-    end
-
-  private
-
-    def prepare_for_permission(args, key)
-      ActionController::Parameters.new(:work => { key => args[:work].delete(key) })
-    end
-
-  end
-
-  #
-  # <tt>add_author_with_roles(author, role)</tt>
-  #
-  # adds all the three-way links between an author, a work and the roles of the author (instance
-  # method)
-  #
-  def add_author_with_roles(a, rs)
-    rs = [ rs ] unless rs.kind_of?(Array)
-    rs.each { |r| self.class.add_author_with_role(self.to_param, a.to_param, r.to_param) }
-  end
-
-  #
-  # <tt>remove_a_role_from_an_author(role, author)</tt>
-  #
-  # removes a three-way link between a work, an author and a role (instance
-  # method). This does not destroy any of the linked records (author, work,
-  # or role).
-  #
-  def remove_a_role_from_an_author(r, a)
-    self.class.remove_a_role_from_an_author(self.to_param, a.to_param, r.to_param)
-  end
-
-  #
-  # <tt>detach_an_author(author)</tt>
-  #
-  # removes all three-way links between a work and an author (instance method).
-  # This does not destroy any of the linked records (author, work,
-  # or role), but just any connection between an author and a work.
-  #
-  def detach_an_author(author)
-    self.class.detach_an_author(self.to_param, author.to_param)
+    self.authors(force).uniq.map { |a| '%s (%s)' % [ a.full_name, a.roles(force).for_work(self.to_param).uniq.map { |r| r.description }.join(', ') ] }.join(', ')
   end
 
 private
@@ -321,6 +155,27 @@ private
   def year_anti_hystheresis(val)
     res = val.kind_of?(Time) ? val : Time.zone.parse(val.to_s)
     res + 2.days
+  end
+
+  def create_authors_roles_links
+    unless @_wras_.blank?
+      @_wras_.each do
+        |wra|
+        wra.update(work_id: self.to_param)
+        wra.save
+      end
+    end
+  end
+
+  def create_submitted_files_links
+    unless @_sfs_.blank?
+      @_sfs_.each do
+        |sf_args|
+        sf_args.update(work: self)
+        sf = SubmittedFile.create(sf_args)
+        sf.upload
+      end
+    end
   end
 
 end

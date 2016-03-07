@@ -23,12 +23,16 @@ class AuthorsController < EndUserBaseController
   # POST /works/:id/authors
   # POST /works/:id/authors.json
   def create
+    params[:author].update(owner_id: current_account.to_param)
+    r_attrs = params[:author].delete(:roles_attributes) || []
     @work = current_account.works.where(params[:work_id]).uniq.first
-    parms = params.has_key?(:author) ? author_params : nil
-    (@author, roles_attrs) = Author.build(parms)
+    @author = @work.authors.new(author_params)
 
     respond_to do |format|
-      if @author.save_with_work(@work, roles_attrs)
+      if @author.save
+        a_attrs = HashWithIndifferentAccess.new(@author.attributes)
+        a_attrs.update(roles_attributes: r_attrs)
+        @work.update(authors_attributes: [ a_attrs ])
         format.html { redirect_to work_author_path(@work, @author), notice: 'Author was successfully created.' }
         format.json { render :show, status: :created, location: @author }
       else
@@ -72,7 +76,6 @@ class AuthorsController < EndUserBaseController
     # Never trust parameters from the scary internet, only allow the white list through.
     def author_params
       params.require(:author).permit(:first_name, :last_name, :birth_year, :bio_en, :bio_it, :owner_id, :work_id, :owner_id,
-                                     works_attributes: [:id],
-                                     roles_attributes: [:id])
+                                    roles_attributes: [:id])
     end
 end

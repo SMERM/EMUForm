@@ -21,8 +21,16 @@
 </p>
 
 <p>
-  <strong>Roles:</strong>
-  (<%= @work.display_roles(@author) %>)
+  <strong><%= pluralize(@work.authors.uniq.count, "author") %>:</strong>
+  <table class="table" id="authors">
+    <thead>
+      <th>Name</th>
+      <th>Roles</th>
+    </thead>
+    <tbody>
+      <%= render partial: 'authors/author_item', collection: @work.authors.uniq %>
+    </tbody>
+  </table
 </p>
 
 <p>

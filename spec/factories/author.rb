@@ -9,20 +9,6 @@ FactoryGirl.define do
     bio_it               { Forgery(:lorem_ipsum).paragraphs(Forgery(:basic).number(:at_least => 1, :at_most => 3)) }
     owner_id             nil
 
-    transient do
-      works_attributes     []
-    end
-
-    after :create do
-      |a, evaluator|
-      evaluator.works_attributes.each do
-        |wa|
-        w = Work.find(wa[:id])
-        roles = FactoryGirl.create_list(:role, 2)
-        w.add_author_with_roles(a, roles)
-      end
-    end
-
   end
 
 end

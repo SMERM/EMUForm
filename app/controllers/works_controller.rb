@@ -1,6 +1,5 @@
 class WorksController < EndUserBaseController
-  before_action :set_work, only: [:show, :edit, :update, :destroy]
-  before_action :set_extra_params, only: [:create, :update]
+  before_action :set_work, except: [ :new, :index ]
 
   # GET /works
   # GET /works.json
@@ -34,12 +33,9 @@ class WorksController < EndUserBaseController
   # Submitted files are uploaded on the fly before the response
   #
   def create
-    parms = params.has_key?(:work) ? work_params(params) : nil
-    @work = current_account.works.new(@cleaned_params)
 
     respond_to do |format|
       if @work.save
-        @work.update_extra_features(@author, @roles, @submitted_files)
         format.html { redirect_to work_path(@work), notice: 'Work was successfully created.' }
         format.json { render :show, status: :created, location: @work }
       else
@@ -54,8 +50,7 @@ class WorksController < EndUserBaseController
   # PATCH/PUT /works/1.json
   def update
     respond_to do |format|
-      if @work.update(@cleaned_params)
-        @work.update_extra_features(@authors, @roles, @submitted_files)
+      if @work.update(work_params)
         format.html { redirect_to work_path(@work), notice: 'Work was successfully updated.' }
         format.json { render :show, status: :ok, location: @work }
       else
@@ -79,21 +74,12 @@ class WorksController < EndUserBaseController
 private
   # Use callbacks to share common setup or constraints between actions.
   def set_work
-    @work = current_account.works.find(params[:id])
-  end
-
-  def set_extra_params
-    (cp, as, rs, sfs) = Work.clean_args(params)
-    @cleaned_params = work_params(cp)
-    @authors = work_params(as)
-    @roles = work_params(rs)
-    @submitted_files = work_params(sfs)
-    [@cleaned_params, @authors, @roles, @submitted_files]
+    @work = params[:id].blank? ? current_account.works.new(work_params) : current_account.works.find(params[:id])
   end
 
   # Never trust parameters from the scary internet, only allow the white list through.
-  def work_params(parms)
-    parms.require(:work).permit(:title, :year, :duration, :instruments, :program_notes_en, :program_notes_it, :owner_id,
+  def work_params
+    params.require(:work).permit(:title, :year, :duration, :instruments, :program_notes_en, :program_notes_it, :owner_id,
                                 authors_attributes: [:id, roles_attributes: [:id]],
                                 submitted_files_attributes: [:id, :http_request, :filename, :content_type, :size, :_destroy],
                                )

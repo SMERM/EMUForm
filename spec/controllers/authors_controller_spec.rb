@@ -314,9 +314,12 @@ RSpec.describe AuthorsController, type: :controller do
 
 private
 
-  def create_author(owner_id = 9999)
-    args = valid_attributes.update(works_attributes: [ { id: @work.to_param } ], owner_id: owner_id)
-    FactoryGirl.create(:author, args)
+  def create_author(owner_id = 9999, work = @work)
+    args = valid_attributes.update(owner_id: owner_id)
+    a = FactoryGirl.create(:author, args)
+    r = Role.music_composer
+    WorkRoleAuthor.create(work_id: work.to_param, author_id: a.to_param, role_id: r.to_param)
+    a
   end
 
 end

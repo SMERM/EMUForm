@@ -1,9 +1,11 @@
 require 'rails_helper'
+require_relative File.join('..', 'support', 'work_builder')
 
 RSpec.describe Work, type: :model do
 
   before :example do
     @num_authors = 3
+    @num_roles = 2
     @account = FactoryGirl.create(:account)
     @authors = FactoryGirl.create_list(:author, @num_authors, owner_id: @account.to_param)
     @w = nil # this is where we set the work
@@ -27,8 +29,8 @@ RSpec.describe Work, type: :model do
   }
 
   let(:full_args) {
-    args.update(:authors_attributes => @authors, :roles_attributes => build_roles(@authors),
-      :submitted_files_attributes => build_submitted_files(@w, @num_submitted_files),
+    args.update(authors_attributes: build_authors_and_roles_attributes(@authors, @num_roles),
+      submitted_files_attributes: build_submitted_files_attributes(@num_submitted_files),
     )
   }
 
@@ -62,16 +64,14 @@ RSpec.describe Work, type: :model do
     end
 
     it 'creates an object along with its nested submitted files' do
-      (cleaned_args, authors, roles, submitted_files) = Work.clean_args(ActionController::Parameters.new(work: full_args))
-      expect((work = Work.create!(work_params(cleaned_args))).valid?).to eq(true)
+      expect((work = Work.create!(full_args)).valid?).to eq(true)
+      expect(work.submitted_files(true).count).to eq(@num_submitted_files)
     end
 
     it 'creates a work with many authors and many roles' do
-      expect((work = Work.create!(args)).valid?).to eq(true)
-      roles = build_roles(@authors)
-      work.update_all_roles roles
-      expect(work.authors(true).uniq.count).to eq(roles.size)
-      roles.each { |r| expect(work.authors.find(r[:author_id]).roles(true).count).to eq(r[:roles_attributes].size-1) } # argument has an extra empty element
+      expect((work = Work.create!(full_args)).valid?).to eq(true)
+      expect(work.authors(true).uniq.count).to eq(@num_authors)
+      work.authors.uniq.each { |a| expect(a.roles.for_work(work.to_param).count).to eq(@num_roles) }
     end
 
   end
@@ -97,14 +97,34 @@ RSpec.describe Work, type: :model do
 
   context 'object update' do
 
+    before :example do
+      @num_other_authors = 4
+      @num_other_roles = 5
+      @other_authors = FactoryGirl.create_list(:author, @num_other_authors, owner_id: @account.to_param)
+    end
+
     let(:update_args) {
       HashWithIndifferentAccess.new(:title => 'Updated Title', :program_notes_it => 'note di test aggiornate')
     }
+
+    let(:full_update_args) do
+      h = HashWithIndifferentAccess.new(update_args)
+      h.update(authors_attributes: build_authors_and_roles_attributes(@other_authors, @num_other_roles))
+      h
+    end
 
     it 'updates the object properly when needed' do
       expect((@w = Work.create!(args)).class).to be(Work)
       expect(@w.update!(update_args)).to eq(true)
       update_args.each { |k, v| expect(@w.send(k)).to eq(v) }
+    end
+
+    it 'updates the object with all the nested attributes properly when needed' do
+      expect((@w = Work.create!(full_args)).class).to be(Work)
+      expect(@w.update!(full_update_args)).to eq(true)
+      update_args.each { |k, v| expect(@w.send(k)).to eq(v) }
+      expect(@w.authors(true).uniq.count).to eq(@num_other_authors + @num_authors)
+      @w.authors.uniq.each { |a| expect(a.roles(true).for_work(@w.to_param).count).to be >= @num_roles }
     end
 
   end
@@ -161,8 +181,8 @@ RSpec.describe Work, type: :model do
       expect((ws = FactoryGirl.create_list(:work_with_authors_and_roles, num_works, num_authors: 1, num_roles: 2)).size).to eq(num_works)
       ws.each do
         |w|
-        expect(w.authors_with_roles(true).count).to eq(num_authors)
         expect(w.authors(true).uniq.count).to eq(num_authors)
+        w.authors.uniq.each { |a| expect(a.roles.for_work(w.to_param).count).to eq(num_roles) }
         #
         # we have `num_authors` different authors linked to each work, so each
         # author has just one work
@@ -179,49 +199,48 @@ RSpec.describe Work, type: :model do
 
     it 'can link authors to a single work' do
       num_authors = 3
+      num_roles = 1
       expect((w = FactoryGirl.create(:work)).valid?).to be(true)
       expect((as = FactoryGirl.create_list(:author, num_authors, owner_id: @account.to_param)).class).to be(Array)
-      expect((r = Role.music_composer).valid?).to be(true)
-      as.each { |a| w.add_author_with_roles(a, r) }
+      as_attrs = build_authors_and_roles_attributes(as, num_roles)
+      expect(w.update!(authors_attributes: as_attrs)).to be(true)
       expect(w.authors(true).uniq.count).to eq(num_authors)
+      w.authors.uniq.each { |a| expect(a.roles(true).for_work(w.to_param).count).to eq(num_roles) }
     end
 
     it 'can link authors through multiple works' do
       num_works = 3
       num_authors = 5
-      expect((r = Role.music_composer).valid?).to be(true)
+      num_roles = Role.count - 3
       expect((as = FactoryGirl.create_list(:author, num_authors, owner_id: @account.to_param)).class).to be(Array)
       expect((ws = FactoryGirl.create_list(:work, num_works)).class).to be(Array)
-      ws.each { |w| as.each { |a| w.add_author_with_roles(a, r) } }
+      ws.each do
+        |w|
+        as_h = build_authors_and_roles_attributes(as, num_roles)
+        expect(w.update!(authors_attributes: as_h)).to be(true)
+      end
       ws.each { |w| expect(w.authors(true).uniq.count).to eq(num_authors) }
+      ws.each { |w| w.authors.uniq.each { |a| expect(a.roles(true).for_work(w.to_param).count).to eq(num_roles) } }
     end
 
-    it 'lists authors and works properly' do
+    it 'displays authors and works properly' do
       num_works = 3
       num_authors = 5
-      expect((ws = FactoryGirl.create_list(:work_with_authors_and_roles, num_works, num_authors: num_authors)).class).to be(Array)
+      num_roles = 2
+      expect((ws = FactoryGirl.create_list(:work_with_authors_and_roles, num_works, num_authors: num_authors, num_roles: num_roles)).class).to be(Array)
       ws.each do
         |work|
-        expect(work.authors_with_roles(true).size).to eq(num_authors)
-        work.authors_with_roles.each do
-          |wra_hash|
-          expect(wra_hash.has_key?(:author_id)).to be(true)
-          expect(wra_hash.has_key?(:roles_attributes)).to be(true)
-          expect((auth = Author.find(wra_hash[:author_id])).kind_of?(Author)).to be(true)
-          expect(wra_hash[:roles_attributes].size).to eq(WorkRoleAuthor.where('author_id = ? and work_id = ?', auth.to_param, work.to_param).count)
-          wra_hash[:roles_attributes].each { |r_a| expect(auth.roles.where('roles.id = ?', r_a[:id]).uniq.count).to eq(1) }
+        expect(work.authors(true).uniq.count).to eq(num_authors)
+        work.authors.uniq.each { |a| expect(a.roles(true).for_work(work.to_param).count).to eq(num_roles) }
+        ar_array = []
+        work.authors.uniq.each do
+          |a|
+          a_array = [ a.full_name ]
+          a_array << ('(' + a.roles.for_work(work.to_param).map { |r| r.description }.join(', ') + ')')
+          ar_array << a_array.join(' ')
         end
+        expect(work.display_authors_with_roles).to eq(ar_array.join(', '))
       end
-    end
-
-    it 'displays roles properly' do
-      nr = 3
-      na = 1
-      work = FactoryGirl.create(:work_with_authors_and_roles, num_authors: na, num_roles: nr)
-      author = work.authors(true).uniq.last
-      expect((wras = WorkRoleAuthor.where('author_id = ? and work_id = ?', author.to_param, work.to_param)).size).to eq(nr)
-      string_result = wras.map { |wra| wra.role.description }.sort.join(', ')
-      expect(work.display_roles(author)).to eq(string_result)
     end
 
   end
@@ -237,35 +256,7 @@ private
     end
   end
 
-  #
-  # +build_roles(authors)+ builds the proper role argument for each author
-  #
-  # we need to simulate the behaviour of the view. For this reason we add an
-  # extra empty 'id' element to the roles (needed by the checkbox collection).
-  #
-  def build_roles(authors)
-    res = []
-    max_num_roles = Role.count-1
-    authors.each do
-      |a|
-      num_roles = Forgery(:basic).number(:at_least => 1, :at_most => 4)
-      roles = []
-      1.upto(num_roles) { roles << Role.all[Forgery(:basic).number(:at_least => 0, :at_most => max_num_roles)] }
-      roles = roles.uniq.map { |r| { 'id' => r.id.to_s } }
-      roles << { 'id' => '' } # empty (wrong) element added by the view
-      h = HashWithIndifferentAccess.new(author_id: a.id.to_s, roles_attributes: roles)
-      res << h
-    end
-    res
-  end
-
-  #
-  # +build_submitted_files(n_sfs) builds the appropriate number of submitted
-  # files
-  #
-  def build_submitted_files(work, n_sfs)
-    FactoryGirl.build_list(:submitted_file_without_association, n_sfs, work_id: work.to_param).map { |sf| sf.attributes }
-  end
+  include WorkBuilderSpecHelper # contains: build_authors_and_roles_attributes and build_submitted_files_attributes
 
   #
   # lifted from app/controllers/works_controller.rb (needed for parameter permission check)

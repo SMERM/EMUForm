@@ -1,13 +1,3 @@
-#
-#                    work_authors GET        /works/:work_id/authors(.:format)            authors#index
-#                                 POST       /works/:work_id/authors(.:format)            authors#create
-#                 new_work_author GET        /works/:work_id/authors/new(.:format)        authors#new
-#                edit_work_author GET        /works/:work_id/authors/:id/edit(.:format)   authors#edit
-#                     work_author GET        /works/:work_id/authors/:id(.:format)        authors#show
-#                                 PATCH      /works/:work_id/authors/:id(.:format)        authors#update
-#                                 PUT        /works/:work_id/authors/:id(.:format)        authors#update
-#                                 DELETE     /works/:work_id/authors/:id(.:format)        authors#destroy
-#
 require 'rails_helper'
 
 RSpec.describe "Authors", type: :request do
@@ -29,9 +19,7 @@ RSpec.describe "Authors", type: :request do
     describe "POST /works/:id/authors" do
       it "works! redirected to sign-up " do
         new_author = FactoryGirl.build(:author)
-        awr = AuthorWorkRole.new(:work => @work, :role => Role.music_composer) 
         aparms = new_author.attributes
-        aparms.update( roles_attributes: [{ id: awr.role.to_param }] )
         post work_authors_path(@work), { author: aparms }
         expect(response).to redirect_to(new_account_session_path)
       end
@@ -103,12 +91,14 @@ RSpec.describe "Authors", type: :request do
     describe "POST /works/:id/authors" do
       it "works! " do
         new_author = FactoryGirl.build(:author) # need some proper attributes to save
+        r = Role.music_composer
         aparms = new_author.attributes
-        aparms.update( roles_attributes: [{ id: Role.music_composer.to_param }] )
+        aparms.update(roles_attributes: [ { id: r.to_param } ])
         post work_authors_path(@work), { author: aparms }
         a = @work.authors(true).where('last_name = ? and first_name = ?', new_author.last_name, new_author.first_name).uniq.first
-        skip("this needs to be fixed before it can be checked further")
         expect(a.valid?).to be(true)
+        expect(a.roles(true).for_work(@work.to_param).count).to eq(1)
+        expect(a.roles.for_work(@work.to_param).first.id).to eq(r.id)
         expect(response).to redirect_to(work_author_path(@work, a))
       end
     end

@@ -13,7 +13,7 @@ require 'rails_helper'
 RSpec.describe "Works", type: :request do
 
   before :example do
-    @work = FactoryGirl.create(:work)
+    @work = FactoryGirl.create(:work_with_authors_and_roles)
   end
 
   context 'user not signed in' do

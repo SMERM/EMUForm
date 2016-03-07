@@ -24,27 +24,6 @@
   <strong>Bio it:</strong>
   <%= @author.bio_it %>
 </p>
-<p>
-  <strong>Works associated to <%= @author.full_name %>:</strong>
-  <table class="table">
-    <thead>
-      <tr>
-        <th>Title</th>
-        <th>Year</th>
-        <th>Duration</th>
-        <th>Instruments</th>
-        <th>Roles</th>
-        <th colspan="3"></th>
-      </tr>
-    </thead>
-
-    <tbody>
-      <%= render partial: 'works/work_item', collection: @author.works.uniq %>
-    </tbody>
-  </table>
-  <br />
-  <%= link_to 'Add new work', new_work_author_path(@work) %>
-</p>
 
 <%= link_to 'Edit', edit_work_author_path(@work, @author) %> |
 <%= link_to 'Back', work_authors_path(@work) %>
