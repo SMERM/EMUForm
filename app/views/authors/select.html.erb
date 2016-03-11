@@ -1,0 +1,23 @@
+<p class="notice"><%= notice %></p>
+
+<header class="entry-header">
+  <h1 class="entry-title">Select an Author</h1>
+</header>
+
+<div class="entry-content">
+
+Please select one (or more) authors for <span class='work_title'><%= @work.title %></span>:
+
+<%= form_for([@work, @author], url: confirm_selection_work_authors_path(@work)) do |f| %>
+  <div class="field">
+    <%= f.label :author %><br>
+    <%= f.collection_select(:id, @authors, :id, :full_name, {}, { multiple: 'multiple' }) %>
+  </div>
+  <div class="actions">
+    <%= f.submit('Confirm selection') %>
+  </div>
+<% end %>
+
+<%= link_to 'Add a new author', new_work_author_path(@work) %>
+
+</div>

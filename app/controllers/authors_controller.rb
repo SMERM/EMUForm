@@ -1,10 +1,11 @@
 class AuthorsController < EndUserBaseController
-  before_action :set_work_and_author, except: [:create]
+  before_action :set_work_and_author, except: [ :create, :index, :confirm_selection ]
+  before_action :set_work_and_authors, only: [:index]
+  before_action :set_work, only: [:confirm_selection]
 
   # GET /authors
   # GET /authors.json
   def index
-    @authors = @work.authors.order('last_name, first_name').uniq
   end
 
   # GET /works/:id/authors/1
@@ -18,6 +19,16 @@ class AuthorsController < EndUserBaseController
 
   # GET /works/:id/authors/1/edit
   def edit
+  end
+
+  # GET /works/:id/authors/select
+  def select
+    @authors = Author.all.order('last_name, first_name').uniq
+  end
+
+  # POST /works/:id/authors/confirm_selection
+  def confirm_selection
+    # redirect_to select_work_authors_roles_path(@work, @selected_authors)
   end
 
   # POST /works/:id/authors
@@ -68,9 +79,18 @@ class AuthorsController < EndUserBaseController
 
   private
     # Use callbacks to share common setup or constraints between actions.
-    def set_work_and_author
+    def set_work
       @work = current_account.works.find(params[:work_id])
+    end
+
+    def set_work_and_author
+      set_work
       @author = params.has_key?(:id) && params[:id] ? @work.authors.find(params[:id]) : @work.authors.build
+    end
+
+    def set_work_and_authors
+      set_work
+      @authors = @work.authors.order('last_name, first_name').uniq
     end
 
     # Never trust parameters from the scary internet, only allow the white list through.

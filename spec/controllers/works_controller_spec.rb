@@ -272,7 +272,7 @@ RSpec.describe WorksController, type: :controller do
   
         it "redirects to the created work" do
           post :create, {:work => valid_attributes}
-          expect(response).to redirect_to(work_path(assigns(:work)))
+          expect(response).to redirect_to(select_work_authors_path(assigns(:work)))
         end
   
         #

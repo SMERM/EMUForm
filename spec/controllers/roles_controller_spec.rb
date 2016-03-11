@@ -33,14 +33,6 @@ RSpec.describe RolesController, type: :controller do
 
   context 'account not signed in (shouldn\'t go anywhere here)' do
 
-    describe "GET #index" do
-      it "assigns all roles as @roles" do
-        role = Role.create! valid_attributes
-        get :index, {}
-        expect(response).to redirect_to(new_account_session_path)
-      end
-    end
-  
     describe "GET #show" do
       it "assigns the requested role as @role" do
         role = Role.create! valid_attributes
@@ -155,14 +147,6 @@ RSpec.describe RolesController, type: :controller do
 
     login_account
 
-    describe "GET #index" do
-      it "assigns all roles as @roles" do
-        role = Role.create! valid_attributes
-        get :index, {}
-        expect(assigns(:roles)).to eq(Role.static_roles.to_a + [role])
-      end
-    end
-  
     describe "GET #show" do
       it "assigns the requested role as @role" do
         role = Role.create! valid_attributes

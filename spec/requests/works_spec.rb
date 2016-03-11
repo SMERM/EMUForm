@@ -100,7 +100,7 @@ RSpec.describe "Works", type: :request do
         new_work = FactoryGirl.build(:work)
         post works_path, { :work => new_work.attributes }
         w = Work.where('title = ?', new_work.title).first
-        expect(response).to redirect_to(work_path(w))
+        expect(response).to redirect_to(select_work_authors_path(w))
       end
     end
 

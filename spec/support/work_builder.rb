@@ -1,5 +1,8 @@
+require_relative 'random_roles'
+
 module WorkBuilderSpecHelper
 
+  include RandomRoles
   #
   # +build_authors_and_roles_attributes(authors, n_roles)+
   #
@@ -12,8 +15,7 @@ module WorkBuilderSpecHelper
     res = []
     authors.each do
       |a|
-      roles = []
-      1.upto(n_roles) { roles << Forgery(:basic).unique_number(roles, :at_least => 1, :at_most => Role.count) }
+      roles = select_random_roles(n_roles)
       roles_h = roles.uniq.map { |r| { id: r.to_s } }
       roles_h << { id: '' } # empty (wrong) element added by the view
       h = HashWithIndifferentAccess.new(id: a.to_param, roles_attributes: roles_h)

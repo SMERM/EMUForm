@@ -18,13 +18,9 @@ RSpec.describe "Roles", type: :request do
 
   context 'user not signed in' do
 
-    describe "GET /roles" do
-      it "works! redirected to sign-up " do
-        get roles_path
-        expect(response).to redirect_to(new_account_session_path)
-      end
-    end
-
+    #
+    # there's no index in roles
+    #
     describe "POST /roles" do
       it "works! redirected to sign-up " do
         post roles_path
@@ -87,13 +83,9 @@ RSpec.describe "Roles", type: :request do
       sign_out @account
     end
 
-    describe "GET /roles" do
-      it "works! " do
-        get roles_path
-        expect(response).to have_http_status(200)
-      end
-    end
-
+    #
+    # there's no index in roles
+    #
     describe "POST /roles" do
       it "works! " do
         new_role = FactoryGirl.build(:role)

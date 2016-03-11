@@ -83,6 +83,13 @@ RSpec.describe AuthorsController, type: :controller do
       end
     end
   
+    describe "GET #select" do
+      it "does not assign all the authors as @authors" do
+        get :select, { work_id: @work.to_param }
+        expect(response).to redirect_to(new_account_session_path)
+      end
+    end
+  
     describe "POST #create" do
       context "with valid params" do
         it "cannot create a new Author" do
@@ -213,6 +220,18 @@ RSpec.describe AuthorsController, type: :controller do
         author = create_author(subject.current_account.to_param)
         get :edit, {:id => author.to_param, work_id: @work.to_param }
         expect(assigns(:author)).to eq(author)
+      end
+    end
+  
+    describe "GET #select" do
+      it "does assign all the authors as @authors" do
+        authors = []
+        1.upto(@num_authors) { authors << create_author }
+        authors = Author.all.order('last_name, first_name').uniq
+        get :select, { work_id: @work.to_param }
+        expect(response).to have_http_status(200)
+        expect(response).to render_template('select')
+        expect(assigns(:authors)).to eq(authors)
       end
     end
   

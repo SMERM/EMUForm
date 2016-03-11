@@ -49,7 +49,7 @@ feature "a simple linear user journey " do
     #
     click_link 'New Work'
     expect(page).to have_content 'Submit New Work'
-    # expect(page).to have_button  'Select author'
+    expect(page).to have_button  'Select author(s)'
     fill_in 'Title', :with => @new_work.title
     select @new_work.year.year.to_s, :from => 'work_year_1i'
     select ("%02d" % @new_work.duration.hour), :from => 'work_duration_4i'
@@ -61,7 +61,7 @@ feature "a simple linear user journey " do
     #
     # selecting an (existing author)
     #
-    # click_button 'Select author'
+    click_button 'Select author(s)'
     #
     # TO BE COMPLETED
     #

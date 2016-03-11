@@ -67,6 +67,13 @@ RSpec.describe "Authors", type: :request do
       end
     end
 
+    describe 'GET /wors/:id/authors/select' do
+      it "works! redirected to sign-up " do
+        get select_work_authors_path(@work)
+        expect(response).to redirect_to(new_account_session_path)
+      end
+    end
+
   end
 
   context 'user signed in' do
@@ -150,6 +157,14 @@ RSpec.describe "Authors", type: :request do
         expect(response).to redirect_to(account_path)
       end
     end
+
+    describe "GET /works/:id/authors/select" do
+      it "works! " do
+        get select_work_authors_path(@work)
+        expect(response).to have_http_status(200)
+      end
+    end
+
 
   end
 

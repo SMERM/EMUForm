@@ -36,7 +36,7 @@ class WorksController < EndUserBaseController
 
     respond_to do |format|
       if @work.save
-        format.html { redirect_to work_path(@work), notice: 'Work was successfully created.' }
+        format.html { redirect_to select_work_authors_path(@work), notice: 'Work was successfully created.' }
         format.json { render :show, status: :created, location: @work }
       else
         format.html { render :new }
