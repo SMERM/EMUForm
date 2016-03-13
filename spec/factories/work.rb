@@ -4,10 +4,7 @@ FactoryGirl.define do
 
     association          :owner
 
-    title                do
-      start = Forgery(:basic).number(:at_least => 0, :at_most => 100)
-      Forgery(:lorem_ipsum).words(start..start+Forgery(:basic).number(:at_least => start + 1, :at_most => start + 3))
-    end
+    title                { Forgery(:emuform).title }
     year                 { DateTime.civil_from_format(:local, Forgery(:basic).number(:at_least => 1950, :at_most => Time.zone.now.year)) }
     duration             { Time.zone.parse("00:%02d:%02d" % [ Forgery(:basic).number(:at_least => 0, :at_most => 23), Forgery(:basic).number(:at_least => 1, :at_most => 59)]) }
     instruments          'pno, fl, cl'
