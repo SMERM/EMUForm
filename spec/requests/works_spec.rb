@@ -142,7 +142,7 @@ RSpec.describe "Works", type: :request do
     describe "DELETE /works/:id" do
       it "works! " do
         delete work_path(@work)
-        expect(response).to redirect_to(account_path)
+        expect(response).to redirect_to(works_path)
       end
     end
 

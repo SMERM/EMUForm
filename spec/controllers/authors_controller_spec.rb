@@ -225,13 +225,12 @@ RSpec.describe AuthorsController, type: :controller do
   
     describe "GET #select" do
       it "does assign all the authors as @authors" do
-        authors = []
-        1.upto(@num_authors) { authors << create_author }
-        authors = Author.all.order('last_name, first_name').uniq
+        1.upto(@num_authors) { create_author }
+        all_authors = Author.all.order('last_name, first_name').uniq
         get :select, { work_id: @work.to_param }
         expect(response).to have_http_status(200)
         expect(response).to render_template('select')
-        expect(assigns(:authors)).to eq(authors)
+        expect(assigns(:all_authors)).to eq(all_authors)
       end
     end
   
@@ -325,7 +324,7 @@ RSpec.describe AuthorsController, type: :controller do
       it "redirects to the account list of authors" do
         author = create_author(subject.current_account.to_param)
         delete :destroy, {:id => author.to_param, work_id: @work.to_param }
-        expect(response).to redirect_to(account_path)
+        expect(response).to redirect_to(work_authors_path(@work))
       end
     end
 

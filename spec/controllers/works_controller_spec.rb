@@ -363,7 +363,7 @@ RSpec.describe WorksController, type: :controller do
       it "redirects to the author works list" do
         work = create_environment(3, 2, subject.current_account.to_param)
         delete :destroy, {:id => work.to_param }
-        expect(response).to redirect_to(account_path)
+        expect(response).to redirect_to(works_path)
       end
     end
 

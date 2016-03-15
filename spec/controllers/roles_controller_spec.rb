@@ -147,6 +147,23 @@ RSpec.describe RolesController, type: :controller do
 
     login_account
 
+    before :example do
+      @account = FactoryGirl.create(:account)
+    end
+
+    describe "POST #select" do
+      it 'accesses the selection of roles for each author in a given work' do
+        work = FactoryGirl.create(:work, owner_id: @account.to_param)
+        authors = FactoryGirl.create_list(:author, 3, owner_id: @account.to_param)
+        args = HashWithIndifferentAccess.new(notice: 'Authors successefully selected.', role: { work_id: work.to_param, authors_attributes: authors.map { |a| { id: a.to_param } } })
+        args[:role][:authors_attributes] << { id: '' } # to simulate form behaviour
+        post :select, args
+        expect(assigns(:work)).to eq(work)
+        expect(assigns(:authors)).to eq(authors)
+        expect(response).to render_template('select')
+      end
+    end
+
     describe "GET #show" do
       it "assigns the requested role as @role" do
         role = Role.create! valid_attributes

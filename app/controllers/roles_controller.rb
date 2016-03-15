@@ -1,9 +1,11 @@
 class RolesController < EndUserBaseController
   before_action :set_role, only: [:show, :edit, :update, :destroy]
 
-  # GET /roles
-  # GET /roles.json
-  def index
+  # POST /roles/select
+  # POST /roles/select.json
+  def select
+    @work = Work.find(role_selection_params[:work_id])
+    @authors = Author.find(role_selection_params[:authors_attributes].map { |a| a[:id] unless a[:id].blank? }.compact)
     @roles = Role.ordered_all
   end
 
@@ -61,14 +63,20 @@ class RolesController < EndUserBaseController
     end
   end
 
-  private
-    # Use callbacks to share common setup or constraints between actions.
-    def set_role
-      @role = Role.find(params[:id])
-    end
+private
+  # Use callbacks to share common setup or constraints between actions.
+  def set_role
+    @role = Role.find(params[:id])
+  end
 
-    # Never trust parameters from the scary internet, only allow the white list through.
-    def role_params
-      params.require(:role).permit(:description)
-    end
+  # Never trust parameters from the scary internet, only allow the white list through.
+  def role_params
+    params.require(:role).permit(:description)
+  end
+
+  # Never trust parameters from the scary internet, only allow the white list through.
+  def role_selection_params
+    params.require(:role).permit(:work_id, authors_attributes: [:id])
+  end
+
 end

@@ -31,5 +31,9 @@ RSpec.describe RolesController, type: :routing do
       expect(:delete => "/roles/1").to route_to("roles#destroy", :id => "1")
     end
 
+    it 'routes to #select' do
+      expect(:post => "/roles/select").to route_to("roles#select")
+    end
+
   end
 end

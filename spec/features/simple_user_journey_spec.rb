@@ -19,9 +19,14 @@ feature "a simple linear user journey " do
 
   background :example do
     @account = FactoryGirl.create(:account)
-    @num_authors = 5
+    @num_authors = 15
+    @num_selected_authors = 3
     @authors = FactoryGirl.create_list(:author, @num_authors, owner_id: @account.to_param)
+    selected_authors_idxs = []
+    @num_selected_authors.times { selected_authors_idxs << Forgery(:basic).unique_number(selected_authors_idxs, at_least: 0, at_most: @authors.size - 1) } 
+    @selected_authors = selected_authors_idxs.map { |n| @authors[n] }
     @new_work = FactoryGirl.build(:work)
+    @work_count = Work.count
   end
 
   given(:account_data) {
@@ -58,10 +63,31 @@ feature "a simple linear user journey " do
     fill_in 'Instruments', :with => @new_work.instruments
     fill_in 'work_program_notes_en', :with => @new_work.program_notes_en
     fill_in 'work_program_notes_it', :with => @new_work.program_notes_it
-    #
-    # selecting an (existing author)
-    #
     click_button 'Select author(s)'
+    #
+    # selecting some (existing) authors
+    #
+    expect(Work.count).to eq(@work_count + 1)
+    expect(page).to have_content 'Work was successfully created.'
+    expect(page).to have_content "Please select one (or more) authors for #{@new_work.title}:"
+    @selected_authors.each { |sa| expect(page).to have_content sa.full_name }
+    @selected_authors.each { |sa| select(sa.full_name) }
+    click_button 'Confirm selection'
+    #
+    # select roles for each chosen author
+    #
+    expect(page).to have_content 'Select Roles for the following authors:'
+    @selected_authors.each { |sa| expect(page).to have_content sa.full_name }
+    @selected_authors.each do
+      |sa|
+      num_roles = Forgery(:basic).number(at_least: 1, at_most: (Role.count/2.0).floor)
+      role_idxs = []
+      num_roles.times { role_idxs << Forgery(:basic).unique_number(role_idxs, at_least: 1, at_most: Role.count - 1) }
+      roles = []
+      role_idxs.each { |n| roles << Role.all[n] }
+      within("div.role_selector#author_#{sa.to_param}") { roles.each { |r| check(r.description) } }
+    end
+    click_button 'Submit selection of roles'
     #
     # TO BE COMPLETED
     #

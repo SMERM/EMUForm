@@ -8,10 +8,11 @@
 
 Please select one (or more) authors for <span class='work_title'><%= @work.title %></span>:
 
-<%= form_for([@work, @author], url: confirm_selection_work_authors_path(@work)) do |f| %>
+<%= form_for(@author, url: select_roles_url) do |f| %>
+  <%= f.hidden_field(:work, { value: @work.to_param, name: 'role[work_id]' }) %>
   <div class="field">
-    <%= f.label :author %><br>
-    <%= f.collection_select(:id, @authors, :id, :full_name, {}, { multiple: 'multiple' }) %>
+    <%= f.label :author %>
+    <%= f.collection_select(:id, @all_authors, :to_param, :full_name, {}, { multiple: 'multiple', name: 'role[authors_attributes][][id]' }) %>
   </div>
   <div class="actions">
     <%= f.submit('Confirm selection') %>

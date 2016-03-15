@@ -3,8 +3,11 @@ require 'rails_helper'
 RSpec.describe "Authors", type: :request do
 
   before :example do
-    @work = FactoryGirl.create(:work_with_authors_and_roles)
-    @author = @work.authors(true).uniq.first
+    @work = FactoryGirl.create(:work, owner_id: 9999)
+  end
+
+  before :each do
+    @author = FactoryGirl.create(:author, owner_id: 9999)
   end
 
   context 'user not signed in' do
@@ -78,9 +81,10 @@ RSpec.describe "Authors", type: :request do
 
   context 'user signed in' do
 
-    before :each do
+    before :example do
       @account = FactoryGirl.create(:account)
       @account.works << @work
+      @account.authors << @author
       sign_in @account
     end
 
@@ -97,11 +101,13 @@ RSpec.describe "Authors", type: :request do
 
     describe "POST /works/:id/authors" do
       it "works! " do
-        new_author = FactoryGirl.build(:author) # need some proper attributes to save
+        new_author = FactoryGirl.build(:author, owner_id: @account.to_param) # need some proper attributes to save
         r = Role.music_composer
         aparms = new_author.attributes
         aparms.update(roles_attributes: [ { id: r.to_param } ])
-        post work_authors_path(@work), { author: aparms }
+        expect {
+          post work_authors_path(@work), { author: aparms }
+        }.to change(Author, :count).by(+1)
         a = @work.authors(true).where('last_name = ? and first_name = ?', new_author.last_name, new_author.first_name).uniq.first
         expect(a.valid?).to be(true)
         expect(a.roles(true).for_work(@work.to_param).count).to eq(1)
@@ -121,6 +127,8 @@ RSpec.describe "Authors", type: :request do
     describe "GET /works/:id/authors/:id/edit" do
       it "works! " do
         expect(@author.valid?).to be(true)
+        add_author_to_work_with_a_random_role
+        expect(@work.authors(true).uniq.count).to eq(1)
         get edit_work_author_path(@work, @author)
         expect(response).to have_http_status(200)
       end
@@ -129,6 +137,8 @@ RSpec.describe "Authors", type: :request do
     describe "GET /works/:id/authors/:id" do
       it "works! " do
         expect(@author.valid?).to be(true)
+        add_author_to_work_with_a_random_role
+        expect(@work.authors(true).uniq.count).to eq(1)
         get work_author_path(@work, @author)
         expect(response).to have_http_status(200)
       end
@@ -137,6 +147,8 @@ RSpec.describe "Authors", type: :request do
     describe "PATCH /works/:id/authors/:id" do
       it "works! " do
         expect(@author.valid?).to be(true)
+        add_author_to_work_with_a_random_role
+        expect(@work.authors(true).uniq.count).to eq(1)
         patch work_author_path(@work, @author), { :author => @author.attributes }
         expect(response).to redirect_to(work_author_path(@work, @author))
       end
@@ -145,6 +157,8 @@ RSpec.describe "Authors", type: :request do
     describe "PUT /works/:id/authors/:id" do
       it "works! " do
         expect(@author.valid?).to be(true)
+        add_author_to_work_with_a_random_role
+        expect(@work.authors(true).uniq.count).to eq(1)
         put work_author_path(@work, @author), { :author => @author.attributes }
         expect(response).to redirect_to(work_author_path(@work, @author))
       end
@@ -153,8 +167,12 @@ RSpec.describe "Authors", type: :request do
     describe "DELETE /works/:id/authors/:id" do
       it "works! " do
         expect(@author.valid?).to be(true)
-        delete work_author_path(@work, @author)
-        expect(response).to redirect_to(account_path)
+        add_author_to_work_with_a_random_role
+        expect(@work.authors(true).uniq.count).to eq(1)
+        expect {
+          delete work_author_path(@work, @author)
+        }.to change(Author, :count).by(-1)
+        expect(response).to redirect_to(work_authors_path(@work))
       end
     end
 
@@ -165,7 +183,15 @@ RSpec.describe "Authors", type: :request do
       end
     end
 
+  end
 
+private
+
+  def add_author_to_work_with_a_random_role
+    ridxs = Role.all.map { |r| r.id }
+    rnum = Forgery(:basic).number(at_least: 0, at_most: ridxs.size - 1)
+    role = Role.find(ridxs[rnum])
+    WorkRoleAuthor.create!(work_id: @work.to_param, author_id: @author.to_param, role_id: role.to_param)
   end
 
 end

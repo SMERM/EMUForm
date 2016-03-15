@@ -1,13 +1,3 @@
-#
-#                       roles GET        /roles(.:format)                             roles#index
-#                             POST       /roles(.:format)                             roles#create
-#                    new_role GET        /roles/new(.:format)                         roles#new
-#                   edit_role GET        /roles/:id/edit(.:format)                    roles#edit
-#                        role GET        /roles/:id(.:format)                         roles#show
-#                             PATCH      /roles/:id(.:format)                         roles#update
-#                             PUT        /roles/:id(.:format)                         roles#update
-#                             DELETE     /roles/:id(.:format)                         roles#destroy
-#
 require 'rails_helper'
 
 RSpec.describe "Roles", type: :request do
@@ -92,6 +82,22 @@ RSpec.describe "Roles", type: :request do
         post roles_path, { :role => new_role.attributes }
         r = Role.where('description = ?', new_role.description).first
         expect(response).to redirect_to(role_path(r))
+      end
+    end
+
+    #
+    # but there's a select
+    #
+    describe 'POST /roles/select' do
+      it "works! " do
+        work = FactoryGirl.create(:work, owner_id: @account.to_param)
+        authors = FactoryGirl.create_list(:author, 3, owner_id: @account.to_param)
+        args = HashWithIndifferentAccess.new(notice: 'Authors successefully selected.', role: { work_id: work.to_param, authors_attributes: authors.map { |a| { id: a.to_param } } })
+        args[:role][:authors_attributes] << { id: '' } # to simulate form behaviour
+        post select_roles_path, args
+        expect(assigns(:work)).to eq(work)
+        expect(assigns(:authors)).to eq(authors)
+        expect(response).to render_template('select')
       end
     end
 

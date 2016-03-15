@@ -35,5 +35,9 @@ RSpec.describe AuthorsController, type: :routing do
       expect(:delete => "/works/1/authors/1").to route_to("authors#destroy", :id => "1", :work_id => '1')
     end
 
+    it "routes to #select" do
+      expect(:get => "/works/1/authors/select").to route_to("authors#select", :work_id => '1')
+    end
+
   end
 end

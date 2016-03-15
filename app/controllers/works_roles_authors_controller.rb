@@ -1,5 +1,6 @@
 class WorksRolesAuthorsController < EndUserBaseController
-  before_action :set_work
+
+  before_action :set_role
 
   #
   # POST /works/:work_id/works_roles_authors(.:format)
@@ -8,7 +9,7 @@ class WorksRolesAuthorsController < EndUserBaseController
     cache = load_cache
     respond_to do |format|
       if save_cache(cache)
-        format.html { redirect_to work_authors_path(@work), notice: 'Work was successfully created along with Authors and roles.' }
+        format.html { redirect_to work_authors_path(@work), notice: 'Work was successfully created and connected to authors and roles.' }
         format.json { render :show, status: :created, location: @work }
       else
         format.html { redirect_to select_work_authors_path(@work), notice: 'Failed to created a full connection between this work, authors and roles' }
@@ -19,7 +20,7 @@ class WorksRolesAuthorsController < EndUserBaseController
 
 private
   #
-  # <tt>cache_save(cache)</tt>
+  # <tt>save_cache(cache)</tt>
   #
   # it creates a cache of *only* those links that are not already there
   # If one of the elements of the cache fails to save it aborts returning false
@@ -53,14 +54,18 @@ private
     res
   end
 
-  # Use callbacks to share common setup or constraints between actions.
-  def set_work
-    @work = current_account.works.find(params[:work_id])
-  end
-
   # Never trust parameters from the scary internet, only allow the white list through.
   def works_roles_authors_params
     params.require(:works_roles_authors).permit(authors_attributes: [:id, roles_attributes: [:id]])
+  end
+
+  #
+  # +set_role+
+  #
+  # picks up the role from params and sets it up
+  #
+  def set_role
+    @work = Work.find(params[:work_id])
   end
 
 end

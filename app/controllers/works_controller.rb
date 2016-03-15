@@ -27,11 +27,6 @@ class WorksController < EndUserBaseController
   #
   # +create+
   #
-  # the +Work+ object created may carry along some file attachments that need to be uploaded
-  # along with the +Work+ record. These files get loaded as +SubmittedFile+
-  # and links to +author+ and +roles+.
-  # Submitted files are uploaded on the fly before the response
-  #
   def create
 
     respond_to do |format|
@@ -44,6 +39,18 @@ class WorksController < EndUserBaseController
       end
     end
 
+  end
+
+  #
+  # POST /work/1/attach
+  # POST /work/1/attach.json
+  # 
+  # +attach+
+  #
+  # attach the submitted files to the indexed work
+  #
+  def attach
+    # TODO: not yet implemented
   end
 
   # PATCH/PUT /works/1
@@ -66,7 +73,7 @@ class WorksController < EndUserBaseController
     owner = @work.owner
     @work.destroy
     respond_to do |format|
-      format.html { redirect_to account_path, notice: 'Work was successfully destroyed.' }
+      format.html { redirect_to works_path, notice: 'Work was successfully destroyed.' }
       format.json { head :no_content }
     end
   end

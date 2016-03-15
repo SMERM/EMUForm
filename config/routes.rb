@@ -29,15 +29,15 @@ Rails.application.routes.draw do
   end
 
   resources :works do
+    post :attach, on: :member
     resources :authors do
-      collection do
-        get :select
-        post :confirm_selection
-      end
+      get :select, on: :collection
     end
     resources :works_roles_authors, only: [:create], as: :roles_authors
   end
-  resources :roles, except: :index
+  resources :roles, except: :index do
+    post :select, on: :collection
+  end
 
 
 

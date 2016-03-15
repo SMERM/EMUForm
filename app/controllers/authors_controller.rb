@@ -1,7 +1,6 @@
 class AuthorsController < EndUserBaseController
-  before_action :set_work_and_author, except: [ :create, :index, :confirm_selection ]
+  before_action :set_work_and_author, except: [ :create, :index ]
   before_action :set_work_and_authors, only: [:index]
-  before_action :set_work, only: [:confirm_selection]
 
   # GET /authors
   # GET /authors.json
@@ -23,12 +22,8 @@ class AuthorsController < EndUserBaseController
 
   # GET /works/:id/authors/select
   def select
-    @authors = Author.all.order('last_name, first_name').uniq
-  end
-
-  # POST /works/:id/authors/confirm_selection
-  def confirm_selection
-    # redirect_to select_work_authors_roles_path(@work, @selected_authors)
+    @authors = []
+    @all_authors = Author.all.order('last_name, first_name').uniq
   end
 
   # POST /works/:id/authors
@@ -72,30 +67,35 @@ class AuthorsController < EndUserBaseController
   def destroy
     @author.destroy
     respond_to do |format|
-      format.html { redirect_to account_path, notice: 'Author was successfully destroyed.' }
+      format.html { redirect_to work_authors_path(@work), notice: 'Author was successfully destroyed.' }
       format.json { head :no_content }
     end
   end
 
-  private
-    # Use callbacks to share common setup or constraints between actions.
-    def set_work
-      @work = current_account.works.find(params[:work_id])
-    end
+private
+  # Use callbacks to share common setup or constraints between actions.
+  def set_work
+    @work = current_account.works.find(params[:work_id])
+  end
 
-    def set_work_and_author
-      set_work
-      @author = params.has_key?(:id) && params[:id] ? @work.authors.find(params[:id]) : @work.authors.build
-    end
+  def set_work_and_author
+    set_work
+    @author = params.has_key?(:id) && params[:id] ? @work.authors.find(params[:id]) : @work.authors.build
+  end
 
-    def set_work_and_authors
-      set_work
-      @authors = @work.authors.order('last_name, first_name').uniq
-    end
+  def set_work_and_authors
+    set_work
+    @authors = @work.authors.order('last_name, first_name').uniq
+  end
 
-    # Never trust parameters from the scary internet, only allow the white list through.
-    def author_params
-      params.require(:author).permit(:first_name, :last_name, :birth_year, :bio_en, :bio_it, :owner_id, :work_id, :owner_id,
-                                    roles_attributes: [:id])
-    end
+  # Never trust parameters from the scary internet, only allow the white list through.
+  def author_params
+    params.require(:author).permit(:first_name, :last_name, :birth_year, :bio_en, :bio_it, :owner_id, :work_id, :owner_id,
+                                  roles_attributes: [:id])
+  end
+
+  # Never trust parameters from the scary internet, only allow the white list through.
+  def selected_authors_params
+    params.require(:author).permit(authors_attributes: [:id])
+  end
 end

@@ -21,8 +21,6 @@ RSpec.describe "authors/new", type: :view do
       assert_select el, "textarea#author_bio_en[name=?]", "author[bio_en]"
 
       assert_select el, "textarea#author_bio_it[name=?]", "author[bio_it]"
-
-      assert_select el, 'input[type=checkbox]', { minimum: @minimum_roles }
     end
   end
 end
