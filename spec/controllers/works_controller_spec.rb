@@ -40,8 +40,8 @@ RSpec.describe WorksController, type: :controller do
   # Work. As you add validations to Work, be sure to
   # adjust the attributes here as well.
   let(:valid_attributes) {
-    {
-      :title => Forgery(:name).title,
+    HashWithIndifferentAccess.new(
+      :title => Forgery(:emuform).title,
       :'year(1i)' => Forgery(:basic).number(:at_least => 1850, :at_most => Time.zone.now.year).to_s, :'year(2i)' => '1', :'year(3i)' => '1',
       :'duration(1i)' => '1', :'duration(2i)' => '1', :'duration(3i)' => '1',
       :'duration(4i)' => '0', :'duration(5i)' => '4', :'duration(6i)' => '33',
@@ -49,8 +49,11 @@ RSpec.describe WorksController, type: :controller do
       :program_notes_en => Forgery(:lorem_ipsum).paragraphs(Forgery(:basic).number(:at_least => 1, :at_most => 10)),
       :program_notes_it => Forgery(:lorem_ipsum).paragraphs(Forgery(:basic).number(:at_least => 1, :at_most => 10)),
       :authors_attributes => build_authors_and_roles_attributes(@authors, @num_roles),
-      :submitted_files_attributes => @submitted_files_attributes
-    }
+    )
+  }
+  
+  let(:valid_submitted_files_attributes) {
+    HashWithIndifferentAccess.new(submitted_files_attributes: @submitted_files_attributes)
   }
   
   let(:invalid_attributes) {
@@ -249,19 +252,14 @@ RSpec.describe WorksController, type: :controller do
     describe "POST #create" do
       context "with valid params" do
         it "creates a new Work" do
-          expect(nop = 0).to eq(0) # we want to make sure the count of works is right
           expect {
             post :create, {:work => valid_attributes }
           }.to change(Work, :count).by(1)
           work = Work.last
           expect(work.reload.valid?).to be(true)
-          expect(work.submitted_files(true).count).to eq(@num_attachments)
           expect(work.directory.blank?).to be(false)
           expect(work.authors(true).uniq.count).to eq(valid_attributes[:authors_attributes].size)
           work.authors(true) { |a| expect(a.roles(true).for_work(work.to_param).uniq.count).to eq(@num_roles) }
-          d = Dir.new(work.directory)
-          n = 0; d.each { n += 1 }
-          expect(n).to eq(@num_attachments + 2) # this count includes also '.' and '..'
         end
   
         it "assigns a newly created work as @work" do
@@ -274,10 +272,6 @@ RSpec.describe WorksController, type: :controller do
           post :create, {:work => valid_attributes}
           expect(response).to redirect_to(select_work_authors_path(assigns(:work)))
         end
-  
-        #
-        # TODO: update a record *removing* a role and check
-        #
       end
   
       context "with invalid params" do
@@ -365,6 +359,30 @@ RSpec.describe WorksController, type: :controller do
         delete :destroy, {:id => work.to_param }
         expect(response).to redirect_to(works_path)
       end
+    end
+
+    describe 'GET #attach_file' do
+      it 'goes to the attach file form' do
+        work = create_environment(3, 2, subject.current_account.to_param)
+        get :attach_file, { :id => work.to_param }
+        expect(response).to have_http_status(200)
+      end
+    end
+
+    describe 'POST #upload_file' do
+
+      it 'actually uploads the submitted files' do
+        work = create_environment(3, 2, subject.current_account.to_param)
+        post :upload_file, { id: work.to_param, work: valid_submitted_files_attributes }
+        expect(work.submitted_files(true).count).to eq(@num_attachments)
+        valid_submitted_files_attributes[:submitted_files_attributes].each do
+          |sfa|
+          expect((sf = work.submitted_files.where('filename = ?', sfa[:filename]).first).class).to be(SubmittedFile)
+          expect(File.exists?(sf.attached_file_full_path)).to be(true)
+          expect(File.size(sf.attached_file_full_path)).to eq(sf.size)
+        end
+      end
+
     end
 
   end

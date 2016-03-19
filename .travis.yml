@@ -1,6 +1,7 @@
 language: ruby
 script: bundle exec rake # do the default task
 before_install:
+  - ./.travis_before_install.sh
   - gem install bundler
   - bundle install
   - bundle exec rake db:reset

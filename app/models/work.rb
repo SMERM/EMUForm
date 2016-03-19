@@ -145,6 +145,24 @@ class Work < ActiveRecord::Base
     self.authors(force).uniq.map { |a| '%s (%s)' % [ a.full_name, a.roles(force).for_work(self.to_param).uniq.map { |r| r.description }.join(', ') ] }.join(', ')
   end
 
+  #
+  # <tt>upload_submitted_files</tt>
+  #
+  # +upload_submitted_files+ uploads all files from the remote (user) machine
+  # to the local (server-side) repository
+  #
+  # It returns `true` upon success or `false` upon failure
+  #
+  def upload_submitted_files
+    res = true
+    begin
+      self.submitted_files.each { |sf| sf.upload }
+    rescue
+      res = false
+    end
+    res
+  end
+
 private
 
   def create_directory
@@ -168,14 +186,7 @@ private
   end
 
   def create_submitted_files_links
-    unless @_sfs_.blank?
-      @_sfs_.each do
-        |sf_args|
-        sf_args.update(work: self)
-        sf = SubmittedFile.create(sf_args)
-        sf.upload
-      end
-    end
+    @_sfs_.each { |sf_args| SubmittedFile.create_from_file(sf_args[:filename], self) } unless @_sfs_.blank?
   end
 
 end

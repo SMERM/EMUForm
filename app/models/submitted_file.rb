@@ -1,3 +1,5 @@
+require 'filemagic'
+
 class SubmittedFile < ActiveRecord::Base
 
   belongs_to :work
@@ -5,57 +7,53 @@ class SubmittedFile < ActiveRecord::Base
   #
   # the real db properties of +SubmittedFile+ are
   #
+  # * work_id
   # * filename
   # * content_type
   # * size
   #
-  # but these arguments are all set automatically from an +http_request+ object
-  #
-  validates_presence_of :http_request, :work_id
+  validates_presence_of :work_id
 
-  attr_accessor :http_request
+  #
+  # we should avoid to create a SubmittedFile via the usual methods (:new and
+  # :create) so we privatize them
+  #
+  private_class_method :new, :create, :create!
 
   class << self
 
     #
-    # <tt>create(args = {})</tt>
+    # <tt>new_from_file(filename, work)</tt>
     #
     # +SubmittedFile+ does not get initialized in the usual way (directely from
-    # a form but, rather, it is initialized from an
-    # +ActionDispatch::Http::FileUploader+ object (which comes from a form) and a
+    # a form but, rather, it is initialized with a filename and a
     # +Work+ reference object. As such, its creation is a bit uncommon.
     #
-    # The argument is the usual Hash but it must have the following fields set:
+    def new_from_file(filename, work)
+      (content_type, size) = set_size_and_content_type(filename)
+      args = { filename: filename, work_id: work.to_param, content_type: content_type, size: size }
+      new(args)
+    end
+
     #
-    # * +:http_request+: the +ActionDispatch::Http::FileUploader+ object
-    # * +:work+: the +Work+ object reference
+    # <tt>create_from_file(filename, work)</tt>
     #
-    # The +http_request+ object is not persisted in the database. As such, the
-    # +upload+ method will only work during the lifetime of the object, and
-    # after it will enter into a `stale` state
+    # +SubmittedFile+ does not get created in the usual way (directely from
+    # a form but, rather, it is created with a filename and a
+    # +Work+ reference object. As such, its creation is a bit uncommon.
     #
-    def create(args = {})
-      final_args = patch_arguments(args)
-      super(final_args)
+    def create_from_file(filename, work)
+      obj = new_from_file(filename, work)
+      obj.save
+      obj
     end
 
   private
 
-    #
-    # <tt>patch_arguments(args)</tt>
-    #
-    # performs the actual ugly work
-    #
-    def patch_arguments(args)
-      raise ArgumentError, "args is not a Hash but rather a #{args.class}" unless args.kind_of?(Hash)
-      raise ArgumentError, "args (#{args.inspect}) does not contain an :http_request field" unless args.has_key?(:http_request)
-      raise ArgumentError, "The :http_request field is not an ActionDispatch::Http::UploadedFile but rather a #{args.class}" unless args[:http_request].kind_of?(ActionDispatch::Http::UploadedFile)
-      raise ArgumentError, "args (#{args.inspect}) does not have a :work field" unless args.has_key?(:work)
-      hr = args[:http_request]
-      work = args.delete(:work)
-      res = args.dup
-      res.update(:work_id => work.to_param, :filename => File.basename(hr.original_filename), :content_type => hr.content_type, :size => hr.size)
-      res
+    def set_size_and_content_type(filename)
+      size = File.size(filename)
+      content_type = FileMagic.open(:mime) { |fm| fm.file(filename) }
+      [ content_type, size ]
     end
 
   end
@@ -63,10 +61,10 @@ class SubmittedFile < ActiveRecord::Base
   #
   # +attached_file_full_path+
   #
-  # returns the full path of the attached file (caching it the first time)
+  # returns the full (server) path of the attached file
   #
   def attached_file_full_path
-    @affp ||= File.join(self.work.directory, self.filename)
+    File.join(self.work.directory, File.basename(self.filename))
   end
 
   #
@@ -81,17 +79,17 @@ class SubmittedFile < ActiveRecord::Base
     File.unlink(self.attached_file_full_path) if File.exists?(self.attached_file_full_path)
   end
 
-  class CantUploadAStaleSubmittedFile < StandardError; end
   #
   # +upload+
   #
   # it actually performs the upload of the file from the remote location into
-  # the repository (overwriting the local file if it exists)
+  # the server-side repository (overwriting the server-side file if it exists)
   #
   UPLOAD_CHUNK = 1024000 # TODO: to be tuned
   def upload
-    raise CantUploadAStaleSubmittedFile if self.stale?
-    hc = self.http_request
+    tf = Tempfile.new('EF_Test')
+    FileUtils.cp(self.filename, tf.path)
+    hc = ActionDispatch::Http::UploadedFile.new(filename: self.filename, content_type: self.content_type, size: self.size, tempfile: tf)
     File.open(self.attached_file_full_path, 'wb') do
       |wh|
       hc.open
@@ -100,17 +98,7 @@ class SubmittedFile < ActiveRecord::Base
       end
     end
     hc.close
-  end
-
-  #
-  # +stale?+
-  #
-  # if the object does not have an +http_request+ any longer, it means that it
-  # comes from the database and has lost the link to the original remote
-  # source
-  #
-  def stale?
-    self.http_request.nil?
+    tf.close
   end
 
 end

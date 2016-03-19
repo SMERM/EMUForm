@@ -28,7 +28,7 @@ FactoryGirl.define do
     #
     skip_create
 
-    initialize_with { new(:filename => original_filename, :type => content_type, :head => headers, :tempfile => tempfile) }
+    initialize_with { new(:filename => Base64.encode64(original_filename.read), :type => content_type, :head => headers, :tempfile => Base64.encode64(tempfile.read)) }
 
   end
 

@@ -1,14 +1,5 @@
-#
-#                           works GET        /works(.:format)                             works#index
-#                                 POST       /works(.:format)                             works#create
-#                        new_work GET        /works/new(.:format)                         works#new
-#                       edit_work GET        /works/:id/edit(.:format)                    works#edit
-#                            work GET        /works/:id(.:format)                         works#show
-#                                 PATCH      /works/:id(.:format)                         works#update
-#                                 PUT        /works/:id(.:format)                         works#update
-#                                 DELETE     /works/:id(.:format)                         works#destroy
-#
 require 'rails_helper'
+require_relative File.join('..', 'support', 'submitted_files_builder')
 
 RSpec.describe "Works", type: :request do
 
@@ -144,6 +135,30 @@ RSpec.describe "Works", type: :request do
         delete work_path(@work)
         expect(response).to redirect_to(works_path)
       end
+    end
+
+    describe 'GET /works/:id/attach_file' do
+
+      it "works! " do
+        get attach_file_work_path(@work)
+        expect(response).to have_http_status(200)
+      end
+    end
+
+    describe 'POST /works/:id/upload_file' do
+
+      include SubmittedFilesBuilder
+
+      before :example do
+        @num_submitted_files = 2
+        @submitted_files_attributes = build_submitted_files(@num_submitted_files).map { |sf| sf.attributes }
+      end
+    
+      it "works! " do
+        post upload_file_work_path(@work), { work: { submitted_files_attributes: @submitted_files_attributes } }
+        expect(response).to redirect_to(work_path(@work))
+      end
+
     end
 
   end

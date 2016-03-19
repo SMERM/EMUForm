@@ -39,5 +39,12 @@ RSpec.describe WorksController, type: :routing do
       expect(:delete => "/works/1").to route_to("works#destroy", :id => "1")
     end
 
+    it 'routes to #attach_file' do
+      expect(:get => "/works/1/attach_file").to route_to("works#attach_file", :id => "1")
+    end
+
+    it 'routes to #upload_file' do
+      expect(:post => "/works/1/upload_file").to route_to("works#upload_file", :id => "1")
+    end
   end
 end

@@ -193,6 +193,17 @@ RSpec.describe Work, type: :model do
       end
     end
 
+    it 'uploads the submitted files properly' do
+      expect((w = Work.create(full_args)).valid?).to be(true)
+      expect(w.submitted_files(true).count).to eq(@num_submitted_files)
+      w.upload_submitted_files
+      w.submitted_files.each do
+        |sf|
+        expect(File.exists?(sf.attached_file_full_path)).to be(true)
+        expect(File.size(sf.attached_file_full_path)).to eq(sf.size)
+      end
+    end
+
   end
 
   context 'associations' do

@@ -29,7 +29,10 @@ Rails.application.routes.draw do
   end
 
   resources :works do
-    post :attach, on: :member
+    member do
+      get :attach_file
+      post :upload_file
+    end
     resources :authors do
       get :select, on: :collection
     end

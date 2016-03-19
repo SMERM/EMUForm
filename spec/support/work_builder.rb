@@ -1,4 +1,5 @@
 require_relative 'random_roles'
+require_relative 'submitted_files_builder'
 
 module WorkBuilderSpecHelper
 
@@ -24,15 +25,14 @@ module WorkBuilderSpecHelper
     res
   end
 
+  include SubmittedFilesBuilder
   #
   # +build_submitted_files_attributes(n_files)+ builds the proper argument for
   # submitted_files
   #
   def build_submitted_files_attributes(n_files)
-    sfs = FactoryGirl.build_list(:submitted_file_without_association, n_files)
-    res = sfs.map { |sf| sf.attributes }
-    sfs.each_index { |idx| res[idx].update(:http_request => sfs[idx].http_request) }
-    res
+    sfs = build_submitted_files(n_files)
+    sfs.map { |sf| sf.attributes }
   end
 
 end

@@ -42,15 +42,39 @@ class WorksController < EndUserBaseController
   end
 
   #
-  # POST /work/1/attach
-  # POST /work/1/attach.json
+  # GET /work/1/attach_file
+  # GET /work/1/attach_file.json
   # 
-  # +attach+
+  # +attach_file+
   #
-  # attach the submitted files to the indexed work
+  # go to the form to add files
   #
-  def attach
-    # TODO: not yet implemented
+  def attach_file
+  end
+
+  # POST /work/1/upload_file
+  # POST /work/1/upload_file.json
+  # 
+  # +upload_file+
+  #
+  # upload the uploaded files to the indexed work
+  #
+  def upload_file
+    @work.submitted_files_attributes = submitted_files_params[:submitted_files_attributes]
+    respond_to do |format|
+      if @work.save
+        if @work.upload_submitted_files
+          format.html { redirect_to work_path(@work), notice: "#{@work.submitted_files.count} files were successefully uploaded." }
+          format.json { render :attach_file, status: :ok, location: @work }
+        else
+          format.html { redirect_to attach_file_work_path(@work), notice: 'There were one or more errors uploading the files.' }
+          format.json { render :attach_file, status: :unprocessable_entity, location: @work }
+        end
+      else
+        format.html { render :edit }
+        format.json { render json: @work.errors, status: :unprocessable_entity }
+      end
+    end
   end
 
   # PATCH/PUT /works/1
@@ -87,9 +111,11 @@ private
   # Never trust parameters from the scary internet, only allow the white list through.
   def work_params
     params.require(:work).permit(:title, :year, :duration, :instruments, :program_notes_en, :program_notes_it, :owner_id,
-                                authors_attributes: [:id, roles_attributes: [:id]],
-                                submitted_files_attributes: [:id, :http_request, :filename, :content_type, :size, :_destroy],
-                               )
+                                authors_attributes: [ :id, roles_attributes: [ :id ] ])
+  end
+
+  def submitted_files_params
+    params.require(:work).permit(submitted_files_attributes: [:filename, :content_type, :size, :_destroy])
   end
 
 end
