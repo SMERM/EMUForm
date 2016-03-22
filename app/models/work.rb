@@ -103,24 +103,6 @@ class Work < ActiveRecord::Base
   end
 
   #
-  # +add_submitted_files(sf_attributes)+
-  #
-  # add an array of submitted files which is enclosed in a hash with key
-  # :submitted_file_attributes
-  #
-  def add_submitted_files(sf_attributes)
-    raise ArgumentError, "add_submitted_files(#{File.basename(__FILE__)}:#{__LINE__}) requires a hash argument and got a \"#{sf_attributes.inspect}\" instead" unless sf_attributes.kind_of?(Hash) && sf_attributes.has_key?(:submitted_files_attributes)
-    sfs = sf_attributes[:submitted_files_attributes]
-    raise ArgumentError, "The submitted files attributes should be an array and it is a #{sfs.class.name} instead" unless sfs.kind_of?(Array)
-    sfs.each do
-      |att|
-      att.update(:work => self)
-      sf = SubmittedFile.create(att)
-      sf.upload
-    end
-  end
-
-  #
   # +clear_directory+ will remove the directory referenced by the object,
   # if present, and clear the field. It returns the removed directory
   #
@@ -145,23 +127,24 @@ class Work < ActiveRecord::Base
     self.authors(force).uniq.map { |a| '%s (%s)' % [ a.full_name, a.roles(force).for_work(self.to_param).uniq.map { |r| r.description }.join(', ') ] }.join(', ')
   end
 
-  #
-  # <tt>upload_submitted_files</tt>
-  #
-  # +upload_submitted_files+ uploads all files from the remote (user) machine
-  # to the local (server-side) repository
-  #
-  # It returns `true` upon success or `false` upon failure
-  #
-  def upload_submitted_files
-    res = true
-    begin
-      self.submitted_files.each { |sf| sf.upload }
-    rescue
-      res = false
-    end
-    res
-  end
+# #
+# # <tt>upload_submitted_files</tt>
+# #
+# # +upload_submitted_files+ uploads all files from the remote (user) machine
+# # to the local (server-side) repository
+# #
+# # It returns `true` upon success or `false` upon failure
+# #
+# def upload_submitted_files
+#   res = true
+#   begin
+#     self.submitted_files.each { |sf| sf.upload }
+#   rescue => msg
+#     Rails.logger.info("*** Upload of files failed: #{msg}")
+#     res = false
+#   end
+#   res
+# end
 
 private
 
@@ -186,7 +169,7 @@ private
   end
 
   def create_submitted_files_links
-    @_sfs_.each { |sf_args| SubmittedFile.create_from_file(sf_args[:filename], self) } unless @_sfs_.blank?
+    @_sfs_.each { |sf_args| SubmittedFile.upload(sf_args[:http_request], self) } unless @_sfs_.blank?
   end
 
 end

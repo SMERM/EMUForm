@@ -1,5 +1,3 @@
-require 'filemagic'
-
 class SubmittedFile < ActiveRecord::Base
 
   belongs_to :work
@@ -10,7 +8,11 @@ class SubmittedFile < ActiveRecord::Base
   # * work_id
   # * filename
   # * content_type
+  # * headers
   # * size
+  #
+  # All these properties are initialized through the specialized constructors
+  # (see below).
   #
   validates_presence_of :work_id
 
@@ -23,37 +25,32 @@ class SubmittedFile < ActiveRecord::Base
   class << self
 
     #
-    # <tt>new_from_file(filename, work)</tt>
+    # <tt>upload(http_request, work)</tt>
     #
-    # +SubmittedFile+ does not get initialized in the usual way (directely from
-    # a form but, rather, it is initialized with a filename and a
-    # +Work+ reference object. As such, its creation is a bit uncommon.
+    # because of the way +SubmittedFile+ objects are created, they get a
+    # different constructor that also +uploads+ the file. It's the only way to
+    # both create and update the file
     #
-    def new_from_file(filename, work)
-      (content_type, size) = set_size_and_content_type(filename)
-      args = { filename: filename, work_id: work.to_param, content_type: content_type, size: size }
-      new(args)
-    end
-
+    # TODO: deal with updates
     #
-    # <tt>create_from_file(filename, work)</tt>
-    #
-    # +SubmittedFile+ does not get created in the usual way (directely from
-    # a form but, rather, it is created with a filename and a
-    # +Work+ reference object. As such, its creation is a bit uncommon.
-    #
-    def create_from_file(filename, work)
-      obj = new_from_file(filename, work)
-      obj.save
+    def upload(http_request, work)
+      obj = create_from_http_request(http_request, work)
+      obj.upload(http_request)
       obj
     end
 
   private
 
-    def set_size_and_content_type(filename)
-      size = File.size(filename)
-      content_type = FileMagic.open(:mime) { |fm| fm.file(filename) }
-      [ content_type, size ]
+    def new_from_http_request(hr, work)
+      raise ArgumentError, "First argument is expected to be an ActionDispatch::Http::UploadedFile (was: #{hr.class.name})" unless hr.kind_of?(ActionDispatch::Http::UploadedFile)
+      args = { filename: hr.original_filename, work: work, content_type: hr.content_type, headers: hr.headers, size: hr.size, }
+      new(args)
+    end
+
+    def create_from_http_request(hr, work)
+      obj = new_from_http_request(hr, work)
+      obj.save
+      obj
     end
 
   end
@@ -74,31 +71,27 @@ class SubmittedFile < ActiveRecord::Base
   # +destroy+ removes the uploaded file from its tree.
   #
   def destroy
-    w = self.work
-    super
     File.unlink(self.attached_file_full_path) if File.exists?(self.attached_file_full_path)
+    super
   end
 
   #
-  # +upload+
+  # +upload(http_request)+
   #
   # it actually performs the upload of the file from the remote location into
   # the server-side repository (overwriting the server-side file if it exists)
   #
   UPLOAD_CHUNK = 1024000 # TODO: to be tuned
-  def upload
-    tf = Tempfile.new('EF_Test')
-    FileUtils.cp(self.filename, tf.path)
-    hc = ActionDispatch::Http::UploadedFile.new(filename: self.filename, content_type: self.content_type, size: self.size, tempfile: tf)
+  def upload(http_request)
+    hr = http_request
     File.open(self.attached_file_full_path, 'wb') do
       |wh|
-      hc.open
-      while(!hc.tempfile.eof?)
-        wh.write(hc.read(UPLOAD_CHUNK))
+      hr.open
+      while(!hr.tempfile.eof?)
+        wh.write(hr.read(UPLOAD_CHUNK))
       end
     end
-    hc.close
-    tf.close
+    hr.close
   end
 
 end

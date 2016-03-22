@@ -1,21 +1,18 @@
+require_relative File.join('..', 'support', 'submitted_files_helper')
+
+include SubmittedFilesHelper
+
 FactoryGirl.define do
 
   factory :uploaded_file, class: ActionDispatch::Http::UploadedFile do
 
-    original_filename do
-      of = Tempfile.new(['Forgery_Lorem_Ipsum', '.txt'])
-      File.open(of, 'w') do
-        |fh|
-        n_repeat = Forgery(:basic).number(:at_least => 10, :at_most => 100)
-        1.upto(n_repeat) do
-          text = Forgery(:lorem_ipsum).paragraphs(50)
-          fh.write(text)
-        end
-      end
-      of.path
+    transient do
+      file_type          { get_file_type_to_submit }
     end
-    content_type    'ascii/txt'
-    headers         '' # FIXME: Don't know what to put here
+
+    original_filename    { get_file_to_submit(file_type) }
+    content_type         { file_type.content_type }
+    headers              { file_type.headers }
     tempfile do
       tf = Tempfile.new('EF_Test')
       FileUtils.cp(original_filename, tf.path)
@@ -28,7 +25,12 @@ FactoryGirl.define do
     #
     skip_create
 
-    initialize_with { new(:filename => Base64.encode64(original_filename.read), :type => content_type, :head => headers, :tempfile => Base64.encode64(tempfile.read)) }
+    #
+    # we add +File.basename(original_filename)+ instead of the full path
+    # because this is actually what happens in forms. The full path is found
+    # in tempfile which is the only accessible file for upload
+    #
+    initialize_with { new(:filename => File.basename(original_filename), :type => content_type, :head => headers, :tempfile => tempfile) }
 
   end
 

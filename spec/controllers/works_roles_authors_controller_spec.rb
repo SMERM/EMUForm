@@ -45,8 +45,17 @@ RSpec.describe WorksRolesAuthorsController, type: :controller do
         expect {
           post :create, valid_attributes
         }.to change(WorkRoleAuthor, :count).by(@num_authors * @num_roles)
-        expect(response).to redirect_to(work_authors_path(@work))
+        expect(response).to redirect_to(attach_file_work_path(@work))
       end
+
+      it 'redirects back when attributes are invalid' do
+        skip("can't find the way to make this succeed (works roles authors never fail)")
+        invalid_attributes = valid_attributes.deep_dup
+        invalid_attributes[:works_roles_authors][:authors_attributes].first.update(id: '')
+        post :create, invalid_attributes
+        expect(response).to redirect_to(select_work_authors_path(@work))
+      end
+
     end
   
   end

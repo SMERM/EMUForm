@@ -377,7 +377,7 @@ RSpec.describe WorksController, type: :controller do
         expect(work.submitted_files(true).count).to eq(@num_attachments)
         valid_submitted_files_attributes[:submitted_files_attributes].each do
           |sfa|
-          expect((sf = work.submitted_files.where('filename = ?', sfa[:filename]).first).class).to be(SubmittedFile)
+          expect((sf = work.submitted_files.where('filename = ?', sfa[:http_request].original_filename).first).class).to be(SubmittedFile)
           expect(File.exists?(sf.attached_file_full_path)).to be(true)
           expect(File.size(sf.attached_file_full_path)).to eq(sf.size)
         end

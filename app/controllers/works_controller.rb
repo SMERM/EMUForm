@@ -63,16 +63,11 @@ class WorksController < EndUserBaseController
     @work.submitted_files_attributes = submitted_files_params[:submitted_files_attributes]
     respond_to do |format|
       if @work.save
-        if @work.upload_submitted_files
-          format.html { redirect_to work_path(@work), notice: "#{@work.submitted_files.count} files were successefully uploaded." }
-          format.json { render :attach_file, status: :ok, location: @work }
-        else
-          format.html { redirect_to attach_file_work_path(@work), notice: 'There were one or more errors uploading the files.' }
-          format.json { render :attach_file, status: :unprocessable_entity, location: @work }
-        end
+        format.html { redirect_to work_path(@work), notice: "#{@work.submitted_files.count} files were successefully uploaded." }
+        format.json { render :attach_file, status: :ok, location: @work }
       else
-        format.html { render :edit }
-        format.json { render json: @work.errors, status: :unprocessable_entity }
+        format.html { redirect_to attach_file_work_path(@work), notice: 'There were one or more errors uploading the files.' }
+        format.json { render :attach_file, status: :unprocessable_entity, location: @work }
       end
     end
   end
@@ -115,7 +110,7 @@ private
   end
 
   def submitted_files_params
-    params.require(:work).permit(submitted_files_attributes: [:filename, :content_type, :size, :_destroy])
+    params.require(:work).permit(submitted_files_attributes: [:http_request])
   end
 
 end

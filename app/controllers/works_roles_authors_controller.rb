@@ -9,7 +9,7 @@ class WorksRolesAuthorsController < EndUserBaseController
     cache = load_cache
     respond_to do |format|
       if save_cache(cache)
-        format.html { redirect_to work_authors_path(@work), notice: 'Work was successfully created and connected to authors and roles.' }
+        format.html { redirect_to attach_file_work_path(@work), notice: 'Work was successfully created and connected to authors and roles.' }
         format.json { render :show, status: :created, location: @work }
       else
         format.html { redirect_to select_work_authors_path(@work), notice: 'Failed to created a full connection between this work, authors and roles' }

@@ -1,18 +1,23 @@
 require 'rails_helper'
 
-RSpec.describe "works/attach_file", type: :view do
+RSpec.describe "works/new", type: :view do
 
-  before :example do
-    @work = FactoryGirl.create(:work)
+  after :example do
+    Work.destroy_all
   end
 
-  it "renders the attach file form" do
+  before(:each) do
+    @work = Work.new
+    @minimum_roles = Role.static_roles.size
+  end
+
+  it "renders new work form" do
     render
 
-    assert_select "form[action=?][method=?]", upload_file_work_path(@work), "post" do
+    assert_select "form[action=?][method=?]", works_path, "post" do
       |el|
 
-      assert_select el, "input#file_field[name=?]", "work[submitted_files_attributes][][filename]"
+      assert_select el, "input#work_title[name=?]", "work[title]"
 
     end
   end

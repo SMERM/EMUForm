@@ -66,6 +66,7 @@ RSpec.describe Work, type: :model do
     it 'creates an object along with its nested submitted files' do
       expect((work = Work.create!(full_args)).valid?).to eq(true)
       expect(work.submitted_files(true).count).to eq(@num_submitted_files)
+      work.submitted_files.each { |sf| expect(File.exists?(sf.attached_file_full_path)).to be(true) }
     end
 
     it 'creates a work with many authors and many roles' do
@@ -196,7 +197,6 @@ RSpec.describe Work, type: :model do
     it 'uploads the submitted files properly' do
       expect((w = Work.create(full_args)).valid?).to be(true)
       expect(w.submitted_files(true).count).to eq(@num_submitted_files)
-      w.upload_submitted_files
       w.submitted_files.each do
         |sf|
         expect(File.exists?(sf.attached_file_full_path)).to be(true)

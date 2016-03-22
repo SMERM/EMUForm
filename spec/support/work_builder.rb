@@ -1,5 +1,5 @@
 require_relative 'random_roles'
-require_relative 'submitted_files_builder'
+require_relative 'submitted_files_helper'
 
 module WorkBuilderSpecHelper
 
@@ -25,14 +25,17 @@ module WorkBuilderSpecHelper
     res
   end
 
-  include SubmittedFilesBuilder
+  include SubmittedFilesHelper
   #
   # +build_submitted_files_attributes(n_files)+ builds the proper argument for
   # submitted_files
   #
   def build_submitted_files_attributes(n_files)
-    sfs = build_submitted_files(n_files)
-    sfs.map { |sf| sf.attributes }
+    hrs = []
+    1.upto(n_files) do
+      hrs << get_an_http_request_to_submit
+    end
+    hrs.map { |hr| { http_request: hr } }
   end
 
 end
