@@ -15,3 +15,8 @@ AdminAccount.create!(email: 'admin@emufest.org', password: 'minimoog', password_
 # present on an installed base.
 #
 EMUForm::RoleManager.setup
+
+#
+# This is needed to have at least one (current) edition
+#
+Edition.send(:create!, current: true, year: 2016, title: "La Ginnastica dell'Orecchio", start_date: "2016-10-24", end_date: "2016-10-29", description_en: "Gymnastics is good for you", description_it: "La Ginnastica fa Bene")

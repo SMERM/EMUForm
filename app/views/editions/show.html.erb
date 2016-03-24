@@ -1,0 +1,39 @@
+<p id="notice"><%= notice %></p>
+
+<p>
+  <strong>Year:</strong>
+  <%= @edition.year %>
+</p>
+
+<p>
+  <strong>Title:</strong>
+  <%= @edition.title %>
+</p>
+
+<p>
+  <strong>Start date:</strong>
+  <%= @edition.start_date %>
+</p>
+
+<p>
+  <strong>End date:</strong>
+  <%= @edition.end_date %>
+</p>
+
+<p>
+  <strong>Description en:</strong>
+  <%= @edition.description_en %>
+</p>
+
+<p>
+  <strong>Description it:</strong>
+  <%= @edition.description_it %>
+</p>
+
+<p>
+  <strong>Submission deadline:</strong>
+  <%= @edition.submission_deadline %>
+</p>
+
+<%= link_to 'Edit', edit_edition_path(@edition) %> |
+<%= link_to 'Back', editions_path %>

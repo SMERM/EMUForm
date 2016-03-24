@@ -8,4 +8,12 @@ module ControllerMacros
     end
   end
 
+  def login_admin_account
+    before(:each) do
+      @request.env["devise.mapping"] = Devise.mappings[:admin_account]
+      admin_account = FactoryGirl.create(:admin_account)
+      sign_in admin_account
+    end
+  end
+
 end
