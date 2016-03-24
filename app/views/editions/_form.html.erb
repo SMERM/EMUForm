@@ -1,0 +1,45 @@
+<%= form_for(@edition) do |f| %>
+  <% if @edition.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(@edition.errors.count, "error") %> prohibited this edition from being saved:</h2>
+
+      <ul>
+      <% @edition.errors.full_messages.each do |message| %>
+        <li><%= message %></li>
+      <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="field">
+    <%= f.label :year %><br>
+    <%= f.datetime_select :year %>
+  </div>
+  <div class="field">
+    <%= f.label :title %><br>
+    <%= f.text_field :title %>
+  </div>
+  <div class="field">
+    <%= f.label :start_date %><br>
+    <%= f.datetime_select :start_date %>
+  </div>
+  <div class="field">
+    <%= f.label :end_date %><br>
+    <%= f.datetime_select :end_date %>
+  </div>
+  <div class="field">
+    <%= f.label :description_en %><br>
+    <%= f.text_area :description_en %>
+  </div>
+  <div class="field">
+    <%= f.label :description_it %><br>
+    <%= f.text_area :description_it %>
+  </div>
+  <div class="field">
+    <%= f.label :submission_deadline %><br>
+    <%= f.datetime_select :submission_deadline %>
+  </div>
+  <div class="actions">
+    <%= f.submit %>
+  </div>
+<% end %>

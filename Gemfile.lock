@@ -111,6 +111,8 @@ GEM
       warden (~> 1.2.3)
     diff-lcs (1.2.5)
     docile (1.1.5)
+    enumerize (1.1.1)
+      activesupport (>= 3.2)
     erubis (2.7.0)
     execjs (2.6.0)
     factory_girl (4.5.0)
@@ -258,7 +260,6 @@ GEM
       rspec-mocks (~> 3.4.0)
       rspec-support (~> 3.4.0)
     rspec-support (3.4.1)
-    ruby-filemagic (0.7.1)
     sass (3.4.21)
     sass-rails (5.0.4)
       railties (>= 4.0.0, < 5.0)
@@ -318,6 +319,7 @@ DEPENDENCIES
   codeclimate-test-reporter
   coffee-rails (~> 4.1.0)
   devise
+  enumerize
   factory_girl_rails (~> 4.0)
   forgery
   jbuilder (~> 2.0)
@@ -332,7 +334,6 @@ DEPENDENCIES
   omniauth-twitter
   rails (= 4.2.5)
   rspec-rails (~> 3.0)
-  ruby-filemagic
   sass-rails (~> 5.0)
   sdoc (~> 0.4.0)
   spring

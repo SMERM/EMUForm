@@ -1,0 +1,39 @@
+<p id="notice"><%= notice %></p>
+
+<h1>Listing Editions</h1>
+
+<table>
+  <thead>
+    <tr>
+      <th>Year</th>
+      <th>Title</th>
+      <th>Start date</th>
+      <th>End date</th>
+      <th>Description en</th>
+      <th>Description it</th>
+      <th>Submission deadline</th>
+      <th colspan="3"></th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <% @editions.each do |edition| %>
+      <tr>
+        <td><%= edition.year %></td>
+        <td><%= edition.title %></td>
+        <td><%= edition.start_date %></td>
+        <td><%= edition.end_date %></td>
+        <td><%= edition.description_en %></td>
+        <td><%= edition.description_it %></td>
+        <td><%= edition.submission_deadline %></td>
+        <td><%= link_to 'Show', edition %></td>
+        <td><%= link_to 'Edit', edit_edition_path(edition) %></td>
+        <td><%= link_to 'Destroy', edition, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+<br>
+
+<%= link_to 'New Edition', new_edition_path %>
