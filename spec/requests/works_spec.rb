@@ -88,6 +88,7 @@ RSpec.describe "Works", type: :request do
 
     describe "POST /works" do
       it "works! " do
+        Work.destroy_all
         new_work = FactoryGirl.build(:work)
         post works_path, { :work => new_work.attributes }
         w = Work.where('title = ?', new_work.title).first

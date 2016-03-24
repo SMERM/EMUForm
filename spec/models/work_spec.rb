@@ -254,6 +254,19 @@ RSpec.describe Work, type: :model do
       end
     end
 
+    it 'is connected to the current edition (even if it was never set)' do
+      expect((w = FactoryGirl.create(:work, owner_id: @account.to_param)).valid?).to be(true)
+      expect(w.edition).to eq(Edition.current)
+      expect(Edition.current.works(true).include?(w)).to be(true)
+    end
+
+    it 'does not change the edition if it is already set otherwise' do
+      expect((old_edition = FactoryGirl.create(:old_edition_without_switch)).valid?).to be(true)
+      expect((w = FactoryGirl.create(:work, owner_id: @account.to_param, edition: old_edition)).valid?).to be(true)
+      expect(w.edition).to eq(old_edition)
+      expect(Edition.find(old_edition.to_param).works(true).include?(w)).to be(true)
+    end
+
   end
 
 private
