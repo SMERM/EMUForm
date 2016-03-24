@@ -69,4 +69,21 @@ RSpec.describe WorkRoleAuthor, type: :model do
 
   end
 
+  context 'edition association' do
+
+    it 'associates to the current edition even if it is not mentioned in the actual arguments' do
+      expect((wra = WorkRoleAuthor.create(valid_attributes)).valid?).to be(true)
+      expect(wra.edition).to eq(Edition.current)
+    end
+
+    it 'associates to an older edition if the edition is already set otherwise' do
+      expect((old_edition = FactoryGirl.create(:old_edition_without_switch)).valid?).to be(true)
+      va = valid_attributes.deep_dup
+      va.update(edition_id: old_edition.to_param)
+      expect((wra = WorkRoleAuthor.create(va)).valid?).to be(true)
+      expect(wra.edition).to eq(old_edition)
+    end
+
+  end
+
 end

@@ -6,8 +6,9 @@
 class Work < ActiveRecord::Base
 
   belongs_to :owner, class_name: 'Account'
+  belongs_to :edition
 
-  validates_presence_of :title, :year, :duration, :instruments, :program_notes_en, :owner_id
+  validates_presence_of :title, :year, :duration, :instruments, :program_notes_en, :owner_id, :edition_id
 
   has_many :submitted_files
   has_many :works_roles_authors
@@ -59,6 +60,13 @@ class Work < ActiveRecord::Base
   def submitted_files_attributes=(attrs)
     @_sfs_ = attrs
   end
+
+  #
+  # +before_validation+
+  #
+  # set the edition appropriately for this work
+  #
+  before_validation :add_edition
 
   #
   # +after_validation+
@@ -127,25 +135,6 @@ class Work < ActiveRecord::Base
     self.authors(force).uniq.map { |a| '%s (%s)' % [ a.full_name, a.roles(force).for_work(self.to_param).uniq.map { |r| r.description }.join(', ') ] }.join(', ')
   end
 
-# #
-# # <tt>upload_submitted_files</tt>
-# #
-# # +upload_submitted_files+ uploads all files from the remote (user) machine
-# # to the local (server-side) repository
-# #
-# # It returns `true` upon success or `false` upon failure
-# #
-# def upload_submitted_files
-#   res = true
-#   begin
-#     self.submitted_files.each { |sf| sf.upload }
-#   rescue => msg
-#     Rails.logger.info("*** Upload of files failed: #{msg}")
-#     res = false
-#   end
-#   res
-# end
-
 private
 
   def create_directory
@@ -170,6 +159,16 @@ private
 
   def create_submitted_files_links
     @_sfs_.each { |sf_args| SubmittedFile.upload(sf_args[:http_request], self) } unless @_sfs_.blank?
+  end
+
+  #
+  # +add_edition+
+  #
+  # adds the current edition to the work as a reference unless it is already set.
+  # Aptly called from a # +before_validation+ callback.
+  #
+  def add_edition
+    self.edition = Edition.current unless self.edition
   end
 
 end

@@ -8,13 +8,15 @@
 #
 class Edition < ActiveRecord::Base
 
+  has_many :works
+
   extend Enumerize
 
   class OnlyOneValidator < ActiveModel::EachValidator
 
     def validate_each(record, attribute, value)
-      record.errors.add attribute, "attribute cannot be set to true for more than one #{record.class}" unless value &&
-                                                                            ((record.class.where("#{attribute} = ?", :true).count == 0) ||
+      record.errors.add attribute, "attribute cannot be set to true for more than one #{record.class}" unless (value == 'false' ||
+                                                                             (record.class.where("#{attribute} = ?", :true).count == 0) ||
                                                                              (record.class.where("#{attribute} = ?", :true).first == record))
     end
 
@@ -45,6 +47,15 @@ class Edition < ActiveRecord::Base
     end
 
     #
+    # +past+
+    #
+    # returns past editions
+    #
+    def past
+      where('current = ?', :false)
+    end
+
+    #
     # <tt>switch(args = {})</tt>
     #
     # switch the edition passed in the arguments to be the current edition
@@ -70,24 +81,5 @@ class Edition < ActiveRecord::Base
     end
 
   end
-
-# #
-# # +current+ and +current=+ accessors are redesigned to cast to +true+ or
-# # +false+ according to a set to 'TRUE' or 'FALSE'
-# #
-# CURRENT_TRUE = 'TRUE'
-# CURRENT_FALSE = 'FALSE'
-
-# def current
-#   res = read_attribute(:current)
-#   res == CURRENT_TRUE ? true : false
-# end
-
-# def current=(value)
-#   v = value ? CURRENT_TRUE : CURRENT_FALSE
-#   write_attribute(:current, v)
-# end
-
-# alias_method :current, :current?
 
 end

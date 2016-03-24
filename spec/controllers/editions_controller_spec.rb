@@ -47,6 +47,7 @@ RSpec.describe EditionsController, type: :controller do
       @start_date = Time.new(@year) + Forgery(:basic).number(at_least: 250, at_most: 310).days
       @end_date   = @start_date + Forgery(:basic).number(at_least: 4, at_most: 15).days
       @submission_deadline = @start_date - 5.months
+      clear_past_editions
     end
   
     # This should return the minimal set of attributes required to create a valid
@@ -198,6 +199,10 @@ RSpec.describe EditionsController, type: :controller do
       end
     end
 
+  end
+  
+  def clear_past_editions
+    Edition.where('current = ?', :false).destroy_all
   end
 
 end

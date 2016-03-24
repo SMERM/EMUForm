@@ -10,6 +10,14 @@ FactoryGirl.define do
     submission_deadline { start_date - 5.months }
 
     initialize_with { Edition.switch(attributes) }
+
+    factory :old_edition_without_switch do
+
+      current            :false
+
+      initialize_with { Edition.send(:new, attributes) }
+
+    end
   end
 
 end

@@ -148,16 +148,18 @@ ActiveRecord::Schema.define(version: 20160322194955) do
     t.text     "program_notes_en", null: false
     t.text     "program_notes_it"
     t.string   "directory"
+    t.integer  "edition_id"
     t.datetime "created_at",       null: false
     t.datetime "updated_at",       null: false
   end
 
   create_table "works_roles_authors", id: false, force: :cascade do |t|
-    t.integer "work_id"
-    t.integer "role_id"
-    t.integer "author_id"
+    t.integer "work_id",    null: false
+    t.integer "role_id",    null: false
+    t.integer "author_id",  null: false
+    t.integer "edition_id"
   end
 
-  add_index "works_roles_authors", ["work_id", "role_id", "author_id"], name: "index_works_roles_authors_on_work_id_and_role_id_and_author_id", unique: true
+  add_index "works_roles_authors", ["work_id", "role_id", "author_id", "edition_id"], name: "wrae_index", unique: true
 
 end
