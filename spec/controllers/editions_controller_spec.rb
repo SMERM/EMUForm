@@ -30,6 +30,8 @@ RSpec.describe EditionsController, type: :controller do
   end
 
   context 'logged in as normal user' do
+
+    login_account
    
     it 'cannot go anywhere' do
       get :index

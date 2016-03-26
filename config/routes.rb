@@ -1,5 +1,6 @@
 Rails.application.routes.draw do
 
+  resources :categories
   resources :editions
   devise_for :admin_accounts, ActiveAdmin::Devise.config
   ActiveAdmin.routes(self)
