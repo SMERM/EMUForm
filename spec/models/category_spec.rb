@@ -47,6 +47,11 @@ RSpec.describe Category, type: :model do
       end
     end
 
+    it 'has a full_title method' do
+      expect((c = FactoryGirl.create(:category)).respond_to?(:full_title)).to be(true)
+      expect(c.full_title).to eq([c.acro, c.title_en].join(': '))
+    end
+
   end
 
 end

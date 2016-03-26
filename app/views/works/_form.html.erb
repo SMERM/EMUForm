@@ -11,6 +11,10 @@
   <% end %>
 
     <div class="field">
+      <%= f.label :category %><br>
+      <%= f.collection_select :category_id, Edition.current.categories, :id, :full_title, prompt: true %>
+    </div>
+    <div class="field">
       <%= f.label :title %><br>
       <%= f.text_field :title %>
     </div>

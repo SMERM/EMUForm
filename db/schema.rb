@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160324233017) do
+ActiveRecord::Schema.define(version: 20160326075413) do
 
   create_table "accounts", force: :cascade do |t|
     t.string   "first_name"
@@ -117,6 +117,14 @@ ActiveRecord::Schema.define(version: 20160324233017) do
     t.datetime "updated_at",               null: false
   end
 
+  create_table "categories_editions", id: false, force: :cascade do |t|
+    t.integer "edition_id",  null: false
+    t.integer "category_id", null: false
+  end
+
+  add_index "categories_editions", ["category_id"], name: "index_categories_editions_on_category_id"
+  add_index "categories_editions", ["edition_id"], name: "index_categories_editions_on_edition_id"
+
   create_table "editions", force: :cascade do |t|
     t.integer  "year",                                  null: false
     t.string   "title",                                 null: false
@@ -157,8 +165,9 @@ ActiveRecord::Schema.define(version: 20160324233017) do
     t.string   "instruments",      null: false
     t.text     "program_notes_en", null: false
     t.text     "program_notes_it"
-    t.string   "directory"
+    t.string   "directory",        null: false
     t.integer  "edition_id"
+    t.integer  "category_id",      null: false
     t.datetime "created_at",       null: false
     t.datetime "updated_at",       null: false
   end

@@ -48,6 +48,7 @@ RSpec.describe WorksController, type: :controller do
       :instruments => 'pno, fl, cl',
       :program_notes_en => Forgery(:lorem_ipsum).paragraphs(Forgery(:basic).number(:at_least => 1, :at_most => 10)),
       :program_notes_it => Forgery(:lorem_ipsum).paragraphs(Forgery(:basic).number(:at_least => 1, :at_most => 10)),
+      :category_id => Edition.current.categories[Forgery(:basic).number(at_least: 0, at_most: Edition.current.categories(true).count - 1)].to_param,
       :authors_attributes => build_authors_and_roles_attributes(@authors, @num_roles),
     )
   }
@@ -153,6 +154,7 @@ RSpec.describe WorksController, type: :controller do
             :instruments => 'pno, fl, cl',
             :program_notes_en => 'Updated ' + Forgery(:lorem_ipsum).paragraphs(Forgery(:basic).number(:at_least => 1, :at_most => 10)),
             :program_notes_it => 'Aggiornamento: ' + Forgery(:lorem_ipsum).paragraphs(Forgery(:basic).number(:at_least => 1, :at_most => 10)),
+            :category_id => Edition.current.categories[Forgery(:basic).number(at_least: 0, at_most: Edition.current.categories(true).count - 1)].to_param,
             :authors_attributes => build_authors_and_roles_attributes(@authors[0..@num_authors-2], @num_roles-1),
           }
         }

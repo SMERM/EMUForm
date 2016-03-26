@@ -7,8 +7,9 @@ class Work < ActiveRecord::Base
 
   belongs_to :owner, class_name: 'Account'
   belongs_to :edition
+  belongs_to :category
 
-  validates_presence_of :title, :year, :duration, :instruments, :program_notes_en, :owner_id, :edition_id
+  validates_presence_of :title, :year, :duration, :instruments, :program_notes_en, :owner_id, :edition_id, :category_id
 
   has_many :submitted_files
   has_many :works_roles_authors

@@ -46,4 +46,22 @@ RSpec.describe Edition, type: :model do
 
   end
 
+  context 'associations' do
+
+    it 'has a many-to-many association with categories' do
+      num_editions = 10
+      num_categories = 3
+      expect((eds = FactoryGirl.create_list(:old_edition_without_switch, num_editions, num_categories: 0)).class).to be(Array)
+      expect((cats = FactoryGirl.create_list(:category, num_categories)).class).to be(Array)
+      eds.each do
+        |ed|
+        ed.categories.concat(cats)
+        expect(ed.categories(true).count).to eq(num_categories)
+        cats.each { |cat| expect(ed.categories.include?(cat)).to be(true) }
+      end
+      cats.each { |cat| expect(cat.editions(true).count).to eq(num_editions) }
+    end
+
+  end
+
 end

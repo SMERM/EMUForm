@@ -105,7 +105,7 @@ private
 
   # Never trust parameters from the scary internet, only allow the white list through.
   def work_params
-    params.require(:work).permit(:title, :year, :duration, :instruments, :program_notes_en, :program_notes_it, :owner_id,
+    params.require(:work).permit(:title, :year, :duration, :instruments, :program_notes_en, :program_notes_it, :owner_id, :category_id,
                                 authors_attributes: [ :id, roles_attributes: [ :id ] ])
   end
 

@@ -15,13 +15,24 @@ FactoryGirl.define do
 
     initialize_with { Edition.switch(attributes) }
 
-    factory :old_edition_without_switch do
-
-      current            :false
-
-      initialize_with { Edition.send(:new, attributes) }
-
+    transient do
+      num_categories       3
     end
+
+    after :create do
+      |e, evaluator|
+      cats = FactoryGirl.create_list(:category, evaluator.num_categories)
+      e.categories.concat cats
+    end
+
+    factory :old_edition_without_switch do
+  
+      current            :false
+  
+      initialize_with { Edition.send(:new, attributes) }
+  
+    end
+
   end
 
 end

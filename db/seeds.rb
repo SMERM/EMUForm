@@ -19,7 +19,7 @@ EMUForm::RoleManager.setup
 #
 # This is needed to have at least one (current) edition...
 #
-Edition.send(:create!, current: true, year: 2016, title: "La Ginnastica dell'Orecchio", start_date: "2016-10-24", end_date: "2016-10-29", description_en: "Gymnastics is good for you", description_it: "La Ginnastica fa Bene")
+ce = Edition.send(:create!, current: true, year: 2016, title: "La Ginnastica dell'Orecchio", start_date: "2016-10-24", end_date: "2016-10-29", description_en: "Gymnastics is good for you", description_it: "La Ginnastica fa Bene")
 
 #
 # ... and to have some preset categories for development
@@ -30,7 +30,8 @@ categories =
   { acro: 'LIVE', title_en: 'Live-Electronics Work', title_it: 'Lavoro con Live-Electronics', description_it: 'Lavoro per strumenti e live-electronics', description_en: 'Instrumental work with live-electronics' },
   { acro: 'INST', title_en: 'Sound installation', title_it: 'Installazione sonora', description_en: 'Autonomous sound installation, sound sculpture', description_it: 'Installazione sonora autonoma, scultura sonora' },
 ]
-categories.each { |cargs| Category.create(cargs) }
+cats = categories.map { |cargs| Category.create(cargs) }
 #
 # we set only the first two in the current edition
 #
+ce.categories.concat(cats[0..1])

@@ -10,7 +10,8 @@ FactoryGirl.define do
     instruments          'pno, fl, cl'
     program_notes_en     { Forgery(:lorem_ipsum).paragraphs(Forgery(:basic).number(:at_least => 1, :at_most => 3)) }
     program_notes_it     { Forgery(:lorem_ipsum).paragraphs(Forgery(:basic).number(:at_least => 1, :at_most => 3)) }
-    edition_id           nil
+    edition_id           nil # this is set automatically
+    category_id          { Edition.current.categories[Forgery(:basic).number(at_least: 0, at_most: Edition.current.categories(true).count - 1)].to_param }
 
     factory :work_with_authors_and_roles do
 

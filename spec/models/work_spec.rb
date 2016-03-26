@@ -25,6 +25,8 @@ RSpec.describe Work, type: :model do
       :program_notes_en => Forgery(:lorem_ipsum).paragraphs(Forgery(:basic).number(:at_least => 1, :at_most => 3)),
       :program_notes_it => Forgery(:lorem_ipsum).paragraphs(Forgery(:basic).number(:at_least => 1, :at_most => 3)),
       :owner_id => @account.to_param,
+      :edition_id => Edition.current.to_param,
+      :category_id => Edition.current.categories[Forgery(:basic).number(at_least: 0, at_most: Edition.current.categories(true).count - 1)].to_param,
     )
   }
 
@@ -265,6 +267,11 @@ RSpec.describe Work, type: :model do
       expect((w = FactoryGirl.create(:work, owner_id: @account.to_param, edition: old_edition)).valid?).to be(true)
       expect(w.edition).to eq(old_edition)
       expect(Edition.find(old_edition.to_param).works(true).include?(w)).to be(true)
+    end
+
+    it 'belongs to a category of the current edition' do
+      expect((w = FactoryGirl.create(:work, owner_id: @account.to_param)).valid?).to be(true)
+      expect(Edition.current.categories(true).include?(w.category)).to be(true)
     end
 
   end

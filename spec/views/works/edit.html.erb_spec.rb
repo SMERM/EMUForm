@@ -15,7 +15,10 @@ RSpec.describe "works/edit", type: :view do
 
     assert_select "form[action=?][method=?]", work_path(@work), "post" do
       |el|
+
+      assert_select el, 'select#work_category_id[name=?]', 'work[category_id]'
       assert_select el, "input#work_title[name=?]", "work[title]"
+
     end
   end
 end
