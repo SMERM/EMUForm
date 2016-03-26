@@ -10,9 +10,9 @@
   - [ ] create interface and binding to payment system (#4 - @nicb and @grammaton + M.L. and I.)
   - [ ] fix graphic looking of all pages
   - [x] add `edition` object table (#6 - @nicb done in 6778995)
-  - [ ] add `categories` object table (#33 - @nicb)
+  - [x] add `categories` object table (#33 - @nicb done in b0d48d5)
   - [x] setup `capybara` for proper integration testing (#8 - @nicb done in 2f73568)
   - [ ] provide internal linking
   - [ ] do partials 
-  - [ ] add mail dispatching to account users (#18 - @nicb)
+  - [ ] add mail dispatching to account users (#18 - @nicb - current task)
   - [ ] integrate into http://www.emufest.org call
