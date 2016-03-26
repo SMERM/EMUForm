@@ -11,6 +11,14 @@ Form for EMUFest submissions
 
 If you are getting bored, feel free to help. [Here](./public/doc/TODO.md) is our [TODO list](./public/doc/TODO.md).
 
+**PLEASE NOTE**: if you want to test mail send/receive in the `development`
+environment, please install (and then run) `mailcatcher`, like so:
+
+```sh
+$ gem install mailcatcher
+$ mailcatcher
+```
+
 ## License
 
 EMUForm - submission form software for the EMUfest Festival
