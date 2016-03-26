@@ -1,0 +1,34 @@
+<p>
+  Dear <%= @work.owner.full_name %>,
+</p>
+<br />
+<p>
+we hereby confirm that we have correctly received and processed the following submission:
+</p>
+<p>
+<h2><strong><i><%= @work.title -%></h2>
+(authors: <%= @work.display_authors_with_roles -%>)
+submitted in category <%= @work.category.full_title -%>.
+</p>
+<p>
+Submitted files:
+<table>
+<thead>
+   <th>Filename</th>
+   <th>Size</th>
+</thead>
+<% @work.submitted_files.each do |sf| %>
+<tr>
+  <td><%= sf.filename -%></td><td><%= sf.size -%></td>
+</tr>
+<% end %>
+</table>
+</p>
+<p>
+Thank you very much for submitting to EMUFest <%= Edition.current.year -%>!
+</p>
+<p>
+Best regards,
+</p>
+<p>
+The EMUFest <%= Edition.current.year -%> staff.

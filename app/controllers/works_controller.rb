@@ -63,6 +63,7 @@ class WorksController < EndUserBaseController
     @work.submitted_files_attributes = submitted_files_params[:submitted_files_attributes]
     respond_to do |format|
       if @work.save
+        SubmissionConfirmation.confirm(@work).deliver_later
         format.html { redirect_to work_path(@work), notice: "#{@work.submitted_files.count} files were successefully uploaded." }
         format.json { render :attach_file, status: :ok, location: @work }
       else

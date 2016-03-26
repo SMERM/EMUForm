@@ -49,4 +49,8 @@ class Account < ActiveRecord::Base
    authorization.account
  end
 
+ def full_name
+   [self.first_name.capitalize, self.last_name.capitalize].join(' ')
+ end
+
 end

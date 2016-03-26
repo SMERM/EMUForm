@@ -25,4 +25,14 @@ RSpec.describe Account, type: :model do
 
   end
 
+  context 'methods' do
+
+    it 'has a full_name method' do
+      expect((account = FactoryGirl.create(:account)).valid?).to be(true)
+      expect(account.respond_to?(:full_name)).to be(true)
+      expect(account.full_name).to eq([account.first_name, account.last_name].join(' '))
+    end
+
+  end
+
 end

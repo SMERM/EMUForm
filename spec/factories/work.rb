@@ -1,3 +1,7 @@
+require_relative File.join('..', 'support', 'submitted_files_helper')
+
+include SubmittedFilesHelper
+  
 FactoryGirl.define do
 
   factory :work do
@@ -33,6 +37,19 @@ FactoryGirl.define do
           res << h
         end
         res
+      end
+
+      factory :work_with_authors_roles_and_submitted_files do
+
+        transient do
+          num_submitted_files    3
+        end
+
+        after :create do
+          |w, evaluator|
+          FactoryGirl.create_list(:submitted_file, evaluator.num_submitted_files, work: w)
+        end
+
       end
 
     end
