@@ -14,5 +14,5 @@
   - [x] setup `capybara` for proper integration testing (#8 - @nicb done in 2f73568)
   - [ ] provide internal linking
   - [ ] do partials 
-  - [ ] add mail dispatching to account users (#18 - @nicb - current task)
+  - [x] add mail dispatching to account users (#18 - @nicb done in 6d14818)
   - [ ] integrate into http://www.emufest.org call
