@@ -18,6 +18,8 @@ environment, please install (and then run) `mailcatcher`, like so:
 $ gem install mailcatcher
 $ mailcatcher
 ```
+then, as described in the `mailcatcher` documentation, you may check the
+testing mail sent pointing your browser [here](http://localhost:1080).
 
 ## License
 
