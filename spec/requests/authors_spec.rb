@@ -112,7 +112,7 @@ RSpec.describe "Authors", type: :request do
         expect(a.valid?).to be(true)
         expect(a.roles(true).for_work(@work.to_param).count).to eq(1)
         expect(a.roles.for_work(@work.to_param).first.id).to eq(r.id)
-        expect(response).to redirect_to(work_author_path(@work, a))
+        expect(response).to redirect_to(select_work_authors_path(@work))
       end
     end
 

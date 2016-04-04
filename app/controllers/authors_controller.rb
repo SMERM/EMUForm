@@ -39,7 +39,7 @@ class AuthorsController < EndUserBaseController
         a_attrs = HashWithIndifferentAccess.new(@author.attributes)
         a_attrs.update(roles_attributes: r_attrs)
         @work.update(authors_attributes: [ a_attrs ])
-        format.html { redirect_to work_author_path(@work, @author), notice: 'Author was successfully created.' }
+        format.html { redirect_to select_work_authors_path(@work), notice: 'Author was successfully created.' }
         format.json { render :show, status: :created, location: @author }
       else
         format.html { redirect_to new_work_author_path(@work, @author) }
@@ -80,7 +80,7 @@ private
 
   def set_work_and_author
     set_work
-    @author = params.has_key?(:id) && params[:id] ? @work.authors.find(params[:id]) : @work.authors.build
+    @author = params.has_key?(:id) && params[:id] ? Author.find(params[:id]) : Author.new
   end
 
   def set_work_and_authors
