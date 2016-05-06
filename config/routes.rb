@@ -38,8 +38,16 @@ Rails.application.routes.draw do
     resources :authors do
       get :select, on: :collection
     end
-    resources :works_roles_authors, only: [:create], as: :roles_authors
+    resources :works_roles_authors, only: [:create]
   end
+  #
+  # remote AJAX methods for works_roles_authors 
+  #
+# post   '/works/:work_id/works_roles_authors/:author_id/create/:id', to: 'works_roles_authors#create', as: :work_role_author
+  post   '/works/:work_id/works_roles_authors/:author_id/set_role/:id', to: 'works_roles_authors#set_role', as: :set_role_work_role_author
+  delete '/works/:work_id/works_roles_authors/remove_author/:id', to: 'works_roles_authors#remove_author', as: :remove_author_work_role_author
+  delete '/works/:work_id/works_roles_authors/:author_id/remove_role/:id', to: 'works_roles_authors#remove_role', as: :remove_role_work_role_author
+  #
   resources :roles, except: :index do
     post :select, on: :collection
   end
