@@ -1,6 +1,14 @@
 class WorksRolesAuthorsController < EndUserBaseController
 
-  before_action :set_role
+  before_action :set_work
+
+  #
+  # TODO: in the remote ajax actions: instead of render do:
+  #
+  # head :created, location: @work
+  # or
+  # head :bad_request, location: @work
+  #
 
   #
   # POST /works/:work_id/works_roles_authors(.:format)
@@ -60,11 +68,11 @@ private
   end
 
   #
-  # +set_role+
+  # +set_work+
   #
-  # picks up the role from params and sets it up
+  # picks up the work from params and sets it up
   #
-  def set_role
+  def set_work
     @work = Work.find(params[:work_id])
   end
 
