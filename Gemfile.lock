@@ -55,6 +55,8 @@ GEM
       thread_safe (~> 0.3, >= 0.3.4)
       tzinfo (~> 1.1)
     addressable (2.4.0)
+    airbrussh (1.0.1)
+      sshkit (>= 1.6.1, != 1.7.0)
     arbre (1.0.3)
       activesupport (>= 3.0.0)
     arel (6.0.3)
@@ -79,6 +81,22 @@ GEM
       thor (~> 0.19)
     builder (3.2.2)
     byebug (8.2.1)
+    capistrano (3.5.0)
+      airbrussh (>= 1.0.0)
+      capistrano-harrow
+      i18n
+      rake (>= 10.0.0)
+      sshkit (>= 1.9.0)
+    capistrano-bundler (1.1.4)
+      capistrano (~> 3.1)
+      sshkit (~> 1.2)
+    capistrano-harrow (0.5.1)
+    capistrano-rails (1.1.6)
+      capistrano (~> 3.1)
+      capistrano-bundler (~> 1.1)
+    capistrano-rvm (0.1.2)
+      capistrano (~> 3.0)
+      sshkit (~> 1.2)
     capybara (2.6.2)
       addressable
       mime-types (>= 1.16)
@@ -167,6 +185,9 @@ GEM
     multi_json (1.11.2)
     multi_xml (0.5.5)
     multipart-post (2.0.0)
+    net-scp (1.2.1)
+      net-ssh (>= 2.6.5)
+    net-ssh (3.1.1)
     nokogiri (1.6.7.1)
       mini_portile2 (~> 2.0.0.rc2)
     oauth (0.4.7)
@@ -284,6 +305,9 @@ GEM
       activesupport (>= 4.0)
       sprockets (>= 3.0.0)
     sqlite3 (1.3.11)
+    sshkit (1.10.0)
+      net-scp (>= 1.1.2)
+      net-ssh (>= 2.8.0)
     therubyracer (0.12.2)
       libv8 (~> 3.16.14.0)
       ref
@@ -314,6 +338,9 @@ DEPENDENCIES
   activeadmin!
   blueimp-file-upload-rails
   byebug
+  capistrano-bundler
+  capistrano-rails
+  capistrano-rvm
   capybara
   carrierwave
   codeclimate-test-reporter
