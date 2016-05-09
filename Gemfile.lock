@@ -338,6 +338,7 @@ DEPENDENCIES
   activeadmin!
   blueimp-file-upload-rails
   byebug
+  capistrano
   capistrano-bundler
   capistrano-rails
   capistrano-rvm
