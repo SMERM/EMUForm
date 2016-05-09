@@ -32,9 +32,9 @@ gem 'sdoc', '~> 0.4.0', group: :doc
 # Use Capistrano for deployment
 group :development do
   gem "capistrano", "~> 3.4"
-  #gem 'capistrano-rails'
-  #gem 'capistrano-rvm'
-  #gem 'capistrano-bundler'
+  gem 'capistrano-rails'
+  gem 'capistrano-rvm'
+  gem 'capistrano-bundler'
 end
 
 group :development, :test do
