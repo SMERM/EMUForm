@@ -6,7 +6,7 @@
 
 <div class="entry-content">
 
-Please select one (or more) authors for <span class='work_title'><%= @work.title %></span>:
+Please select one (or more) authors for <span class='work_title'><strong><%= @work.title %></strong></span>:
 
 <%= form_for(@author, url: select_roles_url) do |f| %>
   <%= f.hidden_field(:work, { value: @work.to_param, name: 'role[work_id]' }) %>
