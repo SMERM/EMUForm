@@ -59,18 +59,27 @@
   <%= javascript_include_tag 'application', :media => 'all', 'data-turbolinks-track' => true %>
   <%= csrf_meta_tags %>
 </head>
+
 <body id="page">
 
   <div class="navigation-wrapper">
   	<nav role="navigation" id="site-nav" class="animated drop">
   	    <ul>
-  		    <li><a href="http://localhost:4000/emufest2016/" >EMUFest 2016</a></li>
-  		    <li><a href="http://localhost:4000/articles/" >News</a></li>
-  		    <li><a href="http://localhost:4000/blog/" >Blog</a></li>
-  		    <li><a href="http://localhost:4000/about/" >About</a></li>
-  		    <li><a href="http://localhost:4000" >Past Editions</a></li>
+
+
+  		    <li><a href="http://emufest.org/2016-emufest/" >EMUFest 2016</a></li>
+
+
+  		    <li><a href="http://emufest.org/about/" >About</a></li>
+
+
   		    <li><a href="http://www.conservatoriosantacecilia.it" target="_blank">Conservatorio S. Cecilia</a></li>
-  		    <li><a href="http://localhost:4000/search/" >Search</a></li>
+
+
+  		    <li><a href="http://emufest.org/search/" >Search</a></li>
+
+  			<!-- <li>__</li>
+  			<li><a href="/it/">IT</a></li> -->
   	    </ul>
   	</nav>
   </div><!-- /.navigation-wrapper -->
@@ -93,9 +102,8 @@
     <article class="entry">
       <div class="entry-wrapper">
 
-        <%= link_to 'Sign out', destroy_account_session_path, method: :delete %>
-
         <%= yield %>
+        <%= link_to 'Sign out', destroy_account_session_path, method: :delete %>
 
       </div>
     </article>
