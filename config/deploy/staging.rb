@@ -51,7 +51,7 @@ set   :subdomain,           true # unless domain is a subdomain, e.g. subdomain.
 set   :user,                "root"
 
 # This configuration is *conventional*
-set   :application,         ip
+set   :application,         "173.236.144.114"
 set   :deploy_to,           "/var/rails/#{domain}"
 set   :repository_path,     "/var/git/#{domain}.git"
 set   :repository,          "ssh://#{user}@#{application}#{repository_path}"
