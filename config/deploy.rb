@@ -1,8 +1,29 @@
 # config valid only for current version of Capistrano
 lock '3.5.0'
 
-set :application, 'my_app_name'
-set :repo_url, 'git@example.com:me/my_repo.git'
+default_run_options[:pty] = true
+
+set :user, 'emuform'
+set :domain, 'emuformtest.giuseppesilvi.com'
+set :application, 'emuform'
+
+set :repository,  "#{user}@#{domain}:EMUForm/#{application}.git"
+set :deploy_to, "/home/#{user}/#{domain}"
+set :deploy_via, :remote_cache
+set :scm, 'git'
+set :branch, 'gs-cap'
+set :git_shallow_clone, 1
+set :scm_verbose, true
+set :use_sudo, false
+
+server domain, :app, :web
+role :db, domain, :primary => true
+
+namespace :deploy do
+  task :restart do
+    run "touch #{current_path}/tmp/restart.txt"
+  end
+end
 
 # Default branch is :master
 # ask :branch, `git rev-parse --abbrev-ref HEAD`.chomp
