@@ -63,7 +63,7 @@ set   :use_sudo,            true
 role  :web,                 application
 role  :app,                 application
 role  :db,                  application
-default_tasks[:pty] = true
+default_run_options[:pty] = true
 
 # Setup Shared Folders
 #   that should be created inside the shared_path
