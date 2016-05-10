@@ -4,10 +4,11 @@
 # Default deploy_to directory is /var/www/my_app_name
 #set :deploy_to, "/home/#{user}/#{domain}"
 
-SSHKit.config.command_map[:bash] = "/usr/bin/bash"
+# SSHKit.config.command_map[:bash] = "/usr/bin/bash"
 
 set :deploy_to, '/home/emuform/emuformtest.giuseppesilvi.com/www/my_app_name'
 set :deploy_via, :remote_cache
+set :default_env, { rvm_bin_path: '~/.rvm/bin' }
 
 # Default value for :scm is :git
 # set :scm, :git
@@ -20,7 +21,7 @@ set :deploy_via, :remote_cache
 # set :format_options, command_output: true, log_file: 'log/capistrano.log', color: :auto, truncate: :auto
 
 # Default value for :pty is false
-set :pty, true
+#set :pty, true
 
 # Default value for :linked_files is []
 # set :linked_files, fetch(:linked_files, []).push('config/database.yml', 'config/secrets.yml')
