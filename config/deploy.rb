@@ -19,12 +19,6 @@ set :use_sudo, false
 server domain, :app, :web
 role :db, domain, :primary => true
 
-namespace :deploy do
-  task :restart do
-    run "touch #{current_path}/tmp/restart.txt"
-  end
-end
-
 # Default branch is :master
 # ask :branch, `git rev-parse --abbrev-ref HEAD`.chomp
 
@@ -56,15 +50,21 @@ end
 # Default value for keep_releases is 5
 # set :keep_releases, 5
 
+# namespace :deploy do
+#
+#   after :restart, :clear_cache do
+#     on roles(:web), in: :groups, limit: 3, wait: 10 do
+#       # Here we can do anything such as:
+#       # within release_path do
+#       #   execute :rake, 'cache:clear'
+#       # end
+#     end
+#   end
+#
+# end
+
 namespace :deploy do
-
-  after :restart, :clear_cache do
-    on roles(:web), in: :groups, limit: 3, wait: 10 do
-      # Here we can do anything such as:
-      # within release_path do
-      #   execute :rake, 'cache:clear'
-      # end
-    end
+  task :restart do
+    run "touch #{current_path}/tmp/restart.txt"
   end
-
 end
