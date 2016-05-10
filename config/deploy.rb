@@ -51,8 +51,7 @@ set :stages, ["staging", "production"]
 set :default_stage, "staging"
 
 set :application, 'emuform'
-  set :repo_url, 'https://github.com/SMERM/EMUForm.git'
-  set :branch, 'gs-cap'
+  set :repo_url, 'https://github.com/grammaton/EMUForm.git'
 
   namespace :deploy do
     task :restart do
