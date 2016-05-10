@@ -42,8 +42,6 @@
 #
 # end
 
-namespace :deploy do
-  task :restart do
-    run "touch #{current_path}/tmp/restart.txt"
-  end
-end
+set :application, 'emuform'
+  set :repo_url, 'https://github.com/SMERM/EMUForm.git'
+  set :branch, 'gs-cap'

@@ -41,3 +41,5 @@ bower.json
 /public/assets/
 /public/private/uploads/*
 /spec/private/uploads/*
+
+/config/database.yml
