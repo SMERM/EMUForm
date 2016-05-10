@@ -2,7 +2,7 @@
 # ask :branch, `git rev-parse --abbrev-ref HEAD`.chomp
 
 # Default deploy_to directory is /var/www/my_app_name
-# set :deploy_to, '/var/www/my_app_name'
+set :deploy_to, '/home/emuform/emuformtest.giuseppesilvi.com/www/my_app_name'
 
 # Default value for :scm is :git
 # set :scm, :git
@@ -41,6 +41,8 @@
 #   end
 #
 # end
+set :stages, ["staging", "production"]
+set :default_stage, "staging"
 
 set :application, 'emuform'
   set :repo_url, 'https://github.com/SMERM/EMUForm.git'
