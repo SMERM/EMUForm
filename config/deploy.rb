@@ -2,7 +2,10 @@
 # ask :branch, `git rev-parse --abbrev-ref HEAD`.chomp
 
 # Default deploy_to directory is /var/www/my_app_name
+#set :deploy_to, "/home/#{user}/#{domain}"
+
 set :deploy_to, '/home/emuform/emuformtest.giuseppesilvi.com/www/my_app_name'
+set :deploy_via, :remote_cache
 
 # Default value for :scm is :git
 # set :scm, :git
@@ -15,7 +18,7 @@ set :deploy_to, '/home/emuform/emuformtest.giuseppesilvi.com/www/my_app_name'
 # set :format_options, command_output: true, log_file: 'log/capistrano.log', color: :auto, truncate: :auto
 
 # Default value for :pty is false
-# set :pty, true
+set :pty, true
 
 # Default value for :linked_files is []
 # set :linked_files, fetch(:linked_files, []).push('config/database.yml', 'config/secrets.yml')
@@ -47,3 +50,9 @@ set :default_stage, "staging"
 set :application, 'emuform'
   set :repo_url, 'https://github.com/SMERM/EMUForm.git'
   set :branch, 'gs-cap'
+
+  namespace :deploy do
+    task :restart do
+      run "touch #{current_path}/tmp/restart.txt"
+  end
+end
