@@ -5,31 +5,23 @@
 <p>
   <strong>First name:</strong>
   <%= @account.first_name %>
-<!-- </p>
-
-<p> -->
+<br>
   <strong>Last name:</strong>
   <%= @account.last_name %>
-<!-- </p>
-
-<p> -->
+<br>
   <strong>E-mail:</strong>
   <%= @account.email %>
-<!-- </p>
-
-<p> -->
+<br>
   <strong>Location:</strong>
   <%= @account.location %>
-<!-- </p>
-
-<p> -->
+<br>
   <strong>Account created on:</strong>
   <%= @account.created_at %>
-<!-- </p> -->
-
+<br>
 <% if @account.remember_created_at %>
-<!-- <p> -->
   <strong>Last Login on:</strong>
   <%= @account.remember_created_at %>
 </p>
 <% end %>
+
+<hr>
