@@ -25,7 +25,10 @@
   <table class="table" id="authors">
     <thead>
       <th>Name</th>
+      <th>Year</th>
       <th>Roles</th>
+      <th></th>
+      <th></th>
     </thead>
     <tbody>
       <%= render partial: 'authors/author_item', collection: @work.authors.uniq %>
@@ -54,3 +57,5 @@
 
 <%= link_to 'Edit', edit_work_path(@work) %> |
 <%= link_to 'Back', works_path %>
+
+<br>

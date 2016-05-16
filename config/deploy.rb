@@ -8,7 +8,7 @@
 
 set :deploy_to, '/home/emuform/emuformtest.giuseppesilvi.com/www/my_app_name'
 set :deploy_via, :remote_cache
-set :default_env, { rvm_bin_path: '~/.rvm/bin' }
+set :default_env, { rvm_bin_path: '/home/emuform/shared/.rvm/bin' }
 
 # Default value for :scm is :git
 # set :scm, :git
