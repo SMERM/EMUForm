@@ -1,8 +1,8 @@
 <p class="notice"><%= notice %></p>
 
-<header class="entry-header">
-  <h1 class="entry-title">List of Authors</h1>
-</header>
+<h1>List of Authors</h1>
+
+<%= link_to 'New Author', new_work_author_path(@work) %>
 
 <div class="entry-content">
 
@@ -23,7 +23,4 @@
   </tbody>
 </table>
 
-<br>
-
-<%= link_to 'New Author', new_work_author_path(@work) %>
 </div>

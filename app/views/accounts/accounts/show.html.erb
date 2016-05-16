@@ -1,37 +1,35 @@
 <p class="notice"><strong><%= notice %></strong></p>
 
+<%= link_to 'Edit', edit_account_registration_path %> | <%= link_to 'List of Works', works_path %>
+
 <p>
   <strong>First name:</strong>
   <%= @account.first_name %>
-</p>
+<!-- </p>
 
-<p>
+<p> -->
   <strong>Last name:</strong>
   <%= @account.last_name %>
-</p>
+<!-- </p>
 
-<p>
+<p> -->
   <strong>E-mail:</strong>
   <%= @account.email %>
-</p>
+<!-- </p>
 
-<p>
+<p> -->
   <strong>Location:</strong>
   <%= @account.location %>
-</p>
+<!-- </p>
 
-<p>
+<p> -->
   <strong>Account created on:</strong>
   <%= @account.created_at %>
-</p>
+<!-- </p> -->
 
 <% if @account.remember_created_at %>
-<p>
+<!-- <p> -->
   <strong>Last Login on:</strong>
   <%= @account.remember_created_at %>
 </p>
 <% end %>
-
-<%= link_to 'Edit', edit_account_registration_path %> | <%= link_to 'List of Works', works_path %>
-
-</br>

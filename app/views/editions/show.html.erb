@@ -1,5 +1,8 @@
 <p id="notice"><%= notice %></p>
 
+<%= link_to 'Edit', edit_edition_path(@edition) %> |
+<%= link_to 'Back', editions_path %>
+
 <p>
   <strong>Year:</strong>
   <%= @edition.year %>
@@ -34,6 +37,3 @@
   <strong>Submission deadline:</strong>
   <%= @edition.submission_deadline %>
 </p>
-
-<%= link_to 'Edit', edit_edition_path(@edition) %> |
-<%= link_to 'Back', editions_path %>

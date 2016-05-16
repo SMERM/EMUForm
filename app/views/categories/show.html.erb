@@ -1,5 +1,8 @@
 <p id="notice"><%= notice %></p>
 
+<%= link_to 'Edit', edit_category_path(@category) %> |
+<%= link_to 'Back', categories_path %>
+
 <p>
   <strong>Acro:</strong>
   <%= @category.acro %>
@@ -24,6 +27,3 @@
   <strong>Description it:</strong>
   <%= @category.description_it %>
 </p>
-
-<%= link_to 'Edit', edit_category_path(@category) %> |
-<%= link_to 'Back', categories_path %>
