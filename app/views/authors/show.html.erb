@@ -1,31 +1,29 @@
 <p class="notice"><%= notice %></p>
 
-<p>
-  <strong>First name:</strong>
-  <%= @author.first_name %>
-</p>
-
-<p>
-  <strong>Last name:</strong>
-  <%= @author.last_name %>
-</p>
-
-<p>
-  <strong>Birth year:</strong>
-  <%= @author.display_birth_year %>
-</p>
-
-<p>
-  <strong>Bio en:</strong>
-  <%= @author.bio_en %>
-</p>
-
-<p>
-  <strong>Bio it:</strong>
-  <%= @author.bio_it %>
-</p>
-
 <%= link_to 'Edit', edit_work_author_path(@work, @author) %> |
 <%= link_to 'Back', work_authors_path(@work) %>
 
-<br>
+<p>
+  <strong>First name:</strong>
+  <%= @author.first_name %>
+<!-- </p>
+
+<p> -->
+  <strong>Last name:</strong>
+  <%= @author.last_name %>
+<!-- </p>
+
+<p> -->
+  <strong>Birth year:</strong>
+  <%= @author.display_birth_year %>
+<!-- </p>
+
+<p> -->
+  <strong>Bio en:</strong>
+  <%= @author.bio_en %>
+<!-- </p>
+
+<p> -->
+  <strong>Bio it:</strong>
+  <%= @author.bio_it %>
+</p>
