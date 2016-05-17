@@ -110,8 +110,9 @@
     <article class="entry">
       <div class="entry-wrapper">
 
+        <%= notice %>
+
         <%= yield %>
-        <%= link_to 'Sign out', destroy_account_session_path, method: :delete %>
 
       </div>
     </article>
@@ -150,6 +151,16 @@
     </tr>
 {% } %}
 </script>
+
+<!-- GITTER SIDECAR  -->
+<script>
+  ((window.gitter = {}).chat = {}).options = {
+    room: 'EMUFest/emufest.github.io'
+  };
+</script>
+<script src="https://sidecar.gitter.im/dist/sidecar.v1.js" async defer></script>
+<!-- GITTER SIDECAR  -->
+
 <!-- The template to display files available for download -->
 
 <%= javascript_include_tag 'http://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js' %>

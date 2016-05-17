@@ -6,7 +6,7 @@
 
 # SSHKit.config.command_map[:bash] = "/usr/bin/bash"
 
-set :deploy_to, '/home/emuform/emuformtest.giuseppesilvi.com/www/my_app_name'
+set :deploy_to, '/home/emuform/emuformtest.giuseppesilvi.com/www/EMUForm'
 set :deploy_via, :remote_cache
 set :default_env, { rvm_bin_path: '/home/emuform/shared/.rvm/bin' }
 
