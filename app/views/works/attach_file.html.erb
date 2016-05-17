@@ -13,6 +13,10 @@
                 <i class="glyphicon gliphicon-plus">
                 <%= f.file_field 'Add files', value: 'Add files...', :name => 'work[submitted_files_attributes][][http_request]', :multiple => true %>
               </span>
+              <!-- <button type="submit" class="btn btn-primary start">
+                  <i class="glyphicon glyphicon-upload"></i>
+                  <span>Start upload</span>
+              </button> -->
               <%= f.button('Cancel upload', :type => 'reset', :class => 'btn btn-warning cancel') %>
               <%# f.button_to('Delete upload', :type => 'reset', :class => 'btn btn-danger delete') %> <%# don't know how to deal with this yet %>
               <%# f.check_box :toggle, :value => 'delete', { :class => 'toggle' } %><%# removed because I can't make it to work :-( %>
@@ -41,7 +45,7 @@
 <h3 class="panel-title">Upload Instructions</h3>
 <ul>
   <li>The maximum file size for uploads is <strong>1 GB</strong>.</li>
-  <li>Only <strong>PDF, WAV, AIF</strong> files are allowed.</li>
+  <li>Only <strong>PDF, WAV, AIF, ZIP</strong> files are allowed.</li>
   <li>If your browser does not suck you can <strong>drag &amp; drop</strong> files from your desktop on this webpage.
   If it does, you won't be able to drag &amp; drop (there's a story to be learned here).</li>
 </ul>

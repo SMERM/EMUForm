@@ -1,7 +1,6 @@
-<!-- app/views/roles/select.html.erb -->
-<p id="notice"><%= notice %></p>
+<h1 class="entry-title">Select Roles:</h1>
 
-<h1 class="entry-title">Select Roles for the following authors:</h1>
+<span><strong>Select at least one role (you may select all that apply):</strong></span>
 
 <%= form_for(:work_role_author, url: work_works_roles_authors_path(@work)) do |f| %>
   <%= render partial: 'select_role', collection: @authors, locals: { form: f, roles: @roles } %>
@@ -10,6 +9,12 @@
 
 <br />
 
-<%= link_to 'Back', select_work_authors_path(@work) %>
+<%= link_to 'Back', select_work_authors_path(@work), class:"btn" %>
 
-<br>
+<hr>
+
+<center>
+<%= link_to 'List of Works', works_path, class:"twobtn" %>
+&nbsp;&nbsp;&nbsp;&nbsp;
+<%= link_to 'Sign out', destroy_account_session_path, class:"twobtn", method: :delete %>
+<center>

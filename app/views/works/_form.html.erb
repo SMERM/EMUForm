@@ -36,6 +36,9 @@
     <div class="field"> <%= f.label 'Note di Programma (in italiano - optional)' %><br>
       <%= f.text_area :program_notes_it %>
     </div>
+
+    <hr>
+
     <% unless @work.new_record? %>
       <div class="authors">
          <%= f.label 'Associated authors' %><br />
@@ -55,21 +58,13 @@
          </table>
 
       </div>
-      <div class="add_new_author">
         <%= link_to 'Add new author', new_work_author_path(@work), class:"btn" %>
-      </div>
+        <%= link_to 'Add new files', attach_file_work_path(@work), class:"btn" %>
+
+
     <% end %>
 
   <div class="actions">
     <%= f.submit 'Select author(s)', class:"btn" %>
   </div>
 <% end %>
-
-
-<hr>
-
-<center>
-<%= link_to 'List of Works', works_path, class:"twobtn" %>
-&nbsp;&nbsp;&nbsp;&nbsp;
-<%= link_to 'Sign out', destroy_account_session_path, class:"twobtn", method: :delete %>
-<center>

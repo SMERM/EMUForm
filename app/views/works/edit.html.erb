@@ -1,3 +1,11 @@
 <h1 class="entry-title">Edit Work</h1>
 
 <%= render 'form' %>
+
+<hr>
+
+<center>
+<%= link_to 'List of Works', works_path, class:"twobtn" %>
+&nbsp;&nbsp;&nbsp;&nbsp;
+<%= link_to 'Sign out', destroy_account_session_path, class:"twobtn", method: :delete %>
+<center>

@@ -1,12 +1,8 @@
-<p class="notice"><%= notice %></p>
-
 <h1 class="entry-title">Select an Author</h1>
-
-<%= link_to 'Add new author', new_work_author_path(@work) %>
 
 <div class="entry-content">
 
-Please select one (or more) authors for <span class='work_title'><strong><%= @work.title %></strong></span>:
+Please select form the list one (or more) authors for <span class='work_title'><strong><%= @work.title %></strong></span>:
 
 <%= form_for(@author, url: select_roles_url) do |f| %>
   <%= f.hidden_field(:work, { value: @work.to_param, name: 'role[work_id]' }) %>
@@ -20,3 +16,7 @@ Please select one (or more) authors for <span class='work_title'><strong><%= @wo
 <% end %>
 
 </div>
+
+If the author is not on the list create it:<br>
+
+<%= link_to 'Add new author', new_work_author_path(@work), class:"btn" %>

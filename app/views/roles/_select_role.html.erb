@@ -1,17 +1,15 @@
-<hr class="author_role_selection_rule" />
-<span class="author_name"><%= select_role.full_name %>:</span>
-<br />
+<!-- <hr class="author_role_selection_rule" /> -->
+
+<h3><%= select_role.full_name %>:</h3>
 <%= form.hidden_field(:id, name: 'works_roles_authors[authors_attributes][][id]', value: select_role.id) %>
 <div class="role_selector" id="author_<%= select_role.to_param -%>">
-  <p>
-  select at least one role (you may select all that apply):
-  </p>
   <%= form.fields_for(:role) do |r_form| %>
       <%= r_form.collection_check_boxes(:roles, roles, :id, :description, {}, { name: 'works_roles_authors[authors_attributes][][roles_attributes][][id]' }) do |b| %>
-      <span class="role_check_box">
+      <div class="checkbox">
   	    <%= b.check_box(class: 'role_checkbox') %>
   	    <%= b.label(class: 'role_label') %>
-      </span>
+      </div>
   	<% end %>
 	<% end %>
+  <hr>
 </div>

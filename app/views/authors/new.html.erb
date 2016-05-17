@@ -1,7 +1,13 @@
 <h1 class="entry-title">New Author</h1>
 
-<%= link_to 'Back', work_authors_path(@work) %>
-
 <%= render 'form' %>
 
-</br>
+<%= link_to 'Back', work_authors_path(@work), class:"btn" %>
+
+<hr>
+
+<center>
+<%= link_to 'List of Works', works_path, class:"twobtn" %>
+&nbsp;&nbsp;&nbsp;&nbsp;
+<%= link_to 'Sign out', destroy_account_session_path, class:"twobtn", method: :delete %>
+<center>
