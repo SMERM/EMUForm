@@ -1,30 +1,20 @@
-<p class="notice"><%= notice %></p>
-
-<%= link_to 'Edit', edit_work_path(@work) %> |
-<%= link_to 'Back', works_path %>
+<h1 class="entry-title"><%= @work.title %></h1>
 
 <p>
   <strong>Title:</strong>
   <%= @work.title %>
-</p>
-
-<p>
+<br>
   <strong>Year:</strong>
   <%= @work.display_year %>
-</p>
-
-<p>
+<br>
   <strong>Duration:</strong>
   <%= @work.display_duration %>
-</p>
-
-<p>
+<br>
   <strong>Instruments:</strong>
   <%= @work.instruments %>
-</p>
-
-<p>
+<br>
   <strong><%= pluralize(@work.authors.uniq.count, "author") %>:</strong>
+
   <table class="table" id="authors">
     <thead>
       <th>Name</th>
@@ -37,26 +27,30 @@
     <tbody>
       <%= render partial: 'authors/author_item', collection: @work.authors.uniq %>
     </tbody>
-  </table
-</p>
+  </table>
 
-<p>
+<br>
   <strong>Program Notes [ENG]:</strong>
   <%= @work.program_notes_en %>
-</p>
-
-<p>
+<br>
   <strong>Program Notes [IT]:</strong>
   <%= @work.program_notes_it %>
-</p>
-
-<p>
+<br>
   <strong>Submitted Files:</strong>
   <ul>
   <% @work.submitted_files.each do |sf| %>
-    <li><%= sf.filename %>  <%= sf.size %></li>
+    <li><%= sf.filename %> | <%= sf.size %> bytes</li>
   <% end %>
   </ul>
 </p>
 
+<%= link_to 'Edit', edit_work_path(@work), class:"btn" %>
+<%= link_to 'Back', works_path, class:"btn" %>
+
 <hr>
+
+<center>
+<%= link_to 'List of Works', works_path, class:"twobtn" %>
+&nbsp;&nbsp;&nbsp;&nbsp;
+<%= link_to 'Sign out', destroy_account_session_path, class:"twobtn", method: :delete %>
+<center>

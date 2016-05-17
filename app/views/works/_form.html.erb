@@ -39,14 +39,37 @@
     <% unless @work.new_record? %>
       <div class="authors">
          <%= f.label 'Associated authors' %><br />
-         <%= render partial: 'authors/author_item', collection: @work.authors.uniq %>
+
+         <table class="table" id="authors">
+           <thead>
+             <th>Name</th>
+             <th>Year</th>
+             <th>Roles</th>
+             <th></th>
+             <th></th>
+             <th></th>
+           </thead>
+           <tbody>
+             <%= render partial: 'authors/author_item', collection: @work.authors.uniq %>
+           </tbody>
+         </table>
+
       </div>
       <div class="add_new_author">
-        <%= link_to 'Add new author', new_work_author_path(@work) %>
+        <%= link_to 'Add new author', new_work_author_path(@work), class:"btn" %>
       </div>
     <% end %>
 
   <div class="actions">
-    <%= f.submit 'Select author(s)' %>
+    <%= f.submit 'Select author(s)', class:"btn" %>
   </div>
 <% end %>
+
+
+<hr>
+
+<center>
+<%= link_to 'List of Works', works_path, class:"twobtn" %>
+&nbsp;&nbsp;&nbsp;&nbsp;
+<%= link_to 'Sign out', destroy_account_session_path, class:"twobtn", method: :delete %>
+<center>

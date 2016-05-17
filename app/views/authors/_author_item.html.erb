@@ -1,7 +1,7 @@
 <tr>
   <td><%= link_to author_item.full_name, work_author_path(@work, author_item) %></td>
-  <td>(<%= author_item.display_birth_year %>)</td>
-  <td>(<%= author_item.display_roles_for_work(@work.to_param) %>)</td>
+  <td><%= author_item.display_birth_year %></td>
+  <td><%= author_item.display_roles_for_work(@work.to_param) %></td>
   <td><%= link_to 'Show', work_author_path(@work, author_item) %></td>
   <td><%= link_to 'Edit', edit_work_author_path(@work, author_item) %></td>
   <td><%= link_to 'Destroy', work_author_path(@work, author_item), method: :delete, data: { confirm: 'Are you sure?' } %></td>

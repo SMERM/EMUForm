@@ -1,8 +1,4 @@
-<p class="notice"><%= notice %></p>
-
 <h1 class="entry-title">List of Works</h1>
-
-  <%= link_to 'New Work', new_work_path() %>
 
 <div class="entry-content">
 
@@ -12,9 +8,9 @@
       <th>Title</th>
       <th>Year</th>
       <th>Duration</th>
-      <th>Instruments</th>
-      <th>Roles<th>
-      <th colspan="3"></th>
+      <th>Authors (with Roles)</th>
+      <th><th>
+      <th></th>
     </tr>
   </thead>
 
@@ -25,4 +21,12 @@
 
 </div>
 
+<br>&nbsp;<br>
+
 <hr>
+
+<center>
+<%= link_to 'Add New Work', new_work_path(), class:"twobtn" %>
+&nbsp;&nbsp;&nbsp;&nbsp;
+<%= link_to 'Sign out', destroy_account_session_path, class:"twobtn", method: :delete %>
+<center>

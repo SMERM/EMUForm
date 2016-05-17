@@ -1,6 +1,14 @@
 <h1 class="entry-title">Editing Account</h1>
 
-<%= link_to 'Show', @account %> |
+<%= render 'form' %>
+
+<%= link_to 'Show', @account %>
 <%= link_to 'Back', accounts_path %>
 
-<%= render 'form' %>
+<hr>
+
+<center>
+<%= link_to 'List of Works', works_path, class:"twobtn" %>
+&nbsp;&nbsp;&nbsp;&nbsp;
+<%= link_to 'Sign out', destroy_account_session_path, class:"twobtn", method: :delete %>
+<center>
