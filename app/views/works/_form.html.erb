@@ -27,7 +27,8 @@
       <%= f.time_select :duration, :include_seconds=>true, :prompt => true %>
     </div>
     <div class="field">
-      <%= f.label :instruments %><br>
+      <%= f.label 'Description:' %><br>
+      <em><%= f.label 'in ex for Acousmatic sound diffusion setup, for Live Electronics a list of Instruments' =%></em>
       <%= f.text_field :instruments %>
     </div>
     <div class="field"> <%= f.label 'Program Notes (in english)' %><br>
