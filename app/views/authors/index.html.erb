@@ -1,8 +1,6 @@
-<p class="notice"><%= notice %></p>
-
 <h1 class="entry-title">List of Authors</h1>
 
-<%= link_to 'New Author', new_work_author_path(@work) %>
+
 
 <div class="entry-content">
 
@@ -24,3 +22,13 @@
 </table>
 
 </div>
+
+<%= link_to 'New Author', new_work_author_path(@work), class:"btn" %>
+
+<hr>
+
+<center>
+<%= link_to 'List of Works', works_path, class:"twobtn" %>
+&nbsp;&nbsp;&nbsp;&nbsp;
+<%= link_to 'Sign out', destroy_account_session_path, class:"twobtn", method: :delete %>
+<center>

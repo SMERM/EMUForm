@@ -1,8 +1,3 @@
-<p class="notice"><%= notice %></p>
-
-<%= link_to 'Edit', edit_work_author_path(@work, @author) %> |
-<%= link_to 'Back', work_authors_path(@work) %>
-
 <p>
   <strong>First name:</strong>
   <%= @author.first_name %>
@@ -19,3 +14,6 @@
   <strong>Bio it:</strong>
   <%= @author.bio_it %>
 </p>
+
+<%= link_to 'Edit', edit_work_author_path(@work, @author), class:"btn" %>
+<%= link_to 'Back', work_authors_path(@work), class:"btn"%>
