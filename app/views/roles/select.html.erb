@@ -1,6 +1,6 @@
 <h1 class="entry-title">Select Roles:</h1>
 
-<span><strong>Select at least one role (you may select all that apply):</strong></span>
+<span><strong>Select at least one role for each author (you may select all that apply):</strong></span>
 
 <%= form_for(:work_role_author, url: work_works_roles_authors_path(@work)) do |f| %>
   <%= render partial: 'select_role', collection: @authors, locals: { form: f, roles: @roles } %>

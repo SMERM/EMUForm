@@ -66,7 +66,7 @@ feature "a simple linear user journey " do
       select ("%02d" % @new_work.duration.hour), :from => 'work_duration_4i'
       select ("%02d" % @new_work.duration.min), :from => 'work_duration_5i'
       select ("%02d" % @new_work.duration.sec), :from => 'work_duration_6i'
-      fill_in 'Instruments', :with => @new_work.instruments
+      fill_in 'work_instruments', :with => @new_work.instruments
       fill_in 'work_program_notes_en', :with => @new_work.program_notes_en
       fill_in 'work_program_notes_it', :with => @new_work.program_notes_it
       click_button 'Select author(s)'
@@ -75,14 +75,14 @@ feature "a simple linear user journey " do
       #
       expect(Work.count).to eq(@work_count + 1)
       expect(page).to have_content 'Work was successfully created.'
-      expect(page).to have_content "Please select one (or more) authors for #{@new_work.title}:"
+      expect(page).to have_content "Please select one (or more) authors for #{@new_work.title} from the following list:"
       @selected_authors.each { |sa| expect(page).to have_content sa.full_name }
       @selected_authors.each { |sa| select(sa.full_name) }
       click_button 'Confirm selection'
       #
       # select roles for each chosen author
       #
-      expect(page).to have_content 'Select Roles for the following authors:'
+      expect(page).to have_content 'Select at least one role for each author (you may select all that apply):'
       @selected_authors.each { |sa| expect(page).to have_content sa.full_name }
       @selected_authors.each do
         |sa|
