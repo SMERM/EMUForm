@@ -33,7 +33,7 @@
 
   <!-- For all browsers -->
   <!-- Webfonts -->
-  <script src="//use.edgefonts.net/source-sans-pro:n2,i2,n3,i3,n4,i4,n6,i6,n7,i7,n9,i9;source-code-pro:n4,n7;volkhov.js"></script>
+  <script src="http://use.edgefonts.net/source-sans-pro:n2,i2,n3,i3,n4,i4,n6,i6,n7,i7,n9,i9;source-code-pro:n4,n7;volkhov.js"></script>
 
   <!-- <meta http-equiv="cleartype" content="on"> -->
 
@@ -55,7 +55,7 @@
   <link rel="apple-touch-icon-precomposed" sizes="144x144" href="http://www.emufest.org/images/apple-touch-icon-144x144-precomposed.png">
 
   <!-- emufest style -->
-  <%= stylesheet_link_tag  '//www.emufest.org/assets/css/main.css' %>
+  <%= stylesheet_link_tag  'http://www.emufest.org/assets/css/main.css' %>
   <%= javascript_include_tag 'application', 'data-turbolinks-track' => true %>
   <%= csrf_meta_tags %>
 
@@ -145,7 +145,7 @@
   var BASE_URL = 'http://www.emufest.org/';
 </script>
 
-<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
 <script>window.jQuery || document.write('<script src="http://www.emufest.org/assets/js/vendor/jquery-1.9.1.min.js"><\/script>')</script>
 <script src="http://www.emufest.org/assets/js/scripts.min.js"></script>
 
@@ -161,16 +161,16 @@
 <!-- The template to display files available for download -->
 
 <%= javascript_include_tag 'http://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js' %>
-<%= javascript_include_tag '//blueimp.github.io/JavaScript-Templates/js/tmpl.min.js' %>
-<%= javascript_include_tag '//netdna.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js' %>
-<%= javascript_include_tag 'js/vendor/jquery.ui.widget.js' %>
-<%= javascript_include_tag 'js/jquery.iframe-transport.js' %>
-<%= javascript_include_tag 'js/jquery.fileupload.js' %>
-<%= javascript_include_tag 'js/jquery.fileupload-process.js' %>
-<%= javascript_include_tag 'js/jquery.fileupload-image.js' %>
-<% javascript_include_tag 'js/jquery.fileupload-audio.js' %>
-<% javascript_include_tag 'js/jquery.fileupload-video.js' %>
-<% javascript_include_tag 'js/jquery.fileupload-validate.js' %>
-<% javascript_include_tag 'js/main.js' %>
+<%= javascript_include_tag 'http://blueimp.github.io/JavaScript-Templates/js/tmpl.min.js' %>
+<%= javascript_include_tag 'http://netdna.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js' %>
+<%= javascript_include_tag 'jquery/vendor/jquery.ui.widget.js' %>
+<%= javascript_include_tag 'jquery/jquery.iframe-transport.js' %>
+<%= javascript_include_tag 'jquery/jquery.fileupload.js' %>
+<%= javascript_include_tag 'jquery/jquery.fileupload-process.js' %>
+<%= javascript_include_tag 'jquery/jquery.fileupload-image.js' %>
+<% javascript_include_tag 'jquery/jquery.fileupload-audio.js' %>
+<% javascript_include_tag 'jquery/jquery.fileupload-video.js' %>
+<% javascript_include_tag 'jquery/jquery.fileupload-validate.js' %>
+<% javascript_include_tag 'jquery/main.js' %>
 </body>
 </html>
