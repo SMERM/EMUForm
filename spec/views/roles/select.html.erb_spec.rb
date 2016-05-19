@@ -15,8 +15,8 @@ RSpec.describe "roles/select", type: :view do
 
   it "select a list of roles" do
     render
-    @authors.each { |a| assert_select '.author_name', text: a.full_name + ':', count: 1 }
-    @roles.each { |r| assert_select '.role_check_box', :text => r.description, :count => @num_authors }
+    @authors.each { |a| assert_select 'h3', text: a.full_name + ':', count: 1 }
+    @roles.each { |r| assert_select 'label.role_label', :text => r.description, :count => @num_authors }
   end
 
 end

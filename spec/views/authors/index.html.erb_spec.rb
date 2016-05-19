@@ -16,7 +16,7 @@ RSpec.describe "authors/index", type: :view do
     @authors.each do
       |auth|
       assert_select "tr>td", :text => auth.full_name, :count => property_count(auth, :last_name)
-      assert_select "tr>td", :text => '(' + auth.display_birth_year + ')', :count => property_count(auth, :birth_year)
+      assert_select "tr>td", :text => auth.display_birth_year, :count => property_count(auth, :birth_year)
     end
   end
 
