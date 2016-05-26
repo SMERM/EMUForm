@@ -1,4 +1,5 @@
 class Accounts::ConfirmationsController < Devise::ConfirmationsController
+
   # GET /resource/confirmation/new
   # def new
   #   super

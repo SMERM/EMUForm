@@ -1,0 +1,4 @@
+<%# BEWARE: this link cannot go *inside* any sort of container which reconfigures jQuery, because it needs jQuery in order to work! %>
+<% if account_signed_in? %>
+  <%= link_to 'Sign out', destroy_account_session_path, { method: :delete, data: { disable_with: 'signing out...' }, class: 'twobtn', id: 'signout' } %>
+<% end %>

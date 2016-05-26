@@ -1,4 +1,7 @@
 class WorksController < EndUserBaseController
+
+  layout 'file_upload', only: [:attach_file, :upload_file]
+
   before_action :set_work, except: [ :new, :index ]
 
   # GET /works

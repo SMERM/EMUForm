@@ -18,8 +18,8 @@
                   <span>Start upload</span>
               </button> -->
               <%= f.button('Cancel upload', :type => 'reset', :class => 'btn btn-warning cancel') %>
-              <%# f.button_to('Delete upload', :type => 'reset', :class => 'btn btn-danger delete') %> <%# don't know how to deal with this yet %>
-              <%# f.check_box :toggle, :value => 'delete', { :class => 'toggle' } %><%# removed because I can't make it to work :-( %>
+              <%= f.button('Delete upload', :type => 'reset', :class => 'btn btn-danger delete') %> <%# don't know how to deal with this yet %>
+              <%# f.check_box(:toggle, { value: 'delete' }, { class: 'toggle' }) %><%# removed because I can't make it to work :-( %>
               <!-- The global file processing state -->
               <span class="fileupload-process"></span>
             </div>

@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>EMUFest Submission Form (Admin section)</title>
+
+  <%= render partial: 'shared/common_header_cruft' %>
+  <!-- extra javascripts for admin -->
+  <%= javascript_include_tag 'active_admin' %>
+  <%= stylesheet_link_tag  'admin' %>
+
+</head>
+
+  <p class="notice"><%= notice %></p>
+
+    <%= yield %>
+
+</body>
+</html>

@@ -49,6 +49,7 @@ class SubmittedFile < ActiveRecord::Base
 
     def create_from_http_request(hr, work)
       obj = new_from_http_request(hr, work)
+      raise ActiveRecord::RecordInvalid, obj unless obj.valid?
       obj.save
       obj
     end

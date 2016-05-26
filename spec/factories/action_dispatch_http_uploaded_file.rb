@@ -7,15 +7,15 @@ FactoryGirl.define do
   factory :uploaded_file, class: ActionDispatch::Http::UploadedFile do
 
     transient do
-      file_type          { get_file_type_to_submit }
+      test_file_name     TestFile::DEFAULT_TEST_FILENAME
+      test_file          { get_file_to_submit(test_file_name) }
     end
 
-    original_filename    { get_file_to_submit(file_type) }
-    content_type         { file_type.content_type }
-    headers              { file_type.headers }
+    content_type         { test_file.file_type.content_type }
+    headers              { test_file.file_type.headers }
     tempfile do
       tf = Tempfile.new('EF_Test')
-      FileUtils.cp(original_filename, tf.path)
+      FileUtils.cp(test_file.filename_full_path, tf.path)
       tf
     end
 
@@ -30,7 +30,7 @@ FactoryGirl.define do
     # because this is actually what happens in forms. The full path is found
     # in tempfile which is the only accessible file for upload
     #
-    initialize_with { new(:filename => File.basename(original_filename), :type => content_type, :head => headers, :tempfile => tempfile) }
+    initialize_with { new(:filename => test_file.basename, :type => content_type, :head => headers, :tempfile => tempfile) }
 
   end
 

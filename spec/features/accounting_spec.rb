@@ -18,7 +18,7 @@ describe "the signup process", :type => :feature do
       fill_in 'Password confirmation', :with => @new_account.password
     end
     click_button 'Sign up'
-    expect(page).to have_content @new_account.last_name
+    expect(body).to have_content @new_account.last_name
   end
 
   #
@@ -44,7 +44,7 @@ describe "the signin process", :type => :feature do
       fill_in 'Password', :with => @account.password
     end
     click_button 'Log in'
-    expect(page).to have_content @account.last_name
+    expect(body).to have_content @account.last_name
   end
 
   #
@@ -52,5 +52,26 @@ describe "the signin process", :type => :feature do
   #
   # * failed signin
   #
+
+end
+
+describe "the signout process", :type => :feature do
+
+  before :each do
+    @account = FactoryGirl.create(:account)
+  end
+
+  it "signs me in (with proper credentials) and then signs me out" do
+    visit root_path
+    within('.sign_in') do
+      fill_in 'Email', :with => @account.email
+      fill_in 'Email', :with => @account.email
+      fill_in 'Password', :with => @account.password
+    end
+    click_button 'Log in'
+    expect(page).to have_content 'Sign out'
+    click_link 'Sign out'
+    expect(body).to have_content 'Sign in Email Password'
+  end
 
 end

@@ -86,3 +86,8 @@ end
 # +EMUForm::RoleManager+
 #
 require 'EMUForm/role_manager'
+
+#
+# When we want Capybara to use a javascript driver
+#
+# Capybara.default_driver = :selenium

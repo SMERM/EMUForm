@@ -1,5 +1,5 @@
 /*
- * This is a manifest file that'll be compiled into application.css, which will include all the files
+ * This is a manifest file that'll be compiled into file_upload.css, which will include all the files
  * listed below.
  *
  * Any CSS and SCSS file within this directory, lib/assets/stylesheets, vendor/assets/stylesheets,
@@ -10,5 +10,8 @@
  * defined in the other CSS/SCSS files in this directory. It is generally better to create a new
  * file per style scope.
  *
- *= require_tree ./default
+ * PLEASE NOTE: the layout of file uploads *INHERITS* the default application
+ * layout header, so including all the application.js javascripts is *not needed*.
+ *
+ *= require_tree ../../../vendor/assets/stylesheets/jquery
  */

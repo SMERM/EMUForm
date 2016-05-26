@@ -47,6 +47,7 @@ group :development, :test do
   gem 'forgery'
   gem 'codeclimate-test-reporter', require: nil
   gem 'capybara'
+  gem 'selenium-webdriver'
 end
 
 group :development do
@@ -78,3 +79,6 @@ gem 'koala'
 gem 'carrierwave'
 gem 'activeadmin', github: 'gregbell/active_admin'
 gem 'enumerize'
+gem 'angularjs-rails'
+# gem 'angularjs-file-upload-rails'
+gem 'jquery-file-upload-railed'

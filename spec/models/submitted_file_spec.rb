@@ -7,7 +7,7 @@ RSpec.describe SubmittedFile, type: :model do
 
   before :example do
     @work = FactoryGirl.create(:work)
-    @http_request = FactoryGirl.create(:uploaded_file)
+    @http_request = FactoryGirl.build(:uploaded_file)
     @mime_types = { '.mp3' => 'audio/mpeg', '.wav' => 'audio/x-wav', '.pdf' => 'application/pdf' }
     @headers = 'Content-Disposition: form-data'
     @mime_type = @mime_types[file_suffix(@http_request.original_filename)]
@@ -43,11 +43,17 @@ RSpec.describe SubmittedFile, type: :model do
       clean_up(sf)
     end
 
-  end
+    it 'does upload a file even if the filename is replete with funny UTF-8 characters' do
+      work_title = '1111111111111'
+      original_filename = "Intérférence d'une idée.wav"
+      expect((w = FactoryGirl.create(:work, title: work_title)).valid?).to be(true)
+      expect((hr = FactoryGirl.build(:uploaded_file, test_file_name: original_filename)).class).to be(ActionDispatch::Http::UploadedFile)
+      expect((sf = FactoryGirl.create(:submitted_file, work: w, http_request: hr)).valid?).to be(true)
+      expect(File.exists?(sf.attached_file_full_path)).to be(true)
+      expect(File.size(sf.attached_file_full_path)).to eq(sf.size)
+      clean_up(sf)
+    end
 
-  def file_suffix(filename)
-    ridx = filename.rindex('.')
-    filename[ridx..-1]
   end
 
 end
